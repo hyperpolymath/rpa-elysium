@@ -1,0 +1,36 @@
+= rpa-elysium - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{rpa-elysium_2025,
+  author = {Polymath, Hyper},
+  title = {rpa-elysium},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/rpa-elysium},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _rpa-elysium_ [Computer software]. Available at: https://github.com/hyperpolymath/rpa-elysium
+
+== OSCOLA
+
+Hyper Polymath, 'rpa-elysium' (2025) <https://github.com/hyperpolymath/rpa-elysium>
+
+== MLA
+
+Polymath, Hyper. "rpa-elysium." 2025, github.com/hyperpolymath/rpa-elysium.
+
+== APA 7
+
+Polymath, H. (2025). _rpa-elysium_ [Computer software]. GitHub. https://github.com/hyperpolymath/rpa-elysium
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]
