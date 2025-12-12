@@ -1,0 +1,14 @@
+name: NPM/Bun Blocker
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Block npm/bun
+        run: |
+          if [ -f "package-lock.json" ] || [ -f "bun.lockb" ] || [ -f ".npmrc" ]; then
+            echo "❌ npm/bun artifacts detected. Use Deno instead."
+            exit 1
+          fi
+          echo "✅ No npm/bun violations"
