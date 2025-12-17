@@ -13,10 +13,10 @@ This document describes the Rhodium Standard Repository (RSR) compliance status 
 |Attribute |Value
 
 |Project |rpa-elysium
-|Primary Language |unknown
-|RSR Tier |N/A
-|Compliance Status |Review Needed
-|Last Updated |2025-12-10
+|Primary Language |Guile Scheme
+|RSR Tier |Tier 2
+|Compliance Status |Gold (Partial)
+|Last Updated |2025-12-17
 |===
 
 == Language Tier Classification
@@ -46,14 +46,15 @@ This document describes the Rhodium Standard Repository (RSR) compliance status 
 |===
 |Requirement |Status |Notes
 
-|Primary language is Tier 1/2 |✓ |unknown
+|Primary language is Tier 1/2 |✓ |Guile Scheme (Tier 2)
 |No restricted languages outside exemptions |✓ |
 |.editorconfig present |✓ |
-|.well-known/ directory |✓ |
-|justfile present |✗ |
-|LICENSE.txt (AGPL + Palimpsest) |✗ |
-|Containerfile present |✗ |
-|flake.nix present |✗ |
+|.well-known/ directory |✓ |RFC 9116 compliant
+|justfile present |✓ |Tasks need implementation
+|LICENSE.txt (AGPL + Palimpsest) |✓ |Dual license
+|SHA-pinned GitHub Actions |✓ |All actions pinned
+|Containerfile present |✗ |Roadmap item
+|flake.nix present |✗ |Nix fallback (optional)
 |===
 
 == Exemptions
@@ -62,9 +63,46 @@ None
 
 == Action Items
 
-* Add justfile
-* Add Containerfile
-* Add flake.nix
+* [x] Add justfile
+* [ ] Implement justfile tasks (build, test, clean, fmt, lint)
+* [ ] Add Containerfile
+* [ ] Add flake.nix (optional Nix fallback)
+* [ ] Add core RPA functionality
+
+== Roadmap
+
+=== Phase 1: Foundation (v0.1) - Current
+* [x] RSR compliance framework
+* [x] Security hardening (SHA-pinned actions)
+* [x] CI/CD workflows (10 workflows)
+* [x] RFC 9116 security.txt
+* [x] Multi-platform mirroring
+* [ ] Implement justfile tasks
+
+=== Phase 2: Core RPA (v0.2)
+* [ ] Design RPA architecture
+* [ ] Browser automation module (Rust + WebDriver)
+* [ ] Process orchestration (Guile Scheme)
+* [ ] Configuration DSL (Guile/Nickel)
+* [ ] Basic tests and examples
+
+=== Phase 3: Integration (v0.3)
+* [ ] Add Containerfile (OCI container)
+* [ ] Guix package testing
+* [ ] API documentation
+* [ ] Workflow templates
+
+=== Phase 4: Advanced Features (v0.4)
+* [ ] Machine learning integration (if needed)
+* [ ] Distributed execution
+* [ ] Monitoring and logging
+* [ ] Production hardening
+
+=== Phase 5: Release (v1.0)
+* [ ] Full documentation
+* [ ] Security audit
+* [ ] Performance benchmarks
+* [ ] Release to Guix channel
 
 == References
 
