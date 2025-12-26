@@ -1,6 +1,10 @@
-= rpa-elysium
+// SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2024-2025 hyperpolymath
+
+= RPA Elysium
 Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
 :toc: macro
+:toclevels: 3
 :icons: font
 :source-highlighter: rouge
 :experimental:
@@ -9,9 +13,246 @@ Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
 :url-bitbucket: https://bitbucket.org/hyperpolymath/rpa-elysium
 :url-codeberg: https://codeberg.org/hyperpolymath/rpa-elysium
 
-RPA paradise - robotic process automation toolkit
+*RPA Paradise* — A next-generation robotic process automation toolkit
 
 image:https://img.shields.io/badge/RSR-Certified-gold[RSR Certified,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
 image:https://img.shields.io/badge/License-AGPL%20v3-blue[License]
+image:https://img.shields.io/badge/Status-Specification%20Phase-yellow[Status]
 
 toc::[]
+
+== Project Status
+
+[IMPORTANT]
+====
+*Current Phase*: Project Specification & Infrastructure
+
+This repository contains:
+
+* Project vision and architectural specification
+* CI/CD infrastructure and governance workflows
+* Language policy and development standards
+* Multi-forge distribution setup
+
+*Implementation has not yet begun.* See <<roadmap>> for development phases.
+====
+
+== Overview
+
+RPA Elysium is a comprehensive robotic process automation toolkit designed to streamline business workflows, automate repetitive tasks, and maximise operational efficiency. Built on the Hyperpolymath language standards, it prioritises type safety, performance, and freedom from Big Tech dependencies.
+
+== Vision
+
+=== Core Capabilities
+
+[cols="1,3"]
+|===
+|Capability |Description
+
+|*Cross-Platform Automation*
+|Automate tasks across web, desktop, and mobile applications
+
+|*Visual Workflow Designer*
+|Intuitive interface for building automation workflows
+
+|*AI-Powered Recognition*
+|Smart element detection and adaptive UI interaction
+
+|*Scheduled Execution*
+|Automated tasks on custom schedules
+
+|*Error Handling & Recovery*
+|Robust error management with automatic retry mechanisms
+
+|*Integration Ready*
+|Connect with business tools and APIs
+
+|*Scalable Architecture*
+|From single bot to enterprise-wide deployment
+
+|*Detailed Analytics*
+|Monitor performance, track success rates, optimise workflows
+|===
+
+=== Planned Architecture
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────────┐
+│                     Management Console (ReScript)               │
+│         Workflow Designer │ Monitoring │ Analytics              │
+├─────────────────────────────────────────────────────────────────┤
+│                        Bot Framework (Rust)                     │
+│      Task Scheduling │ State Management │ Resource Allocation   │
+├─────────────────────────────────────────────────────────────────┤
+│                     Automation Modules (Rust/ReScript)          │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │   Web    │ │ Desktop  │ │   API    │ │ Document/Email   │   │
+│  │Automation│ │Automation│ │Integration│ │   Processing    │   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                   AI & Intelligence (Rust + WASM)               │
+│            OCR │ Form Recognition │ NLP │ Pattern Learning      │
+├─────────────────────────────────────────────────────────────────┤
+│                    Backend Services (Gleam on BEAM)             │
+│              Job Queue │ Event Bus │ Persistence                │
+└─────────────────────────────────────────────────────────────────┘
+----
+
+== Technology Stack
+
+Per the link:.claude/CLAUDE.md[Hyperpolymath Language Policy]:
+
+[cols="1,2,2"]
+|===
+|Layer |Technology |Rationale
+
+|*Application Logic*
+|ReScript
+|Type-safe, compiles to efficient JS
+
+|*Performance-Critical*
+|Rust
+|Systems programming, WASM compilation
+
+|*Runtime*
+|Deno
+|Secure, modern JS/TS runtime
+
+|*Backend Services*
+|Gleam
+|Functional, runs on BEAM for reliability
+
+|*Mobile*
+|Tauri 2.0+ / Dioxus
+|Rust-first mobile, no Kotlin/Swift
+
+|*Configuration*
+|Nickel
+|Programmable, typed configuration
+
+|*Package Management*
+|Guix (primary), Nix (fallback)
+|Reproducible builds
+|===
+
+=== What We *Don't* Use
+
+* No TypeScript (ReScript instead)
+* No Node.js/npm/Bun (Deno instead)
+* No Go (Rust instead)
+* No Python except SaltStack (ReScript/Rust instead)
+* No Kotlin/Swift for mobile (Tauri/Dioxus instead)
+
+== Use Cases
+
+* *Data Entry Automation* — Eliminate manual data input across systems
+* *Report Generation* — Automatically compile and distribute reports
+* *Customer Service* — Automated ticket routing and responses
+* *Invoice Processing* — Extract, validate, and process invoices
+* *System Integration* — Bridge legacy and modern systems
+* *Compliance & Auditing* — Automated compliance checks and logging
+
+[[roadmap]]
+== Roadmap
+
+See link:ROADMAP.adoc[ROADMAP.adoc] for detailed development phases.
+
+=== Phase Summary
+
+[cols="1,2,1"]
+|===
+|Phase |Focus |Status
+
+|*0. Foundation*
+|Project infrastructure, CI/CD, governance
+|✓ Complete
+
+|*1. Core Framework*
+|Bot framework, task scheduling, state management
+|Planned
+
+|*2. Automation Modules*
+|Web, desktop, API, document automation
+|Planned
+
+|*3. AI & Intelligence*
+|OCR, form recognition, NLP integration
+|Planned
+
+|*4. Management Console*
+|Workflow designer, monitoring, analytics
+|Planned
+
+|*5. Mobile & Marketplace*
+|Mobile management app, workflow sharing
+|Future
+|===
+
+== Repository Structure
+
+[source]
+----
+rpa-elysium/
+├── .claude/              # AI assistant configuration
+│   └── CLAUDE.md         # Language policy (Hyperpolymath Standard)
+├── .github/
+│   ├── workflows/        # CI/CD pipelines (11 workflows)
+│   └── ISSUE_TEMPLATE/   # Issue templates
+├── docs/                 # Documentation
+│   └── CITATIONS.adoc    # Citation formats
+├── src/                  # Source code (to be implemented)
+│   ├── core/             # Bot framework (Rust)
+│   ├── automation/       # Automation modules (Rust/ReScript)
+│   ├── ai/               # AI components (Rust/WASM)
+│   ├── console/          # Management UI (ReScript)
+│   └── services/         # Backend services (Gleam)
+├── LICENSE.txt           # MIT OR AGPL-3.0-or-later
+├── README.adoc           # This file
+├── ROADMAP.adoc          # Development roadmap
+└── justfile              # Build automation
+----
+
+== Multi-Forge Distribution
+
+This project is mirrored across multiple forges:
+
+* {url-github}[GitHub] (primary)
+* {url-gitlab}[GitLab]
+* {url-bitbucket}[Bitbucket]
+* {url-codeberg}[Codeberg]
+
+== Security
+
+* Encrypted credential storage
+* Role-based access control
+* Audit logging
+* SOC2 and GDPR compliance considerations
+* SHA-256+ for all cryptographic operations
+* HTTPS only — no HTTP URLs
+
+== Contributing
+
+Contributions welcome once implementation begins. See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+All contributions must adhere to the link:.claude/CLAUDE.md[Hyperpolymath Language Policy].
+
+== License
+
+Dual-licensed under MIT OR AGPL-3.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+
+== Author
+
+*hyperpolymath*
+
+* GitHub: https://github.com/hyperpolymath[@hyperpolymath]
+
+== Acknowledgements
+
+* Open source RPA community
+* Rust, ReScript, Gleam, and Deno communities
+* Automation pioneers and thought leaders
+
+---
+
+_Transform your business processes — Watch this repository to stay updated with development progress._
