@@ -1,0 +1,58 @@
+{
+  "name": "archive-downloads",
+  "description": "Archive and organize files from Downloads folder",
+  "enabled": true,
+  "version": "1.0.0",
+  "watch": [
+    {
+      "path": "/home/user/Downloads",
+      "recursive": false
+    }
+  ],
+  "rules": [
+    {
+      "name": "archive-old-zips",
+      "patterns": ["*.zip", "*.tar.gz", "*.rar"],
+      "events": ["created"],
+      "actions": [
+        {
+          "type": "move",
+          "destination": "/home/user/Archives/Downloads",
+          "overwrite": false
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "name": "rename-screenshots",
+      "patterns": ["Screenshot*.png", "screen*.png"],
+      "events": ["created"],
+      "actions": [
+        {
+          "type": "rename",
+          "pattern": "screenshot_{datetime}.png"
+        },
+        {
+          "type": "move",
+          "destination": "/home/user/Pictures/Screenshots",
+          "overwrite": false
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "name": "compress-logs",
+      "patterns": ["*.log"],
+      "events": ["created"],
+      "actions": [
+        {
+          "type": "archive",
+          "destination": "/home/user/Archives/Logs",
+          "format": "tar_gz",
+          "delete_source": true
+        }
+      ],
+      "enabled": true
+    }
+  ]
+}

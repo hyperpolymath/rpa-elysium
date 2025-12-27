@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+
+[package]
+name = "rpa-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Core types and traits for RPA Elysium automation toolkit"
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+async-trait = { workspace = true }
+chrono = { workspace = true }

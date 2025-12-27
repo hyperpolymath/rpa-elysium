@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+
+[package]
+name = "rpa-fs-workflow"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Filesystem workflow automation for RPA Elysium"
+
+[[bin]]
+name = "rpa-fs"
+path = "src/main.rs"
+
+[dependencies]
+rpa-core = { path = "../rpa-core" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+notify = { workspace = true }
+notify-debouncer-mini = { workspace = true }
+clap = { workspace = true }
+walkdir = { workspace = true }
+glob = { workspace = true }
+flate2 = { workspace = true }
+tar = { workspace = true }
+zip = { workspace = true }
+chrono = { workspace = true }
+ctrlc = "3.4"
+
+[dev-dependencies]
+tempfile = "3.10"

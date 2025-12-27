@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/rpa-core",
+    "crates/rpa-fs-workflow",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR AGPL-3.0-or-later"
+authors = ["Hyperpolymath <hyperpolymath@proton.me>"]
+repository = "https://github.com/hyperpolymath/rpa-elysium"
+
+[workspace.dependencies]
+# Core dependencies
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Filesystem watching
+notify = "6.1"
+notify-debouncer-mini = "0.4"
+
+# CLI
+clap = { version = "4.4", features = ["derive"] }
+
+# Configuration (Nickel integration via JSON bridge)
+nickel-lang-core = "0.8"
+
+# Async utilities
+async-trait = "0.1"
+futures = "0.3"
+
+# File operations
+walkdir = "2.4"
+glob = "0.3"
+flate2 = "1.0"
+tar = "0.4"
+zip = "0.6"
+chrono = { version = "0.4", features = ["serde"] }

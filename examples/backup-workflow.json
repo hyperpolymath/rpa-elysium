@@ -1,0 +1,42 @@
+{
+  "name": "backup-documents",
+  "description": "Automatically backup PDF and Office documents to a backup folder",
+  "enabled": true,
+  "version": "1.0.0",
+  "watch": [
+    {
+      "path": "/home/user/Documents",
+      "recursive": true
+    }
+  ],
+  "rules": [
+    {
+      "name": "backup-pdfs",
+      "patterns": ["*.pdf"],
+      "events": ["created", "modified"],
+      "actions": [
+        {
+          "type": "copy",
+          "destination": "/home/user/Backups/Documents",
+          "overwrite": true,
+          "preserve_structure": false
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "name": "backup-spreadsheets",
+      "patterns": ["*.xlsx", "*.xls", "*.csv"],
+      "events": ["created", "modified"],
+      "actions": [
+        {
+          "type": "copy",
+          "destination": "/home/user/Backups/Spreadsheets",
+          "overwrite": true,
+          "preserve_structure": false
+        }
+      ],
+      "enabled": true
+    }
+  ]
+}
