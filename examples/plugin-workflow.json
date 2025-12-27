@@ -1,0 +1,88 @@
+{
+  "name": "plugin-workflow-example",
+  "description": "Example workflow demonstrating plugin integration with safety sandbox",
+  "enabled": true,
+  "version": "1.0.0",
+
+  "plugins": [
+    {
+      "path": "plugins/image-processor.wasm",
+      "id": "image-processor",
+      "enabled": true,
+      "sandbox": {
+        "memory_limit": 33554432,
+        "timeout_ms": 10000,
+        "read_paths": ["/home/user/Pictures"],
+        "write_paths": ["/home/user/Pictures/processed"],
+        "env_vars": []
+      }
+    },
+    {
+      "path": "plugins/metadata-extractor.wasm",
+      "id": "metadata-extractor",
+      "enabled": true,
+      "sandbox": {
+        "memory_limit": 16777216,
+        "timeout_ms": 5000,
+        "read_paths": ["/home/user/Documents"],
+        "write_paths": [],
+        "env_vars": []
+      }
+    }
+  ],
+
+  "watch": [
+    {
+      "path": "/home/user/Pictures/incoming",
+      "recursive": true
+    }
+  ],
+
+  "rules": [
+    {
+      "name": "process-images-with-plugin",
+      "patterns": ["*.jpg", "*.jpeg", "*.png"],
+      "events": ["created"],
+      "actions": [
+        {
+          "type": "plugin",
+          "plugin": "image-processor",
+          "action": "resize",
+          "config": {
+            "max_width": 1920,
+            "max_height": 1080,
+            "quality": 85
+          }
+        },
+        {
+          "type": "move",
+          "destination": "/home/user/Pictures/processed",
+          "overwrite": false
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "name": "extract-document-metadata",
+      "patterns": ["*.pdf", "*.docx"],
+      "events": ["created"],
+      "actions": [
+        {
+          "type": "plugin",
+          "plugin": "metadata-extractor",
+          "action": "extract",
+          "config": {
+            "output_format": "json"
+          }
+        },
+        {
+          "type": "copy",
+          "destination": "/home/user/Documents/indexed",
+          "overwrite": false,
+          "preserve_structure": false
+        }
+      ],
+      "enabled": true
+    }
+  ]
+}

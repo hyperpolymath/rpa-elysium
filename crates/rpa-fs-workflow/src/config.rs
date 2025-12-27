@@ -8,6 +8,7 @@
 
 use crate::actions::ActionConfig;
 use rpa_core::{Error, Result, Workflow};
+use rpa_plugin::{Permission, PermissionSet, SandboxConfig};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use tracing::debug;
@@ -24,6 +25,80 @@ pub struct WorkflowConfig {
 
     /// Rules that match events to actions
     pub rules: Vec<RuleConfig>,
+
+    /// Plugin configurations
+    #[serde(default)]
+    pub plugins: Vec<PluginLoadConfig>,
+}
+
+/// Configuration for loading a plugin
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PluginLoadConfig {
+    /// Path to the plugin WASM file
+    pub path: PathBuf,
+    /// Optional plugin ID (defaults to filename)
+    pub id: Option<String>,
+    /// Whether plugin is enabled
+    #[serde(default = "default_enabled")]
+    pub enabled: bool,
+    /// Sandbox configuration
+    #[serde(default)]
+    pub sandbox: PluginSandboxConfig,
+}
+
+/// Sandbox configuration for plugins
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PluginSandboxConfig {
+    /// Memory limit in bytes (default: 64MB)
+    #[serde(default = "default_memory_limit")]
+    pub memory_limit: u64,
+    /// Timeout in milliseconds (default: 30s)
+    #[serde(default = "default_timeout")]
+    pub timeout_ms: u64,
+    /// Paths the plugin can read
+    #[serde(default)]
+    pub read_paths: Vec<PathBuf>,
+    /// Paths the plugin can write
+    #[serde(default)]
+    pub write_paths: Vec<PathBuf>,
+    /// Environment variables the plugin can access
+    #[serde(default)]
+    pub env_vars: Vec<String>,
+}
+
+fn default_memory_limit() -> u64 {
+    64 * 1024 * 1024 // 64MB
+}
+
+fn default_timeout() -> u64 {
+    30_000 // 30 seconds
+}
+
+impl PluginSandboxConfig {
+    /// Convert to rpa_plugin::SandboxConfig
+    pub fn to_sandbox_config(&self) -> SandboxConfig {
+        let mut permissions = PermissionSet::empty()
+            .with(Permission::Time)
+            .with(Permission::Random);
+
+        for path in &self.read_paths {
+            permissions.add(Permission::read_path(path.clone()));
+        }
+        for path in &self.write_paths {
+            permissions.add(Permission::write_path(path.clone()));
+        }
+        for var in &self.env_vars {
+            permissions.add(Permission::env(var.clone()));
+        }
+
+        SandboxConfig {
+            memory_limit: self.memory_limit,
+            timeout_ms: self.timeout_ms,
+            fuel_limit: Some(100_000_000),
+            permissions,
+            work_dir: None,
+        }
+    }
 }
 
 /// Configuration for a watched directory
@@ -172,6 +247,7 @@ impl WorkflowConfig {
                 }],
                 enabled: true,
             }],
+            plugins: Vec::new(),
         }
     }
 }

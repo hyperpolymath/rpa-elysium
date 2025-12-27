@@ -5,6 +5,7 @@
 resolver = "2"
 members = [
     "crates/rpa-core",
+    "crates/rpa-plugin",
     "crates/rpa-fs-workflow",
 ]
 
@@ -46,3 +47,8 @@ flate2 = "1.0"
 tar = "0.4"
 zip = "0.6"
 chrono = { version = "0.4", features = ["serde"] }
+
+# Plugin system (WASM sandbox)
+wasmtime = "27.0"
+wit-bindgen = "0.36"
+uuid = { version = "1.6", features = ["v4", "serde"] }

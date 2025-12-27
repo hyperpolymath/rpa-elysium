@@ -8,15 +8,18 @@ mod move_file;
 mod archive;
 mod delete;
 mod rename;
+mod plugin;
 
 pub use copy::CopyAction;
 pub use move_file::MoveAction;
 pub use archive::ArchiveAction;
 pub use delete::DeleteAction;
 pub use rename::RenameAction;
+pub use plugin::PluginActionWrapper;
 
 use rpa_core::{Action, Event, Result, action::ActionResult};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use async_trait::async_trait;
 
@@ -54,6 +57,16 @@ pub enum ActionConfig {
     /// Rename file using pattern
     Rename {
         pattern: String,
+    },
+    /// Execute a plugin action
+    Plugin {
+        /// Plugin ID
+        plugin: String,
+        /// Action name
+        action: String,
+        /// Plugin configuration
+        #[serde(default)]
+        config: HashMap<String, serde_json::Value>,
     },
 }
 
@@ -93,6 +106,9 @@ impl DynamicAction {
             }
             ActionConfig::Rename { pattern } => {
                 Box::new(RenameAction::new(pattern))
+            }
+            ActionConfig::Plugin { plugin, action, config } => {
+                Box::new(PluginActionWrapper::new(plugin, action, config))
             }
         };
         Self { inner }
