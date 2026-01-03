@@ -1,9 +1,11 @@
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+
 // SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2024-2025 hyperpolymath
 
 = RPA Elysium
 
-image:https://img.shields.io/badge/license-AGPL--3.0-blue.svg[AGPL-3.0,link="https://www.gnu.org/licenses/agpl-3.0"] image:https://img.shields.io/badge/philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
 :toc: macro
 :toclevels: 3
@@ -18,7 +20,6 @@ Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
 *RPA Paradise* — A next-generation robotic process automation toolkit
 
 image:https://img.shields.io/badge/RSR-Certified-gold[RSR Certified,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
-image:https://img.shields.io/badge/License-AGPL%20v3-blue[License]
 image:https://img.shields.io/badge/Status-Specification%20Phase-yellow[Status]
 
 toc::[]
