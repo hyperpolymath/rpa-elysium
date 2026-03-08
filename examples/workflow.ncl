@@ -1,17 +1,19 @@
 # SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
-# SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+# Example RPA Elysium Filesystem Workflow (Nickel).
 #
-# Example RPA Elysium Filesystem Workflow in Nickel
-# Run with: rpa-fs run workflow.ncl
+# This module defines an automated filesystem management policy using 
+//! the RPA Elysium framework. It uses Nickel's record merging and 
+//! functions to create a type-safe automation specification.
 
 let home = "/home/user" in
 
 {
   name = "nickel-workflow",
-  description = "Filesystem workflow defined in Nickel for type-safe configuration",
+  description = "Standardized filesystem automation for project silos.",
   enabled = true,
   version = "1.0.0",
 
+  # TRIGGERS: Directories to monitor for filesystem events.
   watch = [
     {
       path = "%{home}/Downloads",
@@ -23,6 +25,7 @@ let home = "/home/user" in
     },
   ],
 
+  # AUTOMATION RULES: Define 'pattern -> event -> action' mappings.
   rules = [
     {
       name = "organize-images",
@@ -30,6 +33,7 @@ let home = "/home/user" in
       events = ["created"],
       actions = [
         {
+          # ACTION: Moves new images to a central sorting directory.
           type = "move",
           destination = "%{home}/Pictures/Unsorted",
           overwrite = false,
@@ -43,6 +47,8 @@ let home = "/home/user" in
       events = ["created"],
       actions = [
         {
+          # ACTION: Copies documents to an 'Incoming' queue while 
+          # preserving the source file.
           type = "copy",
           destination = "%{home}/Documents/Incoming",
           overwrite = false,
@@ -57,6 +63,8 @@ let home = "/home/user" in
       events = ["created"],
       actions = [
         {
+          # ACTION: Compresses large video files into a ZIP archive 
+          # before moving to long-term storage.
           type = "archive",
           destination = "%{home}/Archives/Videos",
           format = "zip",

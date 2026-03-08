@@ -70,3 +70,8 @@ doc:
 # Install the rpa-fs binary locally
 install:
     cargo install --path crates/rpa-fs-workflow
+
+# [AUTO-GENERATED] Multi-arch / RISC-V target
+build-riscv:
+	@echo "Building for RISC-V..."
+	cross build --target riscv64gc-unknown-linux-gnu

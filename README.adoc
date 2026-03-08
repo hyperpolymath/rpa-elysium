@@ -260,3 +260,8 @@ Palimpsest License (PMPL-1.0)
 ---
 
 _Transform your business processes — Watch this repository to stay updated with development progress._
+
+
+== Architecture
+
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.
