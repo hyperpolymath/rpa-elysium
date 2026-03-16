@@ -1,27 +1,27 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Action handlers for filesystem operations
 
-mod copy;
-mod move_file;
 mod archive;
+mod copy;
 mod delete;
-mod rename;
+mod move_file;
 mod plugin;
+mod rename;
 
-pub use copy::CopyAction;
-pub use move_file::MoveAction;
 pub use archive::ArchiveAction;
+pub use copy::CopyAction;
 pub use delete::DeleteAction;
-pub use rename::RenameAction;
+pub use move_file::MoveAction;
 pub use plugin::PluginActionWrapper;
+pub use rename::RenameAction;
 
-use rpa_core::{Action, Event, Result, action::ActionResult};
+use async_trait::async_trait;
+use rpa_core::{action::ActionResult, Action, Event, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use async_trait::async_trait;
 
 /// Configuration for filesystem actions
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -55,9 +55,7 @@ pub enum ActionConfig {
         to_trash: bool,
     },
     /// Rename file using pattern
-    Rename {
-        pattern: String,
-    },
+    Rename { pattern: String },
     /// Execute a plugin action
     Plugin {
         /// Plugin ID
@@ -92,24 +90,27 @@ impl DynamicAction {
     /// Create a new dynamic action from config
     pub fn from_config(config: ActionConfig) -> Self {
         let inner: Box<dyn Action> = match config {
-            ActionConfig::Copy { destination, overwrite, preserve_structure } => {
-                Box::new(CopyAction::new(destination, overwrite, preserve_structure))
-            }
-            ActionConfig::Move { destination, overwrite } => {
-                Box::new(MoveAction::new(destination, overwrite))
-            }
-            ActionConfig::Archive { destination, format, delete_source } => {
-                Box::new(ArchiveAction::new(destination, format, delete_source))
-            }
-            ActionConfig::Delete { to_trash } => {
-                Box::new(DeleteAction::new(to_trash))
-            }
-            ActionConfig::Rename { pattern } => {
-                Box::new(RenameAction::new(pattern))
-            }
-            ActionConfig::Plugin { plugin, action, config } => {
-                Box::new(PluginActionWrapper::new(plugin, action, config))
-            }
+            ActionConfig::Copy {
+                destination,
+                overwrite,
+                preserve_structure,
+            } => Box::new(CopyAction::new(destination, overwrite, preserve_structure)),
+            ActionConfig::Move {
+                destination,
+                overwrite,
+            } => Box::new(MoveAction::new(destination, overwrite)),
+            ActionConfig::Archive {
+                destination,
+                format,
+                delete_source,
+            } => Box::new(ArchiveAction::new(destination, format, delete_source)),
+            ActionConfig::Delete { to_trash } => Box::new(DeleteAction::new(to_trash)),
+            ActionConfig::Rename { pattern } => Box::new(RenameAction::new(pattern)),
+            ActionConfig::Plugin {
+                plugin,
+                action,
+                config,
+            } => Box::new(PluginActionWrapper::new(plugin, action, config)),
         };
         Self { inner }
     }

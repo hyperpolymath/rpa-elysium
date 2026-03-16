@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Delete action implementation
 
 use async_trait::async_trait;
-use rpa_core::{Action, Event, EventKind, Result, action::ActionResult};
+use rpa_core::{action::ActionResult, Action, Event, EventKind, Result};
 use tracing::info;
 
 /// Action that deletes files
@@ -25,7 +25,9 @@ impl Action for DeleteAction {
         let source = match &event.kind {
             EventKind::FileCreated { path } | EventKind::FileModified { path } => path,
             _ => {
-                return Ok(ActionResult::failure("Delete action only supports file creation/modification events"));
+                return Ok(ActionResult::failure(
+                    "Delete action only supports file creation/modification events",
+                ));
             }
         };
 
@@ -41,10 +43,17 @@ impl Action for DeleteAction {
             // For now, we rename to a .trash suffix as a simple implementation
             let trash_path = source.with_extension(format!(
                 "{}.trash",
-                source.extension().map(|e| e.to_string_lossy()).unwrap_or_default()
+                source
+                    .extension()
+                    .map(|e| e.to_string_lossy())
+                    .unwrap_or_default()
             ));
             std::fs::rename(source, &trash_path)?;
-            info!("Moved to trash: {} -> {}", source.display(), trash_path.display());
+            info!(
+                "Moved to trash: {} -> {}",
+                source.display(),
+                trash_path.display()
+            );
             Ok(ActionResult::success(format!(
                 "Moved to trash: {}",
                 trash_path.display()
@@ -52,7 +61,10 @@ impl Action for DeleteAction {
         } else {
             std::fs::remove_file(source)?;
             info!("Deleted: {}", source.display());
-            Ok(ActionResult::success(format!("Deleted: {}", source.display())))
+            Ok(ActionResult::success(format!(
+                "Deleted: {}",
+                source.display()
+            )))
         }
     }
 

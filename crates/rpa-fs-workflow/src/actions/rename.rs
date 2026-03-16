@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Rename action implementation with pattern support
 
 use async_trait::async_trait;
 use chrono::Utc;
-use rpa_core::{Action, Event, EventKind, Result, action::ActionResult, Error};
+use rpa_core::{action::ActionResult, Action, Error, Event, EventKind, Result};
 use std::path::PathBuf;
 use tracing::info;
 
@@ -28,7 +28,7 @@ impl RenameAction {
         Self { pattern }
     }
 
-    fn apply_pattern(&self, source: &PathBuf) -> PathBuf {
+    fn apply_pattern(&self, source: &std::path::Path) -> PathBuf {
         let name = source
             .file_stem()
             .map(|s| s.to_string_lossy().to_string())
@@ -65,7 +65,10 @@ impl RenameAction {
             }
         }
 
-        source.parent().unwrap_or(std::path::Path::new(".")).join(new_name)
+        source
+            .parent()
+            .unwrap_or(std::path::Path::new("."))
+            .join(new_name)
     }
 }
 
@@ -75,7 +78,9 @@ impl Action for RenameAction {
         let source = match &event.kind {
             EventKind::FileCreated { path } | EventKind::FileModified { path } => path,
             _ => {
-                return Ok(ActionResult::failure("Rename action only supports file creation/modification events"));
+                return Ok(ActionResult::failure(
+                    "Rename action only supports file creation/modification events",
+                ));
             }
         };
 
@@ -102,11 +107,7 @@ impl Action for RenameAction {
         std::fs::rename(source, &dest)?;
         info!("Renamed {} to {}", source.display(), dest.display());
 
-        Ok(ActionResult::success(format!(
-            "Renamed to {}",
-            dest.display()
-        ))
-        .with_paths(vec![dest]))
+        Ok(ActionResult::success(format!("Renamed to {}", dest.display())).with_paths(vec![dest]))
     }
 
     fn name(&self) -> &str {

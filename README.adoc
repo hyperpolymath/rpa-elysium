@@ -1,11 +1,11 @@
 image:[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-// SPDX-License-Identifier: PMPL-1.0
-// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 = RPA Elysium
 
-Jonathan D.A. Jewell <jonathan.jewell@gmail.com>
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 :toc: macro
 :toclevels: 3
@@ -28,16 +28,17 @@ toc::[]
 
 [IMPORTANT]
 ====
-*Current Phase*: Project Specification & Infrastructure
+*Current Phase*: Core Framework (Phase 1 — In Progress)
 
 This repository contains:
 
-* Project vision and architectural specification
-* CI/CD infrastructure and governance workflows
+* Rust workspace with 3 crates (rpa-core, rpa-plugin, rpa-fs-workflow)
+* Working filesystem automation CLI (rpa-fs-workflow)
+* CI/CD infrastructure and governance workflows (17 workflows)
 * Language policy and development standards
 * Multi-forge distribution setup
 
-*Implementation has not yet begun.* See <<roadmap>> for development phases.
+See <<roadmap>> for development phases.
 ====
 
 == Overview
@@ -173,7 +174,7 @@ See link:ROADMAP.adoc[ROADMAP.adoc] for detailed development phases.
 
 |*1. Core Framework*
 |Bot framework, task scheduling, state management
-|Planned
+|In Progress
 
 |*2. Automation Modules*
 |Web, desktop, API, document automation
@@ -200,17 +201,18 @@ rpa-elysium/
 ├── .claude/              # AI assistant configuration
 │   └── CLAUDE.md         # Language policy (Hyperpolymath Standard)
 ├── .github/
-│   ├── workflows/        # CI/CD pipelines (11 workflows)
-│   └── ISSUE_TEMPLATE/   # Issue templates
+│   └── workflows/        # CI/CD pipelines (17 workflows)
+├── .machine_readable/    # Structured project metadata (A2ML)
+├── crates/               # Rust workspace crates
+│   ├── rpa-core/         # Core types, traits, abstractions
+│   ├── rpa-plugin/       # WASM plugin system
+│   └── rpa-fs-workflow/  # Filesystem automation CLI (MVP)
+├── src/abi/              # Idris2 ABI definitions
+├── ffi/zig/              # Zig FFI implementation
+├── services/             # Backend services (Gleam)
 ├── docs/                 # Documentation
-│   └── CITATIONS.adoc    # Citation formats
-├── src/                  # Source code (to be implemented)
-│   ├── core/             # Bot framework (Rust)
-│   ├── automation/       # Automation modules (Rust/ReScript)
-│   ├── ai/               # AI components (Rust/WASM)
-│   ├── console/          # Management UI (ReScript)
-│   └── services/         # Backend services (Gleam)
-├── LICENSE.txt           # MIT OR PMPL-1.0-or-later
+├── examples/             # Example workflow configs
+├── LICENSE               # PMPL-1.0-or-later
 ├── README.adoc           # This file
 ├── ROADMAP.adoc          # Development roadmap
 └── justfile              # Build automation
@@ -242,12 +244,12 @@ All contributions must adhere to the link:.claude/CLAUDE.md[Hyperpolymath Langua
 
 == License
 
-Palimpsest License (PMPL-1.0)
-2025 Jonathan D.A. Jewell
+Palimpsest License (PMPL-1.0-or-later)
+2025-2026 Jonathan D.A. Jewell
 
 == Author
 
-*hyperpolymath*
+*Jonathan D.A. Jewell*
 
 * GitHub: https://github.com/hyperpolymath[@hyperpolymath]
 

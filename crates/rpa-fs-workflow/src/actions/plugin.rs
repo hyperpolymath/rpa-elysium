@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Plugin action wrapper
 
 use async_trait::async_trait;
-use rpa_core::{Action, Event, Result, action::ActionResult, Error};
+use rpa_core::{action::ActionResult, Action, Error, Event, Result};
 use rpa_plugin::{PluginContext, PluginHost};
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -43,11 +43,9 @@ impl PluginActionWrapper {
 #[async_trait]
 impl Action for PluginActionWrapper {
     async fn execute(&self, event: &Event) -> Result<ActionResult> {
-        let host = self.host.as_ref().ok_or_else(|| {
-            Error::ActionFailed {
-                action: self.name().to_string(),
-                reason: "Plugin host not configured".to_string(),
-            }
+        let host = self.host.as_ref().ok_or_else(|| Error::ActionFailed {
+            action: self.name().to_string(),
+            reason: "Plugin system not yet integrated — see rpa-plugin crate".to_string(),
         })?;
 
         // Create plugin context from event

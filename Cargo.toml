@@ -12,7 +12,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-license = "PMPL-1.0-or-later"
+license = "PMPL-1.0-or-later"  # MPL-2.0 fallback available for ecosystem compatibility
 authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 repository = "https://github.com/hyperpolymath/rpa-elysium"
 

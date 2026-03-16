@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Move action implementation
 
 use async_trait::async_trait;
-use rpa_core::{Action, Event, EventKind, Result, action::ActionResult, Error};
+use rpa_core::{action::ActionResult, Action, Error, Event, EventKind, Result};
 use std::path::PathBuf;
 use tracing::{debug, info};
 
@@ -30,7 +30,9 @@ impl Action for MoveAction {
         let source = match &event.kind {
             EventKind::FileCreated { path } | EventKind::FileModified { path } => path,
             _ => {
-                return Ok(ActionResult::failure("Move action only supports file creation/modification events"));
+                return Ok(ActionResult::failure(
+                    "Move action only supports file creation/modification events",
+                ));
             }
         };
 
@@ -41,7 +43,9 @@ impl Action for MoveAction {
             )));
         }
 
-        let dest = self.destination.join(source.file_name().unwrap_or_default());
+        let dest = self
+            .destination
+            .join(source.file_name().unwrap_or_default());
 
         if dest.exists() && !self.overwrite {
             return Ok(ActionResult::failure(format!(
@@ -65,11 +69,7 @@ impl Action for MoveAction {
         }
 
         info!("Moved {} to {}", source.display(), dest.display());
-        Ok(ActionResult::success(format!(
-            "Moved to {}",
-            dest.display()
-        ))
-        .with_paths(vec![dest]))
+        Ok(ActionResult::success(format!("Moved to {}", dest.display())).with_paths(vec![dest]))
     }
 
     fn name(&self) -> &str {

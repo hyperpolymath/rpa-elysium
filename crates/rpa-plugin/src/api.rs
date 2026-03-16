@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Plugin API traits and types
 //!
@@ -225,11 +225,8 @@ pub trait Plugin: Send + Sync {
     fn actions(&self) -> Vec<String>;
 
     /// Execute an action by name
-    async fn execute_action(
-        &self,
-        action: &str,
-        ctx: &PluginContext,
-    ) -> Result<PluginActionResult>;
+    async fn execute_action(&self, action: &str, ctx: &PluginContext)
+        -> Result<PluginActionResult>;
 }
 
 /// Host functions that plugins can call (through the sandbox)

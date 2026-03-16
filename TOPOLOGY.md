@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
 <!-- TOPOLOGY.md — Project architecture map and completion dashboard -->
-<!-- Last updated: 2026-02-19 -->
+<!-- Last updated: 2026-03-16 -->
 
 # RPA Elysium — Project Topology
 
@@ -43,6 +43,12 @@
                         └─────────────────────────────────────────┘
 
                         ┌─────────────────────────────────────────┐
+                        │          ABI / FFI LAYER                │
+                        │  Idris2 ABI Defs     Zig C-FFI Impl    │
+                        │  src/abi/            ffi/zig/           │
+                        └─────────────────────────────────────────┘
+
+                        ┌─────────────────────────────────────────┐
                         │          REPO INFRASTRUCTURE            │
                         │  Justfile Automation  .machine_readable/  │
                         │  Multi-Forge Hub      0-AI-MANIFEST.a2ml  │
@@ -54,14 +60,23 @@
 ```
 COMPONENT                          STATUS              NOTES
 ─────────────────────────────────  ──────────────────  ─────────────────────────────────
-PLATFORM CORE
-  Bot Framework (Rust)              █░░░░░░░░░  10%    Architecture stubs
-  Management Console (ReScript)     █░░░░░░░░░  10%    Initial UI design stubs
+RUST WORKSPACE
+  rpa-core                          ██████████ 100%    Types, traits, error handling
+  rpa-plugin                        ████████░░  85%    WASM sandbox, host, permissions
+  rpa-fs-workflow                   █████████░  95%    CLI, watcher, 6 action types
+
+PLATFORM (PLANNED)
+  Management Console (ReScript)     █░░░░░░░░░  10%    Initial design stubs
   Automation Modules                █░░░░░░░░░  10%    Pending implementation
   AI Intelligence Engine            █░░░░░░░░░  10%    WASM component stubs
+  Backend Services (Gleam)          █░░░░░░░░░  10%    Scaffold only
+
+ABI / FFI
+  Idris2 ABI definitions           █░░░░░░░░░  10%    Type scaffolds
+  Zig FFI implementation           █░░░░░░░░░  10%    Build scaffold
 
 INFRASTRUCTURE
-  CI/CD Pipelines (11)              ██████████ 100%    Forge sync stable
+  CI/CD Pipelines (17+)            ██████████ 100%    Forge sync stable
   Governance & Standards            ██████████ 100%    RSR Gold scaffolding verified
   .machine_readable/                ██████████ 100%    STATE tracking active
 
@@ -71,7 +86,7 @@ REPO INFRASTRUCTURE
   Language Policy (CCCP)            ██████████ 100%    RSR stack verified
 
 ─────────────────────────────────────────────────────────────────────────────
-OVERALL:                            ██░░░░░░░░  ~20%   Specification Phase complete
+OVERALL:                            ███░░░░░░░  ~30%   Phase 1 In Progress
 ```
 
 ## Key Dependencies

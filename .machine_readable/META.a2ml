@@ -1,9 +1,46 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# META.a2ml — Project meta-information
-# Converted from META.scm on 2026-03-15
+# META.a2ml — Project meta-information and architecture decisions
 
 [metadata]
 project = "rpa-elysium"
 author = "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
 license = "PMPL-1.0-or-later"
 standard = "RSR 2026"
+
+[architecture-decisions]
+
+[architecture-decisions.adr-001]
+title = "Rust core with WASM plugin system"
+status = "accepted"
+date = "2024-12-28"
+rationale = "Rust provides memory safety, performance, and WASM compilation. WASM sandbox enables safe third-party plugins."
+
+[architecture-decisions.adr-002]
+title = "Gleam for backend services"
+status = "accepted"
+date = "2024-12-28"
+rationale = "BEAM runtime provides fault tolerance and actor model. Gleam adds type safety. Job queue and event bus benefit from BEAM's distributed nature."
+
+[architecture-decisions.adr-003]
+title = "ReScript for management console"
+status = "accepted"
+date = "2024-12-28"
+rationale = "Type-safe React-compatible UI without TypeScript. Compiles to clean JS."
+
+[architecture-decisions.adr-004]
+title = "Idris2 ABI + Zig FFI standard"
+status = "accepted"
+date = "2026-03-16"
+rationale = "Dependent types prove interface correctness at compile-time. Zig provides zero-overhead C ABI compatibility. Follows hyperpolymath universal ABI/FFI standard."
+
+[architecture-decisions.adr-005]
+title = "Ship rpa-fs-workflow as standalone MVP"
+status = "accepted"
+date = "2026-03-16"
+rationale = "Filesystem automation CLI is functional now. Ship standalone, absorb into full framework later. Validates core architecture."
+
+[development-practices]
+test-coverage-target = "80%"
+ci-pipelines = 17
+multi-forge = true
+forges = ["github", "gitlab", "bitbucket", "codeberg"]

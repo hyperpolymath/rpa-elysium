@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! RPA Filesystem Workflow CLI
 //!
@@ -133,7 +133,10 @@ fn init_workflow(output_path: PathBuf) -> anyhow::Result<()> {
     let json = serde_json::to_string_pretty(&config)?;
     std::fs::write(&output_path, json)?;
 
-    info!("Created example workflow configuration: {}", output_path.display());
+    info!(
+        "Created example workflow configuration: {}",
+        output_path.display()
+    );
     info!("Edit the file to customize your workflow, then run with:");
     info!("  rpa-fs run {}", output_path.display());
 

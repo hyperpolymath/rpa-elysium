@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Gleam backend service configuration for RPA Elysium
+
+name = "rpa_elysium_services"
+version = "0.1.0"
+description = "Backend services for RPA Elysium — job queue, event bus, persistence"
+
+# Targets the BEAM (Erlang) runtime for fault tolerance
+target = "erlang"
+
+[dependencies]
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+gleam_erlang = ">= 0.29.0 and < 1.0.0"
+gleam_otp = ">= 0.12.0 and < 1.0.0"
+gleam_json = ">= 2.0.0 and < 3.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"

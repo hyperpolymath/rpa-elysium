@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! WASM Sandbox for secure plugin execution
 //!
 //! Provides isolated execution environment using WebAssembly.
 
-use crate::api::{HostRequest, HostResponse, LogLevel, PluginContext, PluginActionResult};
+use crate::api::{HostRequest, HostResponse, LogLevel, PluginActionResult, PluginContext};
 use crate::error::{PluginError, Result};
 use crate::permissions::{Permission, PermissionSet};
 use serde::{Deserialize, Serialize};
@@ -195,7 +195,9 @@ impl SandboxState {
                 }
 
                 match std::env::var(&name) {
-                    Ok(value) => HostResponse::success_with_data(serde_json::json!({ "value": value })),
+                    Ok(value) => {
+                        HostResponse::success_with_data(serde_json::json!({ "value": value }))
+                    }
                     Err(_) => HostResponse::success_with_data(serde_json::json!({ "value": null })),
                 }
             }
@@ -248,7 +250,8 @@ mod base64 {
     impl Engine {
         pub fn encode(_engine: &Engine, data: &[u8]) -> String {
             // Simple base64 encoding
-            const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            const ALPHABET: &[u8] =
+                b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             let mut result = String::new();
 
             for chunk in data.chunks(3) {
@@ -308,9 +311,8 @@ impl Sandbox {
 
     /// Load a WASM module from bytes
     pub fn load_module(&self, wasm_bytes: &[u8]) -> Result<Module> {
-        Module::new(&self.engine, wasm_bytes).map_err(|e| {
-            PluginError::LoadFailed(format!("Failed to compile WASM module: {}", e))
-        })
+        Module::new(&self.engine, wasm_bytes)
+            .map_err(|e| PluginError::LoadFailed(format!("Failed to compile WASM module: {}", e)))
     }
 
     /// Load a WASM module from a file
@@ -324,7 +326,7 @@ impl Sandbox {
         &self,
         module: &Module,
         action: &str,
-        ctx: &PluginContext,
+        _ctx: &PluginContext,
     ) -> Result<PluginActionResult> {
         let state = Arc::new(Mutex::new(SandboxState::new(&self.config)));
 
@@ -339,11 +341,12 @@ impl Sandbox {
         let mut linker = Linker::new(&self.engine);
 
         // Register host function for handling requests
-        let state_clone = state.clone();
+        // TODO: Wire state_clone into the closure for proper host request handling
+        let _state_clone = state.clone();
         linker.func_wrap(
             "host",
             "request",
-            move |mut caller: Caller<'_, Arc<Mutex<SandboxState>>>, ptr: i32, len: i32| -> i32 {
+            move |_caller: Caller<'_, Arc<Mutex<SandboxState>>>, _ptr: i32, _len: i32| -> i32 {
                 // This is a simplified interface - in production you'd use proper memory access
                 // For now, we return 0 to indicate success
                 0i32
@@ -354,9 +357,9 @@ impl Sandbox {
         let instance = linker.instantiate(&mut store, module)?;
 
         // Look for the action function
-        let func = instance
-            .get_func(&mut store, action)
-            .ok_or_else(|| PluginError::ExecutionFailed(format!("Action '{}' not found", action)))?;
+        let func = instance.get_func(&mut store, action).ok_or_else(|| {
+            PluginError::ExecutionFailed(format!("Action '{}' not found", action))
+        })?;
 
         // Call the function
         let start = Instant::now();

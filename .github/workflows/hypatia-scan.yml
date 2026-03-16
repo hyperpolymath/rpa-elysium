@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# hypatia-scan.yml — Neurosymbolic security scanning via Hypatia
+name: Hypatia Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  hypatia:
+    name: Hypatia Neurosymbolic Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
+        with:
+          fetch-depth: 0
+
+      - name: Check .hypatia directory exists
+        run: |
+          if [ ! -d ".hypatia" ]; then
+            echo "::error::.hypatia/ directory not found"
+            exit 1
+          fi
+          echo "Hypatia config directory found"
+          ls -la .hypatia/
+
+      - name: Run Hypatia rules scan
+        run: |
+          echo "=== Hypatia Neurosymbolic Scan ==="
+          echo ""
+          ERRORS=0
+
+          # SPDX-AGPL-BANNED: Block AGPL-3.0 headers
+          if grep -rn "AGPL-3.0" --include='*.rs' --include='*.idr' --include='*.zig' --include='*.gleam' --include='*.yml' . 2>/dev/null | grep -v '.git/'; then
+            echo "::error::SPDX-AGPL-BANNED: Found AGPL-3.0 references (use PMPL-1.0-or-later)"
+            ERRORS=$((ERRORS + 1))
+          fi
+
+          # INNERHTML-BANNED: Block innerHTML usage
+          if grep -rn 'innerHTML' --include='*.js' --include='*.res' --include='*.mjs' . 2>/dev/null | grep -v '.git/' | grep -v 'node_modules'; then
+            echo "::error::INNERHTML-BANNED: Found innerHTML usage (XSS vector)"
+            ERRORS=$((ERRORS + 1))
+          fi
+
+          # EVAL-BANNED: Block eval()
+          if grep -rn '\beval(' --include='*.js' --include='*.res' --include='*.mjs' . 2>/dev/null | grep -v '.git/' | grep -v 'node_modules' | grep -v 'test'; then
+            echo "::error::EVAL-BANNED: Found eval() usage"
+            ERRORS=$((ERRORS + 1))
+          fi
+
+          # TEMPLATE-PLACEHOLDERS: Detect unreplaced {{PLACEHOLDER}}
+          if grep -rn '{{[A-Z_]*}}' --include='*.yml' --include='*.adoc' --include='*.md' . 2>/dev/null | grep -v '.git/' | grep -v 'CLAUDE.md' | grep -v 'rsr-template'; then
+            echo "::warning::TEMPLATE-PLACEHOLDERS: Found unreplaced template placeholders"
+          fi
+
+          # HARDCODED-TMP: Flag hardcoded /tmp paths in source
+          if grep -rn '"/tmp/' --include='*.rs' --include='*.zig' --include='*.gleam' . 2>/dev/null | grep -v '.git/' | grep -v '#\[cfg(test)\]' | grep -v 'mod tests'; then
+            echo "::warning::HARDCODED-TMP: Found hardcoded /tmp paths (consider mktemp)"
+          fi
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo ""
+            echo "::error::Hypatia scan found $ERRORS blocking issue(s)"
+            exit 1
+          fi
+
+          echo ""
+          echo "Hypatia scan passed — no blocking issues found"

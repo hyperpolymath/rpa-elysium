@@ -1,10 +1,38 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# ECOSYSTEM.a2ml — Ecosystem position
-# Converted from ECOSYSTEM.scm on 2026-03-15
+# ECOSYSTEM.a2ml — Ecosystem position and relationships
 
 [metadata]
 project = "rpa-elysium"
 ecosystem = "hyperpolymath"
+type = "standalone-tool"
 
 [position]
-type = "component"
+category = "automation"
+purpose = "Robotic process automation toolkit"
+target-users = "developers, sysadmins, business process automation"
+
+[relationships]
+
+[relationships.reposystem]
+type = "sibling"
+description = "rpa-elysium follows reposystem governance patterns (contractiles, bot directives)"
+
+[relationships.developer-ecosystem]
+type = "consumer"
+description = "Uses Deno, ReScript, Gleam, Zig from developer-ecosystem tooling"
+
+[relationships.proven-servers]
+type = "potential-consumer"
+description = "May use proven-servers for formally verified networking primitives"
+
+[relationships.panll]
+type = "potential-consumer"
+description = "Management console could use PanLL for panel layout"
+
+[relationships.hypatia]
+type = "consumer"
+description = "Uses Hypatia for neurosymbolic CI/CD scanning"
+
+[relationships.rhodium-standard-repositories]
+type = "implements"
+description = "RSR-certified repository following Rhodium standards"

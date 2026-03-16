@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024-2025 hyperpolymath
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 = RPA Elysium Development Roadmap
 :toc: macro
@@ -20,9 +20,13 @@ toc::[]
 |*Phase 0*
 |Foundation & Infrastructure
 |✓ *COMPLETE*
+
+|*Phase 1*
+|Core Framework
+|⚙ *IN PROGRESS*
 |===
 
-The repository currently contains project infrastructure, CI/CD workflows, governance policies, and architectural specifications. *No application source code has been implemented yet.*
+The repository contains project infrastructure, CI/CD workflows, and a Rust workspace with 3 crates. The filesystem automation CLI (`rpa-fs-workflow`) is functional.
 
 ---
 
@@ -65,7 +69,7 @@ The repository currently contains project infrastructure, CI/CD workflows, gover
 |✓ Done
 
 |Licensing
-|MIT OR PMPL-1.0-or-later dual license
+|PMPL-1.0-or-later (MPL-2.0 fallback)
 |✓ Done
 |===
 
@@ -73,7 +77,7 @@ The repository currently contains project infrastructure, CI/CD workflows, gover
 
 == Phase 1: Core Framework
 
-*Status*: Planned
+*Status*: In Progress
 
 === Objective
 
@@ -609,8 +613,8 @@ See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 == License
 
-This roadmap and the RPA Elysium project are dual-licensed under MIT OR PMPL-1.0-or-later.
+This roadmap and the RPA Elysium project are licensed under PMPL-1.0-or-later.
 
 ---
 
-_Last updated: 2025-12-26_
+_Last updated: 2026-03-16_

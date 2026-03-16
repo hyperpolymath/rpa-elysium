@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! RPA Plugin - Plugin API and WASM Sandbox for RPA Elysium
 //!
@@ -38,6 +38,8 @@ pub mod api;
 pub mod error;
 pub mod host;
 pub mod permissions;
+// TODO: Remove allowances when WASM host functions are fully wired
+#[allow(dead_code, clippy::redundant_pattern_matching, clippy::clone_on_copy)]
 pub mod sandbox;
 
 pub use api::{Plugin, PluginAction, PluginContext, PluginMetadata};

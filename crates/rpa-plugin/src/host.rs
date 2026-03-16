@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Plugin host for managing and executing plugins
 
-use crate::api::{PluginContext, PluginMetadata, PluginActionResult};
+use crate::api::{PluginActionResult, PluginContext, PluginMetadata};
 use crate::error::{PluginError, Result};
 use crate::permissions::Permission;
 use crate::sandbox::{Sandbox, SandboxConfig};
@@ -39,9 +39,7 @@ impl PluginConfig {
     /// Create a new plugin configuration
     pub fn new(path: impl Into<PathBuf>) -> Self {
         let path = path.into();
-        let id = path
-            .file_stem()
-            .map(|s| s.to_string_lossy().to_string());
+        let id = path.file_stem().map(|s| s.to_string_lossy().to_string());
 
         Self {
             path,
@@ -90,14 +88,12 @@ impl PluginConfig {
 
     /// Get plugin ID
     pub fn get_id(&self) -> String {
-        self.id
-            .clone()
-            .unwrap_or_else(|| {
-                self.path
-                    .file_stem()
-                    .map(|s| s.to_string_lossy().to_string())
-                    .unwrap_or_else(|| "unknown".to_string())
-            })
+        self.id.clone().unwrap_or_else(|| {
+            self.path
+                .file_stem()
+                .map(|s| s.to_string_lossy().to_string())
+                .unwrap_or_else(|| "unknown".to_string())
+        })
     }
 }
 
@@ -187,7 +183,11 @@ impl PluginHost {
         }
 
         let plugin_id = config.get_id();
-        info!("Loading plugin: {} from {}", plugin_id, config.path.display());
+        info!(
+            "Loading plugin: {} from {}",
+            plugin_id,
+            config.path.display()
+        );
 
         // Create sandbox
         let sandbox = Sandbox::new(config.sandbox.clone())?;
@@ -196,11 +196,7 @@ impl PluginHost {
         let module = sandbox.load_module_from_file(&config.path)?;
 
         // Extract metadata from module (in a real impl, this would parse custom sections)
-        let metadata = PluginMetadata::new(
-            &plugin_id,
-            &plugin_id,
-            "0.1.0",
-        );
+        let metadata = PluginMetadata::new(&plugin_id, &plugin_id, "0.1.0");
 
         // Get exported functions as available actions
         let actions: Vec<String> = module
@@ -290,7 +286,10 @@ impl PluginHost {
 
         for search_path in self.search_paths.clone() {
             if !search_path.exists() {
-                debug!("Plugin search path does not exist: {}", search_path.display());
+                debug!(
+                    "Plugin search path does not exist: {}",
+                    search_path.display()
+                );
                 continue;
             }
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Filesystem watcher implementation using notify
 
@@ -53,9 +53,9 @@ impl FsWatcher {
             RecursiveMode::NonRecursive
         };
 
-        self.watcher
-            .watch(&path, mode)
-            .map_err(|e| rpa_core::Error::Watch(format!("Failed to watch {}: {}", path.display(), e)))?;
+        self.watcher.watch(&path, mode).map_err(|e| {
+            rpa_core::Error::Watch(format!("Failed to watch {}: {}", path.display(), e))
+        })?;
 
         info!("Watching path: {}", path.display());
         self.watched_paths.push(path);
@@ -65,9 +65,9 @@ impl FsWatcher {
     /// Stop watching a path
     pub fn unwatch(&mut self, path: impl AsRef<Path>) -> rpa_core::Result<()> {
         let path = path.as_ref();
-        self.watcher
-            .unwatch(path)
-            .map_err(|e| rpa_core::Error::Watch(format!("Failed to unwatch {}: {}", path.display(), e)))?;
+        self.watcher.unwatch(path).map_err(|e| {
+            rpa_core::Error::Watch(format!("Failed to unwatch {}: {}", path.display(), e))
+        })?;
 
         self.watched_paths.retain(|p| p != path);
         info!("Stopped watching: {}", path.display());
@@ -127,23 +127,22 @@ impl FsWatcher {
                     to: paths[1].clone(),
                 }
             }
-            EventKind::Modify(ModifyKind::Name(RenameMode::From)) => {
-                RpaEventKind::FileDeleted {
-                    path: paths[0].clone(),
-                }
-            }
-            EventKind::Modify(ModifyKind::Name(RenameMode::To)) => {
-                RpaEventKind::FileCreated {
-                    path: paths[0].clone(),
-                }
-            }
+            EventKind::Modify(ModifyKind::Name(RenameMode::From)) => RpaEventKind::FileDeleted {
+                path: paths[0].clone(),
+            },
+            EventKind::Modify(ModifyKind::Name(RenameMode::To)) => RpaEventKind::FileCreated {
+                path: paths[0].clone(),
+            },
             _ => {
                 debug!("Ignoring event kind: {:?}", event.kind);
                 return None;
             }
         };
 
-        let source = paths[0].parent().map(|p| p.to_string_lossy().to_string()).unwrap_or_default();
+        let source = paths[0]
+            .parent()
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_default();
 
         Some(Event::new(kind, source))
     }

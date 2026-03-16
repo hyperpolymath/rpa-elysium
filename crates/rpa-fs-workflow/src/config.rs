@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Workflow configuration parsing
 //!
@@ -186,14 +186,19 @@ impl WorkflowConfig {
             .args(["export", "--format", "json"])
             .arg(path)
             .output()
-            .map_err(|e| Error::Config(format!(
-                "Failed to run nickel: {}. Ensure nickel is installed.",
-                e
-            )))?;
+            .map_err(|e| {
+                Error::Config(format!(
+                    "Failed to run nickel: {}. Ensure nickel is installed.",
+                    e
+                ))
+            })?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(Error::Config(format!("Nickel evaluation failed: {}", stderr)));
+            return Err(Error::Config(format!(
+                "Nickel evaluation failed: {}",
+                stderr
+            )));
         }
 
         let json = String::from_utf8_lossy(&output.stdout);

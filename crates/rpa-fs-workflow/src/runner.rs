@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Workflow runner that orchestrates watching and action execution
 
@@ -93,7 +93,10 @@ impl WorkflowRunner {
         debug!("Handling event: {:?}", event.kind);
 
         // Clone rules to avoid borrow conflict with mutable self
-        let rules: Vec<_> = self.config.rules.iter()
+        let rules: Vec<_> = self
+            .config
+            .rules
+            .iter()
             .filter(|r| r.enabled && Self::rule_matches_static(r, event))
             .cloned()
             .collect();
@@ -167,17 +170,9 @@ impl WorkflowRunner {
                 Ok(result) => {
                     self.state.record_action();
                     if result.success {
-                        info!(
-                            "Action '{}' succeeded: {}",
-                            action.name(),
-                            result.message
-                        );
+                        info!("Action '{}' succeeded: {}", action.name(), result.message);
                     } else {
-                        warn!(
-                            "Action '{}' failed: {}",
-                            action.name(),
-                            result.message
-                        );
+                        warn!("Action '{}' failed: {}", action.name(), result.message);
                         self.state.record_error();
                     }
                 }

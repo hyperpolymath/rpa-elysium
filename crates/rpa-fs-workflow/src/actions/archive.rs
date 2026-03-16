@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Archive action implementation
 
@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use chrono::Utc;
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use rpa_core::{Action, Event, EventKind, Result, action::ActionResult, Error};
+use rpa_core::{action::ActionResult, Action, Error, Event, EventKind, Result};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::PathBuf;
@@ -31,7 +31,7 @@ impl ArchiveAction {
         }
     }
 
-    fn generate_archive_name(&self, source: &PathBuf) -> PathBuf {
+    fn generate_archive_name(&self, source: &std::path::Path) -> PathBuf {
         let stem = source
             .file_stem()
             .map(|s| s.to_string_lossy().to_string())
@@ -43,7 +43,8 @@ impl ArchiveAction {
             ArchiveFormat::Zip => "zip",
         };
 
-        self.destination.join(format!("{}_{}.{}", stem, timestamp, extension))
+        self.destination
+            .join(format!("{}_{}.{}", stem, timestamp, extension))
     }
 
     fn create_tar_gz(&self, source: &PathBuf, archive_path: &PathBuf) -> Result<()> {
@@ -66,8 +67,8 @@ impl ArchiveAction {
         let file = File::create(archive_path)?;
         let mut zip = zip::ZipWriter::new(file);
 
-        let options = zip::write::FileOptions::default()
-            .compression_method(zip::CompressionMethod::Deflated);
+        let options =
+            zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Deflated);
 
         let file_name = source
             .file_name()
@@ -82,7 +83,8 @@ impl ArchiveAction {
         source_file.read_to_end(&mut buffer)?;
         zip.write_all(&buffer)?;
 
-        zip.finish().map_err(|e| Error::Io(std::io::Error::other(e)))?;
+        zip.finish()
+            .map_err(|e| Error::Io(std::io::Error::other(e)))?;
 
         Ok(())
     }
@@ -94,7 +96,9 @@ impl Action for ArchiveAction {
         let source = match &event.kind {
             EventKind::FileCreated { path } | EventKind::FileModified { path } => path,
             _ => {
-                return Ok(ActionResult::failure("Archive action only supports file creation/modification events"));
+                return Ok(ActionResult::failure(
+                    "Archive action only supports file creation/modification events",
+                ));
             }
         };
 
@@ -109,7 +113,11 @@ impl Action for ArchiveAction {
         std::fs::create_dir_all(&self.destination)?;
 
         let archive_path = self.generate_archive_name(source);
-        debug!("Archiving {} to {}", source.display(), archive_path.display());
+        debug!(
+            "Archiving {} to {}",
+            source.display(),
+            archive_path.display()
+        );
 
         match self.format {
             ArchiveFormat::TarGz => self.create_tar_gz(source, &archive_path)?,
@@ -124,14 +132,17 @@ impl Action for ArchiveAction {
                 archive_path.display()
             );
         } else {
-            info!("Archived {} to {}", source.display(), archive_path.display());
+            info!(
+                "Archived {} to {}",
+                source.display(),
+                archive_path.display()
+            );
         }
 
-        Ok(ActionResult::success(format!(
-            "Archived to {}",
-            archive_path.display()
-        ))
-        .with_paths(vec![archive_path]))
+        Ok(
+            ActionResult::success(format!("Archived to {}", archive_path.display()))
+                .with_paths(vec![archive_path]),
+        )
     }
 
     fn name(&self) -> &str {

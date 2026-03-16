@@ -1,14 +1,35 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # STATE.a2ml — Project state checkpoint
-# Converted from STATE.scm on 2026-03-15
 
 [metadata]
 project = "rpa-elysium"
 version = "0.1.0"
-last-updated = "2026-03-15"
+last-updated = "2026-03-16"
 status = "active"
 
 [project-context]
 name = "rpa-elysium"
-completion-percentage = 0
-phase = "In development"
+completion-percentage = 30
+phase = "Phase 1 — Core Framework (In Progress)"
+description = "Rust-based RPA toolkit with WASM plugin system"
+
+[current-position]
+milestone = "Phase 1.1 — Scaffolding"
+focus = "Multi-language scaffold, ABI/FFI layer, governance cleanup"
+rust-workspace = "done"
+abi-ffi-scaffold = "done"
+multi-lang-scaffold = "done"
+hypatia-workflow = "done"
+
+[blockers]
+# No active blockers
+
+[next-actions]
+priority-1 = "rpa-fs-workflow standalone release prep (--version, --dry-run, README)"
+priority-2 = "Extract rpa-config crate from rpa-fs-workflow"
+priority-3 = "Implement rpa-scheduler (cron-like task scheduling)"
+priority-4 = "Wire plugin host into rpa-fs-workflow runner"
+priority-5 = "Implement rpa-state persistence layer"
+
+[session-history]
+# 2026-03-16: Governance cleanup, license alignment, ABI/FFI scaffold, multi-lang scaffold

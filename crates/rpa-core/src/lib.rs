@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! RPA Core - Foundation types and traits for RPA Elysium
 //!
@@ -9,12 +9,12 @@
 //! - Result and error types
 //! - State management interfaces
 
-pub mod event;
 pub mod action;
-pub mod workflow;
 pub mod error;
+pub mod event;
+pub mod workflow;
 
+pub use action::Action;
 pub use error::{Error, Result};
 pub use event::{Event, EventKind};
-pub use action::Action;
 pub use workflow::{Workflow, WorkflowState};

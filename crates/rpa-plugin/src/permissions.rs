@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Plugin permission system
 //!
@@ -69,10 +69,9 @@ impl Permission {
             (a, b) if a == b => true,
 
             // ReadPath covers if granted path is parent of requested
-            (
-                Permission::ReadPath { path: granted },
-                Permission::ReadPath { path: requested },
-            ) => path_covers(granted, requested),
+            (Permission::ReadPath { path: granted }, Permission::ReadPath { path: requested }) => {
+                path_covers(granted, requested)
+            }
 
             // WritePath covers if granted path is parent of requested
             (
@@ -120,8 +119,12 @@ impl Permission {
 /// Check if granted path covers requested path
 fn path_covers(granted: &Path, requested: &Path) -> bool {
     // Normalize paths for comparison
-    let granted = granted.canonicalize().unwrap_or_else(|_| granted.to_path_buf());
-    let requested = requested.canonicalize().unwrap_or_else(|_| requested.to_path_buf());
+    let granted = granted
+        .canonicalize()
+        .unwrap_or_else(|_| granted.to_path_buf());
+    let requested = requested
+        .canonicalize()
+        .unwrap_or_else(|_| requested.to_path_buf());
 
     // Exact match or granted is parent
     requested == granted || requested.starts_with(&granted)

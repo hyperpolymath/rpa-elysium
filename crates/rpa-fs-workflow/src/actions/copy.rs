@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
-// SPDX-FileCopyrightText: 2024 Hyperpolymath <hyperpolymath@proton.me>
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 //! Copy action implementation
 
 use async_trait::async_trait;
-use rpa_core::{Action, Event, EventKind, Result, action::ActionResult, Error};
+use rpa_core::{action::ActionResult, Action, Error, Event, EventKind, Result};
 use std::path::PathBuf;
 use tracing::{debug, info};
 
@@ -25,12 +25,14 @@ impl CopyAction {
         }
     }
 
-    fn get_dest_path(&self, source: &PathBuf) -> PathBuf {
+    fn get_dest_path(&self, source: &std::path::Path) -> PathBuf {
         if self.preserve_structure {
             // Preserve directory structure under destination
-            self.destination.join(source.file_name().unwrap_or_default())
+            self.destination
+                .join(source.file_name().unwrap_or_default())
         } else {
-            self.destination.join(source.file_name().unwrap_or_default())
+            self.destination
+                .join(source.file_name().unwrap_or_default())
         }
     }
 }
@@ -41,7 +43,9 @@ impl Action for CopyAction {
         let source = match &event.kind {
             EventKind::FileCreated { path } | EventKind::FileModified { path } => path,
             _ => {
-                return Ok(ActionResult::failure("Copy action only supports file creation/modification events"));
+                return Ok(ActionResult::failure(
+                    "Copy action only supports file creation/modification events",
+                ));
             }
         };
 
@@ -70,11 +74,7 @@ impl Action for CopyAction {
         std::fs::copy(source, &dest)?;
 
         info!("Copied {} to {}", source.display(), dest.display());
-        Ok(ActionResult::success(format!(
-            "Copied to {}",
-            dest.display()
-        ))
-        .with_paths(vec![dest]))
+        Ok(ActionResult::success(format!("Copied to {}", dest.display())).with_paths(vec![dest]))
     }
 
     fn name(&self) -> &str {

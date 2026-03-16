@@ -26,6 +26,22 @@ Thumbs.db
 # Rust
 # Cargo.lock  # Keep for binaries
 
+# Zig
+/ffi/zig/zig-cache/
+/ffi/zig/zig-out/
+/ffi/zig/.zig-cache/
+
+# Idris2
+/src/abi/build/
+/src/abi/.idris2/
+
+# Generated ABI headers
+/generated/abi/*.h
+
+# Gleam
+/services/build/
+/services/_gleam_artefacts/
+
 # Elixir
 /cover/
 /doc/
