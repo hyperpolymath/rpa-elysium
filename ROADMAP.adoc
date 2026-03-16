@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+// SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
 // SPDX-FileCopyrightText: 2024-2025 hyperpolymath
 
 = RPA Elysium Development Roadmap
@@ -65,7 +65,7 @@ The repository currently contains project infrastructure, CI/CD workflows, gover
 |✓ Done
 
 |Licensing
-|MIT OR AGPL-3.0-or-later dual license
+|MIT OR PMPL-1.0-or-later dual license
 |✓ Done
 |===
 
@@ -609,7 +609,7 @@ See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 == License
 
-This roadmap and the RPA Elysium project are dual-licensed under MIT OR AGPL-3.0-or-later.
+This roadmap and the RPA Elysium project are dual-licensed under MIT OR PMPL-1.0-or-later.
 
 ---
 
