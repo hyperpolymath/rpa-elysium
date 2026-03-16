@@ -9,9 +9,15 @@
 ## Canonical File Locations
 - SCM/A2ML files: `.machine_readable/` ONLY (never root)
 - Rust source: `crates/` (workspace members)
-- ABI definitions: `src/abi/` (Idris2)
+- ABI definitions: `src/abi/` (Idris2 + Ephapax)
 - FFI implementation: `ffi/zig/` (Zig)
+- PanLL panels: `panels/` (JSON panel definitions)
 - CI/CD workflows: `.github/workflows/`
+
+## Integration
+- Works standalone OR as a target for hybrid-automation-router (HAR)
+- Shares ABI types with HAR (proven-fsm, proven-queueconn)
+- HAR publishes events → rpa-elysium subscribes via proven-queueconn
 - Examples: `examples/`
 
 ## Critical Invariants

@@ -39,6 +39,24 @@ status = "accepted"
 date = "2026-03-16"
 rationale = "Filesystem automation CLI is functional now. Ship standalone, absorb into full framework later. Validates core architecture."
 
+[architecture-decisions.adr-006]
+title = "proven-servers integration (proven-fsm + proven-queueconn)"
+status = "accepted"
+date = "2026-03-17"
+rationale = "Formally verified state machine and queue types from proven-servers give compile-time guarantees for workflow transitions and event delivery. Tag values shared with HAR for interop."
+
+[architecture-decisions.adr-007]
+title = "Ephapax linear types for ownership safety"
+status = "accepted"
+date = "2026-03-17"
+rationale = "Linear types enforce single-use of events, transitions, and queue handles. Supplementary to Idris2 (not authoritative when they conflict). Enables gradual adoption via affine/linear dyadic design."
+
+[architecture-decisions.adr-008]
+title = "PanLL panels for monitoring dashboards"
+status = "accepted"
+date = "2026-03-17"
+rationale = "JSON panel definitions in panels/ enable integration with PanLL monitoring system. Two panels: fs-workflow (runtime) and plugin-status (sandbox)."
+
 [development-practices]
 test-coverage-target = "80%"
 ci-pipelines = 17

@@ -71,9 +71,16 @@ PLATFORM (PLANNED)
   AI Intelligence Engine            █░░░░░░░░░  10%    WASM component stubs
   Backend Services (Gleam)          █░░░░░░░░░  10%    Scaffold only
 
-ABI / FFI
-  Idris2 ABI definitions           █░░░░░░░░░  10%    Type scaffolds
-  Zig FFI implementation           █░░░░░░░░░  10%    Build scaffold
+ABI / FFI / PROVEN
+  Idris2 ABI (core types)          ███░░░░░░░  30%    Types + Layout + Foreign
+  proven-fsm bindings              ██████████ 100%    ProvenFSM.idr complete
+  proven-queueconn bindings        ██████████ 100%    ProvenQueue.idr complete
+  Ephapax linear types             ██████████ 100%    LinearDispatch.eph complete
+  Zig FFI implementation           █░░░░░░░░░  10%    Build scaffold only
+
+PANLL PANELS
+  fs-workflow panel                ██████████ 100%    Status, rules, timeline, FSM
+  plugin-status panel              ██████████ 100%    Plugins, sandbox, logs
 
 INFRASTRUCTURE
   CI/CD Pipelines (17+)            ██████████ 100%    Forge sync stable

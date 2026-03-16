@@ -264,6 +264,40 @@ Palimpsest License (PMPL-1.0-or-later)
 _Transform your business processes — Watch this repository to stay updated with development progress._
 
 
+== Integration with Hybrid Automation Router
+
+RPA Elysium works standalone as a filesystem automation CLI, or as a *target* for the https://github.com/hyperpolymath/hybrid-automation-router[Hybrid Automation Router (HAR)].
+
+[cols="1,3"]
+|===
+|Mode |Description
+
+|*Standalone*
+|Run `rpa-fs run workflow.json` directly. Events come from filesystem watchers only.
+
+|*With HAR*
+|HAR routes events from multiple sources (webhooks, queues, schedules) to rpa-elysium via proven-queueconn. RPA Elysium subscribes to a task queue and executes received events.
+|===
+
+Both repos share the same link:src/abi/[ABI layer] (proven-fsm state machines, proven-queueconn delivery guarantees) and link:src/abi/LinearDispatch.eph[Ephapax linear types] for ownership safety.
+
+== Formally Verified Foundations
+
+RPA Elysium consumes types from https://github.com/hyperpolymath/proven-servers[proven-servers]:
+
+* **proven-fsm** — Workflow state machine with transition proofs (link:src/abi/ProvenFSM.idr[ProvenFSM.idr])
+* **proven-queueconn** — Queue connector with delivery guarantees (link:src/abi/ProvenQueue.idr[ProvenQueue.idr])
+* **Ephapax linear types** — Compile-time ownership enforcement (link:src/abi/LinearDispatch.eph[LinearDispatch.eph])
+
+See link:ABI-FFI-README.md[ABI-FFI-README.md] for full type mappings and architecture.
+
+== Monitoring Panels (PanLL)
+
+Pre-built monitoring panels in `panels/`:
+
+* `panels/fs-workflow/` — Workflow status, watch paths, rules, event timeline, FSM state diagram, queue connection status
+* `panels/plugin-status/` — Loaded WASM plugins, sandbox memory, execution logs
+
 == Architecture
 
 See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.

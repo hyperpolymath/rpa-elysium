@@ -114,7 +114,29 @@ Build the foundational bot framework in Rust that handles task scheduling, state
 |Guix packaging
 |Guix
 |guix.scm for reproducible builds
+
+|ABI/FFI scaffold
+|Idris2 + Zig
+|Formal type definitions and C-compatible FFI stubs
+
+|proven-fsm bindings
+|Idris2
+|Workflow state machine with transition proofs
+
+|proven-queueconn bindings
+|Idris2
+|Queue connector for HAR event subscription
+
+|Ephapax linear types
+|Ephapax
+|Compile-time ownership enforcement for events and transitions
+
+|PanLL monitoring panels
+|JSON
+|fs-workflow and plugin-status panels
 |===
+
+NOTE: All Phase 1.1 items are complete as of 2026-03-17.
 
 ==== 1.2 Bot Core (Rust)
 

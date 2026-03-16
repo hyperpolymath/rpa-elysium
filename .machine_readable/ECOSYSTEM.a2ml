@@ -33,6 +33,10 @@ description = "Management console could use PanLL for panel layout"
 type = "consumer"
 description = "Uses Hypatia for neurosymbolic CI/CD scanning"
 
+[relationships.hybrid-automation-router]
+type = "integration-target"
+description = "HAR routes events to rpa-elysium via proven-queueconn. Both share ABI types (proven-fsm, proven-queueconn). Either works standalone."
+
 [relationships.rhodium-standard-repositories]
 type = "implements"
 description = "RSR-certified repository following Rhodium standards"
