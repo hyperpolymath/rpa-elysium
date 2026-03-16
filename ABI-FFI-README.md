@@ -33,15 +33,18 @@ RPA Elysium uses the **hyperpolymath universal ABI/FFI standard**:
 
 ```
 src/abi/
-  Types.idr        — Core RPA types (Event, Action, Workflow, Error)
-  Layout.idr       — Memory layout proofs and alignment guarantees
-  Foreign.idr      — FFI function declarations and calling conventions
+  Types.idr          — Core RPA types (Event, Action, Workflow, Error)
+  Layout.idr         — Memory layout proofs and alignment guarantees
+  Foreign.idr        — FFI function declarations and calling conventions
+  ProvenFSM.idr      — proven-fsm bindings (workflow state machine)
+  ProvenQueue.idr    — proven-queueconn bindings (event queue interface)
+  LinearDispatch.eph — Ephapax linear types (single-use event dispatch)
 
 ffi/zig/
-  build.zig        — Zig build configuration (shared + static lib)
-  src/main.zig     — C-compatible FFI implementation stubs
+  build.zig          — Zig build configuration (shared + static lib)
+  src/main.zig       — C-compatible FFI implementation stubs
 
-generated/abi/     — Auto-generated C headers (not yet implemented)
+generated/abi/       — Auto-generated C headers (not yet implemented)
 ```
 
 ## Type Mapping
@@ -67,6 +70,53 @@ cd ffi/zig && zig build test
 cargo build --workspace
 ```
 
+## Proven-Servers Integration
+
+RPA Elysium integrates with the **proven-servers** ecosystem for formally
+verified state machines and message queue interfaces:
+
+### proven-fsm (ProvenFSM.idr)
+
+Maps proven-fsm's linear finite state machine types onto RPA Elysium's
+workflow lifecycle:
+
+| proven-fsm `MachineState` | RPA Elysium `WorkflowStatus` | Tag |
+|---------------------------|------------------------------|-----|
+| `Initial` | `Idle` | 0 |
+| `Running` | `Running` | 1 |
+| `Terminal` | `Stopped` | 2 |
+| `Faulted` | `Error` | 3 |
+
+Additional types imported:
+- `TransitionResult` (Accepted/Rejected/Deferred) — workflow state change outcomes
+- `EventDisposition` (Consumed/Ignored/Queued/Dropped) — event processing results
+- `ValidMachineTransition` — proof-carrying type for legal state transitions
+
+### proven-queueconn (ProvenQueue.idr)
+
+Maps proven-queueconn's queue connector types onto RPA Elysium's event
+consumption layer (events routed from the Hybrid Automation Router):
+
+- `QueueState` — subscription lifecycle (Disconnected/Connected/Consuming/Producing/Failed)
+- `MessageState` — individual event lifecycle (Pending/Delivered/Acknowledged/Rejected/DeadLettered/Expired)
+- `DeliveryGuarantee` — per-workflow delivery semantics (AtMostOnce/AtLeastOnce/ExactlyOnce)
+- `QueueOp` — queue operations (Publish/Subscribe/Acknowledge/Reject/Peek/Purge)
+- `ValidQueueTransition` — proof-carrying type for legal subscription state transitions
+
+### Ephapax Linear Types (LinearDispatch.eph)
+
+Defines linear types that enforce single-use semantics at compile time:
+
+| Type | Guarantee |
+|------|-----------|
+| `RoutedEvent linear` | Event consumed exactly once — no duplication, no silent drop |
+| `WorkflowTransition linear` | Transition executed exactly once — no re-execution |
+| `QueueLease linear` | Subscription handle explicitly released — no resource leak |
+
+Uses `let!` bindings to enforce that linear values are consumed exactly once
+within their scope.  The `withLease` pattern provides automatic lease
+lifecycle management.
+
 ## Current Status
 
 - [x] Idris2 ABI type definitions (scaffold)
@@ -74,6 +124,9 @@ cargo build --workspace
 - [x] Idris2 FFI declarations (scaffold)
 - [x] Zig build configuration
 - [x] Zig FFI stubs with tests
+- [x] proven-fsm bindings (ProvenFSM.idr)
+- [x] proven-queueconn bindings (ProvenQueue.idr)
+- [x] Ephapax linear types (LinearDispatch.eph)
 - [ ] C header generation from Idris2
 - [ ] Wire FFI into Rust via `extern "C"` bindings
 - [ ] Integration tests (Rust <-> Zig via C ABI)

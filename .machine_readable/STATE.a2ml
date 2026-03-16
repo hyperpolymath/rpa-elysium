@@ -18,6 +18,9 @@ milestone = "Phase 1.1 — Scaffolding"
 focus = "Multi-language scaffold, ABI/FFI layer, governance cleanup"
 rust-workspace = "done"
 abi-ffi-scaffold = "done"
+proven-fsm-bindings = "done"
+proven-queueconn-bindings = "done"
+ephapax-linear-types = "done"
 multi-lang-scaffold = "done"
 hypatia-workflow = "done"
 
@@ -34,3 +37,4 @@ priority-5 = "Implement rpa-state persistence layer"
 [session-history]
 # 2026-03-16: Governance cleanup, license alignment, ABI/FFI scaffold, multi-lang scaffold
 # 2026-03-17: Doc cleanup, security fixes (wasmtime 36.0.6), SPDX alignment, Hypatia rules config, CodeQL matrix fix, cruft removal
+# 2026-03-16: proven-fsm bindings (ProvenFSM.idr), proven-queueconn bindings (ProvenQueue.idr), Ephapax linear types (LinearDispatch.eph)

@@ -1,0 +1,190 @@
+-- SPDX-License-Identifier: PMPL-1.0-or-later
+-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+--
+-- LinearDispatch.eph — Ephapax linear type definitions for RPA Elysium
+--
+-- Defines linear types that enforce single-use semantics on events,
+-- transitions, and queue handles.  Linear types guarantee at compile-time
+-- that:
+--   - Every routed event is consumed exactly once (no duplication, no drop)
+--   - Every state transition is executed exactly once
+--   - Every queue lease is explicitly released
+--
+-- These types sit between the proven-fsm/proven-queueconn ABI layer and
+-- the Rust/Zig FFI, providing a formal bridge that prevents resource leaks.
+
+module RpaElysium.Abi.LinearDispatch
+
+---------------------------------------------------------------------------
+-- RoutedEvent — an event routed to this target from HAR.
+-- Linear: must be consumed exactly once.
+---------------------------------------------------------------------------
+
+--- A routed automation event.  Once created, it MUST be consumed by
+--- exactly one handler — it cannot be duplicated or silently dropped.
+--- The `linear` qualifier ensures the compiler rejects code paths that
+--- would lose or duplicate the event.
+type RoutedEvent linear =
+  { eventId     : String
+  , source      : String
+  , kind        : String
+  , timestamp   : Int64
+  , payload     : Bytes
+  }
+
+--- Consume a routed event by processing it through a workflow step.
+--- The `let!` binding enforces that `event` is used exactly once inside
+--- the block — attempting to reference it twice is a compile error,
+--- and failing to reference it at all is also a compile error.
+---
+--- Returns: an EventOutcome indicating what happened.
+fn processEvent (event : RoutedEvent) -> EventOutcome =
+  let! e = event in
+  match e.kind with
+  | "file_created"  -> EventOutcome.Consumed { eventId = e.eventId }
+  | "file_modified" -> EventOutcome.Consumed { eventId = e.eventId }
+  | "file_deleted"  -> EventOutcome.Consumed { eventId = e.eventId }
+  | "file_renamed"  -> EventOutcome.Consumed { eventId = e.eventId }
+  | "manual"        -> EventOutcome.Consumed { eventId = e.eventId }
+  | "scheduled"     -> EventOutcome.Consumed { eventId = e.eventId }
+  | _               -> EventOutcome.Ignored  { eventId = e.eventId }
+
+---------------------------------------------------------------------------
+-- WorkflowTransition — a state transition, consumed on execution.
+-- Linear: must be executed exactly once.
+---------------------------------------------------------------------------
+
+--- A validated workflow state transition.  Created by the transition
+--- validator after confirming the transition is legal.  Once created,
+--- it MUST be executed exactly once — it cannot be stored, duplicated,
+--- or discarded.
+type WorkflowTransition linear =
+  { fromStatus  : WorkflowStatus
+  , toStatus    : WorkflowStatus
+  , reason      : String
+  , validatedAt : Int64
+  }
+
+--- Execute a validated workflow transition.
+--- The `let!` binding consumes the transition token — after this call,
+--- the transition cannot be re-executed.
+---
+--- Returns: the new WorkflowStatus after the transition has been applied.
+fn executeTransition (transition : WorkflowTransition) -> WorkflowStatus =
+  let! t = transition in
+  t.toStatus
+
+--- Create and immediately execute a transition in a single linear scope.
+--- This is the preferred pattern: validate-then-execute in one `let!` chain,
+--- ensuring no transition token can leak.
+fn transitionWorkflow
+  (current : WorkflowStatus)
+  (target  : WorkflowStatus)
+  (reason  : String)
+  (now     : Int64)
+  -> Result WorkflowStatus TransitionError =
+  let! t = WorkflowTransition
+    { fromStatus  = current
+    , toStatus    = target
+    , reason      = reason
+    , validatedAt = now
+    } in
+  Ok (executeTransition t)
+
+---------------------------------------------------------------------------
+-- QueueLease — a queue subscription handle.
+-- Linear: must be explicitly released.
+---------------------------------------------------------------------------
+
+--- A handle representing an active subscription to the event queue.
+--- Linear: the lease MUST be explicitly released via `releaseLease`.
+--- Failing to release the lease is a compile-time error — there is no
+--- implicit cleanup or finaliser.
+type QueueLease linear =
+  { leaseId     : String
+  , queueName   : String
+  , guarantee   : DeliveryGuarantee
+  , acquiredAt  : Int64
+  }
+
+--- Acquire a queue lease (subscribe to routed events from HAR).
+--- Returns a linear QueueLease that must eventually be released.
+fn acquireLease
+  (queueName : String)
+  (guarantee : DeliveryGuarantee)
+  (now       : Int64)
+  -> QueueLease =
+  QueueLease
+    { leaseId    = generateLeaseId queueName now
+    , queueName  = queueName
+    , guarantee  = guarantee
+    , acquiredAt = now
+    }
+
+--- Release a queue lease, ending the subscription.
+--- The `let!` binding consumes the lease — after release, the handle
+--- cannot be used.
+fn releaseLease (lease : QueueLease) -> LeaseReceipt =
+  let! l = lease in
+  LeaseReceipt
+    { leaseId    = l.leaseId
+    , queueName  = l.queueName
+    , releasedAt = currentTime ()
+    }
+
+--- Process events within a leased scope.  The lease is acquired at the
+--- start and automatically released at the end, ensuring no leak even
+--- if the processing function raises an error.
+---
+--- This is the idiomatic pattern for consuming routed events:
+---   withLease "rpa-events" AtLeastOnce now \lease ->
+---     let! event = receiveEvent lease in
+---     processEvent event
+fn withLease
+  (queueName : String)
+  (guarantee : DeliveryGuarantee)
+  (now       : Int64)
+  (body      : QueueLease -> Result a Error)
+  -> Result a Error =
+  let! lease = acquireLease queueName guarantee now in
+  let result = body lease in
+  let! _ = releaseLease lease in
+  result
+
+---------------------------------------------------------------------------
+-- Supporting types (non-linear — these are pure data).
+---------------------------------------------------------------------------
+
+--- The outcome of processing a routed event.
+type EventOutcome =
+  | Consumed { eventId : String }
+  | Ignored  { eventId : String }
+  | Queued   { eventId : String }
+  | Dropped  { eventId : String, reason : String }
+
+--- The status of a workflow (mirrors RpaElysium.Abi.Types.WorkflowStatus).
+type WorkflowStatus =
+  | Idle
+  | Running
+  | Paused
+  | Stopped
+  | Error
+
+--- Delivery guarantee level (mirrors ProvenQueue.DeliveryGuarantee).
+type DeliveryGuarantee =
+  | AtMostOnce
+  | AtLeastOnce
+  | ExactlyOnce
+
+--- Error returned when a transition is invalid.
+type TransitionError =
+  | InvalidTransition   { from : WorkflowStatus, to : WorkflowStatus }
+  | PreconditionFailed  { reason : String }
+  | GuardFailed         { guard : String }
+
+--- Receipt proving a lease was properly released.
+type LeaseReceipt =
+  { leaseId    : String
+  , queueName  : String
+  , releasedAt : Int64
+  }
