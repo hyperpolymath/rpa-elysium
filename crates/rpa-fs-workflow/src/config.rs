@@ -170,8 +170,22 @@ impl WorkflowConfig {
     /// Load from JSON file
     fn load_json(path: &Path) -> Result<Self> {
         debug!("Loading JSON config from {}", path.display());
-        let content = std::fs::read_to_string(path)?;
-        let config: Self = serde_json::from_str(&content)?;
+        let content = std::fs::read_to_string(path).map_err(|e| {
+            Error::Config(format!(
+                "Cannot read config file '{}': {}",
+                path.display(),
+                e
+            ))
+        })?;
+        let config: Self = serde_json::from_str(&content).map_err(|e| {
+            Error::Config(format!(
+                "Invalid JSON in '{}': {} (line {}, column {})",
+                path.display(),
+                e,
+                e.line(),
+                e.column()
+            ))
+        })?;
         config.validate()?;
         Ok(config)
     }

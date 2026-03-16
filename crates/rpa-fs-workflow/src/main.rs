@@ -50,6 +50,10 @@ enum Commands {
     Run {
         /// Path to the workflow configuration file (.json or .ncl)
         config: PathBuf,
+
+        /// Validate and display the workflow without executing it
+        #[arg(long)]
+        dry_run: bool,
     },
 
     /// Generate an example configuration file
@@ -84,7 +88,13 @@ fn main() {
         .init();
 
     let result = match cli.command {
-        Commands::Run { config } => run_workflow(config),
+        Commands::Run { config, dry_run } => {
+            if dry_run {
+                dry_run_workflow(config)
+            } else {
+                run_workflow(config)
+            }
+        }
         Commands::Init { output } => init_workflow(output),
         Commands::Validate { config } => validate_workflow(config),
     };
@@ -93,6 +103,47 @@ fn main() {
         error!("Error: {}", e);
         std::process::exit(1);
     }
+}
+
+/// Validate and display workflow plan without executing
+fn dry_run_workflow(config_path: PathBuf) -> anyhow::Result<()> {
+    info!("Dry run — loading workflow from: {}", config_path.display());
+
+    let config = WorkflowConfig::load(&config_path)?;
+
+    info!("Workflow: {}", config.workflow.name);
+    if let Some(desc) = &config.workflow.description {
+        info!("  Description: {}", desc);
+    }
+    info!("  Version: {}", config.workflow.version);
+    info!("  Enabled: {}", config.workflow.enabled);
+
+    info!("Watch paths ({}):", config.watch.len());
+    for watch in &config.watch {
+        info!(
+            "  - {} (recursive: {})",
+            watch.path.display(),
+            watch.recursive
+        );
+        if !watch.path.exists() {
+            info!("    [WARNING] Path does not exist — will be created at runtime");
+        }
+    }
+
+    info!("Rules ({}):", config.rules.len());
+    for rule in &config.rules {
+        info!(
+            "  - {} (enabled: {}, events: {:?}, patterns: {:?}, actions: {})",
+            rule.name,
+            rule.enabled,
+            rule.events,
+            rule.patterns,
+            rule.actions.len()
+        );
+    }
+
+    info!("Dry run complete — configuration is valid, no actions were executed.");
+    Ok(())
 }
 
 fn run_workflow(config_path: PathBuf) -> anyhow::Result<()> {
