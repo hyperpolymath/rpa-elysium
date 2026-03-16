@@ -4,7 +4,7 @@
 [metadata]
 project = "rpa-elysium"
 version = "0.1.0"
-last-updated = "2026-03-16"
+last-updated = "2026-03-17"
 status = "active"
 
 [project-context]
@@ -33,3 +33,4 @@ priority-5 = "Implement rpa-state persistence layer"
 
 [session-history]
 # 2026-03-16: Governance cleanup, license alignment, ABI/FFI scaffold, multi-lang scaffold
+# 2026-03-17: Doc cleanup, security fixes (wasmtime 36.0.6), SPDX alignment, Hypatia rules config, CodeQL matrix fix, cruft removal

@@ -56,6 +56,11 @@ erl_crash.dump
 # ReScript
 /lib/bs/
 /.bsb.lock
+*.res.mjs
+
+# Deno
+/.deno/
+/deno.lock
 
 # Python (SaltStack only)
 __pycache__/
@@ -88,6 +93,12 @@ htmlcov/
 # Logs
 *.log
 /logs/
+
+# Fuzzing
+/fuzz/corpus/
+/fuzz/artifacts/
+/fuzz/coverage/
+*.profraw
 
 # Temp
 /tmp/

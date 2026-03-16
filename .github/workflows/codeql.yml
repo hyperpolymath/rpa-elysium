@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0
+# SPDX-License-Identifier: PMPL-1.0-or-later
 name: CodeQL Security Analysis
 
 on:
@@ -21,7 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: javascript-typescript
+          # Rust is not supported by CodeQL — scan workflow actions only
+          # When JS/ReScript is added, add: javascript-typescript
+          - language: actions
             build-mode: none
 
     steps:

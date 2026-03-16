@@ -6,11 +6,11 @@ set -euo pipefail
 CODEQL_FILE=".github/workflows/codeql.yml"
 [ -f "$CODEQL_FILE" ] || exit 0
 
-# Detect languages in repo
-HAS_JS=$(find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" 2>/dev/null | grep -v node_modules | head -1)
-HAS_PY=$(find . -name "*.py" 2>/dev/null | grep -v __pycache__ | head -1)
-HAS_GO=$(find . -name "*.go" 2>/dev/null | head -1)
-HAS_RS=$(find . -name "*.rs" 2>/dev/null | head -1)
+# Detect languages in repo (|| true to avoid pipefail on empty results)
+HAS_JS=$(find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" 2>/dev/null | grep -v node_modules | head -1 || true)
+HAS_PY=$(find . -name "*.py" 2>/dev/null | grep -v __pycache__ | head -1 || true)
+HAS_GO=$(find . -name "*.go" 2>/dev/null | head -1 || true)
+HAS_RS=$(find . -name "*.rs" 2>/dev/null | head -1 || true)
 
 # Check if matrix includes unsupported languages
 if grep -q "language:.*python" "$CODEQL_FILE" && [ -z "$HAS_PY" ]; then

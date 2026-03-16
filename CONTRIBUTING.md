@@ -1,116 +1,121 @@
+<!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
+<!-- SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk> -->
+
+# Contributing to RPA Elysium
+
+We welcome contributions! Please read this guide before submitting.
+
+## Development Setup
+
+```bash
 # Clone the repository
 git clone https://github.com/hyperpolymath/rpa-elysium.git
 cd rpa-elysium
 
-# Using Nix (recommended for reproducibility)
-nix develop
+# Build and test
+just check   # fmt + lint + test
+just build   # Release build
 
-# Or using toolbox/distrobox
-toolbox create rpa-elysium-dev
-toolbox enter rpa-elysium-dev
-# Install dependencies manually
-
-# Verify setup
-just check   # or: cargo check / mix compile / etc.
-just test    # Run test suite
+# Or individually
+cargo build --workspace
+cargo test --workspace
+cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-### Repository Structure
+## Repository Structure
+
 ```
 rpa-elysium/
-├── src/                 # Source code (Perimeter 1-2)
-├── lib/                 # Library code (Perimeter 1-2)
-├── extensions/          # Extensions (Perimeter 2)
-├── plugins/             # Plugins (Perimeter 2)
-├── tools/               # Tooling (Perimeter 2)
-├── docs/                # Documentation (Perimeter 3)
-│   ├── architecture/    # ADRs, specs (Perimeter 2)
-│   └── proposals/       # RFCs (Perimeter 3)
-├── examples/            # Examples (Perimeter 3)
-├── spec/                # Spec tests (Perimeter 3)
-├── tests/               # Test suite (Perimeter 2-3)
-├── .well-known/         # Protocol files (Perimeter 1-3)
-├── .github/             # GitHub config (Perimeter 1)
-│   ├── ISSUE_TEMPLATE/
-│   └── workflows/
-├── CHANGELOG.md
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md      # This file
-├── GOVERNANCE.md
-├── LICENSE
-├── MAINTAINERS.md
-├── README.adoc
-├── SECURITY.md
-├── flake.nix            # Nix flake (Perimeter 1)
-└── justfile             # Task runner (Perimeter 1)
+├── crates/               # Rust workspace crates
+│   ├── rpa-core/         # Core types, traits, abstractions
+│   ├── rpa-plugin/       # WASM plugin system
+│   └── rpa-fs-workflow/  # Filesystem automation CLI (MVP)
+├── src/abi/              # Idris2 ABI definitions
+├── ffi/zig/              # Zig FFI implementation
+├── services/             # Backend services (Gleam)
+├── examples/             # Example workflow configs
+├── hooks/                # Validation scripts (pre-commit)
+├── .github/workflows/    # CI/CD pipelines (18 workflows)
+├── .machine_readable/    # A2ML project metadata
+├── contractiles/         # Governance contracts (K9, must/trust/dust)
+└── justfile              # Build automation
 ```
 
----
+## Language Policy
 
-## How to Contribute
+This project follows the [Hyperpolymath Language Policy](.claude/CLAUDE.md):
 
-### Reporting Bugs
+| Allowed | Use Case |
+|---------|----------|
+| **Rust** | Core framework, WASM, CLI |
+| **ReScript** | Management console UI |
+| **Gleam** | Backend services (BEAM) |
+| **Deno** | JS runtime (not Node.js) |
+| **Idris2** | ABI definitions |
+| **Zig** | FFI implementation |
+| **Bash** | Scripts, automation |
 
-**Before reporting**:
-1. Search existing issues
-2. Check if it's already fixed in `main`
-3. Determine which perimeter the bug affects
+**Banned**: TypeScript, Node.js, npm, Go, Python, Java, Kotlin, Swift.
 
-**When reporting**:
+## Branch Naming
 
-Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
-
-- Clear, descriptive title
-- Environment details (OS, versions, toolchain)
-- Steps to reproduce
-- Expected vs actual behaviour
-- Logs, screenshots, or minimal reproduction
-
-### Suggesting Features
-
-**Before suggesting**:
-1. Check the [roadmap](ROADMAP.md) if available
-2. Search existing issues and discussions
-3. Consider which perimeter the feature belongs to
-
-**When suggesting**:
-
-Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md) and include:
-
-- Problem statement (what pain point does this solve?)
-- Proposed solution
-- Alternatives considered
-- Which perimeter this affects
-
-### Your First Contribution
-
-Look for issues labelled:
-
-- [`good first issue`](https://github.com/hyperpolymath/rpa-elysium/labels/good%20first%20issue) — Simple Perimeter 3 tasks
-- [`help wanted`](https://github.com/hyperpolymath/rpa-elysium/labels/help%20wanted) — Community help needed
-- [`documentation`](https://github.com/hyperpolymath/rpa-elysium/labels/documentation) — Docs improvements
-- [`perimeter-3`](https://github.com/hyperpolymath/rpa-elysium/labels/perimeter-3) — Community sandbox scope
-
----
-
-## Development Workflow
-
-### Branch Naming
 ```
-docs/short-description       # Documentation (P3)
-test/what-added              # Test additions (P3)
-feat/short-description       # New features (P2)
-fix/issue-number-description # Bug fixes (P2)
-refactor/what-changed        # Code improvements (P2)
-security/what-fixed          # Security fixes (P1-2)
+feat/short-description       # New features
+fix/issue-number-description # Bug fixes
+docs/short-description       # Documentation
+test/what-added              # Test additions
+refactor/what-changed        # Code improvements
+security/what-fixed          # Security fixes
 ```
 
-### Commit Messages
+## Commit Messages
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
 ```
 <type>(<scope>): <description>
 
 [optional body]
 
 [optional footer]
+```
+
+Types: `feat`, `fix`, `docs`, `test`, `refactor`, `security`, `chore`, `ci`
+
+Scopes: `core`, `plugin`, `fs-workflow`, `abi`, `ffi`, `services`, `ci`
+
+## Pull Request Process
+
+1. Fork the repository and create a feature branch
+2. Ensure `just check` passes (fmt, lint, test)
+3. All SPDX headers must be `PMPL-1.0-or-later`
+4. All GitHub Actions must be SHA-pinned
+5. No banned language code introduced
+6. Submit PR against `main` with descriptive title and body
+
+## Code Standards
+
+- All source files must have SPDX license headers
+- All code must pass `cargo clippy -- -D warnings`
+- All code must be formatted with `cargo fmt`
+- Test coverage target: 80%+
+- No hardcoded secrets, credentials, or API keys
+- HTTPS only — no HTTP URLs
+
+## Reporting Bugs
+
+Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md). Include:
+- Environment details (OS, Rust version, etc.)
+- Steps to reproduce
+- Expected vs actual behaviour
+
+## Suggesting Features
+
+Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). Include:
+- Problem statement
+- Proposed solution
+- Which crate/component this affects
+
+## License
+
+All contributions are licensed under PMPL-1.0-or-later.

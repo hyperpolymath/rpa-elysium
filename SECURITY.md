@@ -160,7 +160,7 @@ In Scope ✅
 
 The following are within scope for security research:
 
-    This repository (hyperpolymath/terrapin-ssg) and all its code
+    This repository (hyperpolymath/rpa-elysium) and all its code
     Official releases and packages published from this repository
     Documentation that could lead to security issues
     Build and deployment configurations in this repository
@@ -286,7 +286,7 @@ Previous minor release 	✅ Yes 	Security fixes backported
 Older versions 	❌ No 	Please upgrade
 Security Best Practices
 
-When using terrapin-ssg, we recommend:
+When using rpa-elysium, we recommend:
 General
 
     Keep dependencies up to date
@@ -325,4 +325,4 @@ This security policy may be updated from time to time. Significant changes will 
     Noted in the changelog
     Announced via GitHub Discussions (for major changes)
 
-Thank you for helping keep terrapin-ssg and its users safe.
+Thank you for helping keep rpa-elysium and its users safe.

@@ -1,0 +1,58 @@
+{
+  "$schema": "hypatia-rules/v1",
+  "project": "rpa-elysium",
+  "scan_depth": "standard",
+  "rules": {
+    "SPDX-AGPL-BANNED": {
+      "severity": "error",
+      "description": "Block AGPL-3.0 license headers — replaced by PMPL-1.0-or-later",
+      "pattern": "AGPL-3.0",
+      "file_types": ["*.rs", "*.idr", "*.zig", "*.gleam", "*.yml"]
+    },
+    "INNERHTML-BANNED": {
+      "severity": "error",
+      "description": "Block innerHTML usage — XSS vector",
+      "pattern": "innerHTML",
+      "file_types": ["*.js", "*.res", "*.mjs"]
+    },
+    "EVAL-BANNED": {
+      "severity": "error",
+      "description": "Block eval() in JS/ReScript",
+      "pattern": "\\beval\\(",
+      "file_types": ["*.js", "*.res", "*.mjs"],
+      "exclude": ["**/test/**"]
+    },
+    "TEMPLATE-PLACEHOLDERS": {
+      "severity": "warning",
+      "description": "Detect unreplaced {{PLACEHOLDER}} template variables",
+      "pattern": "\\{\\{[A-Z_]*\\}\\}",
+      "file_types": ["*.yml", "*.adoc", "*.md"],
+      "exclude": ["CLAUDE.md", "**/rsr-template/**"]
+    },
+    "HARDCODED-TMP": {
+      "severity": "warning",
+      "description": "Flag hardcoded /tmp paths — use mktemp instead",
+      "pattern": "\"/tmp/",
+      "file_types": ["*.rs", "*.zig", "*.gleam"],
+      "exclude": ["**/tests/**"]
+    },
+    "SPDX-HEADER-REQUIRED": {
+      "severity": "error",
+      "description": "All source files must have SPDX-License-Identifier header",
+      "check": "first_line_contains",
+      "pattern": "SPDX-License-Identifier",
+      "file_types": ["*.rs", "*.idr", "*.zig", "*.gleam", "*.yml"]
+    },
+    "BANNED-LANGUAGE-FILES": {
+      "severity": "error",
+      "description": "Block banned language files from being committed",
+      "check": "file_not_exists",
+      "patterns": ["*.ts", "*.tsx", "*.go", "*.py", "*.kt", "*.swift"],
+      "exclude": ["**/test/**", ".github/**"]
+    }
+  },
+  "ci_integration": {
+    "workflow": ".github/workflows/hypatia-scan.yml",
+    "on_failure": "block_merge"
+  }
+}

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # Pre-commit hook: Validate GitHub Actions are SHA-pinned
+#
+# Only checks actual YAML-level `uses:` directives.
+# Ignores `uses:` strings inside run: shell blocks.
 
 set -euo pipefail
 
@@ -8,11 +11,14 @@ ERRORS=0
 
 for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
     [ -f "$workflow" ] || continue
-    
-    # Find uses: lines that aren't SHA-pinned
+
+    # Use yq-style approach: only match lines that are YAML step uses: keys
+    # These are indented with spaces and followed by owner/repo@ref format
     while IFS= read -r line; do
-        if [[ "$line" =~ uses:.*@ ]]; then
-            # Check if it has a SHA (40 hex chars)
+        # Match YAML uses: directives (leading whitespace + uses: + owner/repo pattern)
+        # Skip lines inside run: blocks (those contain shell code with "uses:" as strings)
+        if echo "$line" | grep -qP '^\s+uses:\s+[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+@'; then
+            # Check if it has a SHA (40 hex chars after @)
             if ! echo "$line" | grep -qE '@[a-f0-9]{40}'; then
                 echo "ERROR: Unpinned action in $workflow"
                 echo "  $line"
@@ -26,7 +32,6 @@ done
 if [ $ERRORS -gt 0 ]; then
     echo ""
     echo "Found $ERRORS unpinned actions. Please SHA-pin all GitHub Actions."
-    echo "Use: gh api repos/OWNER/REPO/git/matching-refs/tags/VERSION to find SHAs"
     exit 1
 fi
 

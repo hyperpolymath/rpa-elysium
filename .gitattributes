@@ -18,6 +18,11 @@
 *.scm   text eol=lf
 *.ncl   text eol=lf
 *.nix   text eol=lf
+*.idr   text eol=lf
+*.ipkg  text eol=lf
+*.zig   text eol=lf
+*.gleam text eol=lf
+*.a2ml  text eol=lf
 
 # Docs
 *.md    text eol=lf diff=markdown

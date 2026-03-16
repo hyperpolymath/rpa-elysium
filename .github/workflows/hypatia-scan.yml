@@ -33,17 +33,35 @@ jobs:
           echo "Hypatia config directory found"
           ls -la .hypatia/
 
+      - name: Validate Hypatia rules config
+        run: |
+          if [ ! -f ".hypatia/rules.json" ]; then
+            echo "::warning::No .hypatia/rules.json found — using inline rules"
+          else
+            echo "Hypatia rules config: $(jq -r '.rules | keys | length' .hypatia/rules.json) rules defined"
+          fi
+
       - name: Run Hypatia rules scan
         run: |
           echo "=== Hypatia Neurosymbolic Scan ==="
           echo ""
           ERRORS=0
+          WARNINGS=0
 
           # SPDX-AGPL-BANNED: Block AGPL-3.0 headers
           if grep -rn "AGPL-3.0" --include='*.rs' --include='*.idr' --include='*.zig' --include='*.gleam' --include='*.yml' . 2>/dev/null | grep -v '.git/'; then
             echo "::error::SPDX-AGPL-BANNED: Found AGPL-3.0 references (use PMPL-1.0-or-later)"
             ERRORS=$((ERRORS + 1))
           fi
+
+          # SPDX-HEADER-REQUIRED: Check SPDX headers on workflows
+          for f in .github/workflows/*.yml; do
+            [ -f "$f" ] || continue
+            if ! head -1 "$f" | grep -q "SPDX-License-Identifier"; then
+              echo "::error::SPDX-HEADER-REQUIRED: Missing SPDX header in $f"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
 
           # INNERHTML-BANNED: Block innerHTML usage
           if grep -rn 'innerHTML' --include='*.js' --include='*.res' --include='*.mjs' . 2>/dev/null | grep -v '.git/' | grep -v 'node_modules'; then
@@ -57,21 +75,32 @@ jobs:
             ERRORS=$((ERRORS + 1))
           fi
 
+          # BANNED-LANGUAGE-FILES: Check for banned language files in source
+          BANNED=$(find . -name '*.ts' -o -name '*.tsx' -o -name '*.go' -o -name '*.py' -o -name '*.kt' -o -name '*.swift' 2>/dev/null | grep -v '.git/' | grep -v 'node_modules' | grep -v '__pycache__' | head -5)
+          if [ -n "$BANNED" ]; then
+            echo "::error::BANNED-LANGUAGE-FILES: Found banned language files:"
+            echo "$BANNED"
+            ERRORS=$((ERRORS + 1))
+          fi
+
           # TEMPLATE-PLACEHOLDERS: Detect unreplaced {{PLACEHOLDER}}
           if grep -rn '{{[A-Z_]*}}' --include='*.yml' --include='*.adoc' --include='*.md' . 2>/dev/null | grep -v '.git/' | grep -v 'CLAUDE.md' | grep -v 'rsr-template'; then
             echo "::warning::TEMPLATE-PLACEHOLDERS: Found unreplaced template placeholders"
+            WARNINGS=$((WARNINGS + 1))
           fi
 
           # HARDCODED-TMP: Flag hardcoded /tmp paths in source
-          if grep -rn '"/tmp/' --include='*.rs' --include='*.zig' --include='*.gleam' . 2>/dev/null | grep -v '.git/' | grep -v '#\[cfg(test)\]' | grep -v 'mod tests'; then
+          if grep -rn '"/tmp/' --include='*.rs' --include='*.zig' --include='*.gleam' . 2>/dev/null | grep -v '.git/' | grep -v 'mod tests' | grep -v '#\[test\]'; then
             echo "::warning::HARDCODED-TMP: Found hardcoded /tmp paths (consider mktemp)"
+            WARNINGS=$((WARNINGS + 1))
           fi
 
+          echo ""
+          echo "Results: $ERRORS error(s), $WARNINGS warning(s)"
+
           if [ "$ERRORS" -gt 0 ]; then
-            echo ""
             echo "::error::Hypatia scan found $ERRORS blocking issue(s)"
             exit 1
           fi
 
-          echo ""
-          echo "Hypatia scan passed — no blocking issues found"
+          echo "Hypatia scan passed"
