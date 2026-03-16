@@ -9,6 +9,7 @@
 //! - Result and error types
 //! - State management interfaces
 
+#![forbid(unsafe_code)]
 pub mod action;
 pub mod error;
 pub mod event;
