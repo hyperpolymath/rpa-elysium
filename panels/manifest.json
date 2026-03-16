@@ -1,0 +1,110 @@
+{
+  "$schema": "panll-harness/v1",
+  "service_id": "rpa-elysium",
+  "service_name": "RPA Elysium Filesystem Automation",
+  "version": "0.1.0",
+  "protocol": "http",
+  "default_endpoint": "http://localhost:7800/api/v1",
+  "health_check": {
+    "path": "/health",
+    "interval_ms": 30000,
+    "timeout_ms": 5000,
+    "healthy_threshold": 1,
+    "unhealthy_threshold": 3
+  },
+  "data_sources": {
+    "rpa-elysium://workflow/status": {
+      "path": "/workflow/status",
+      "method": "GET",
+      "returns": "WorkflowStatus",
+      "description": "Current workflow execution status (idle/running/paused/stopped/error)"
+    },
+    "rpa-elysium://workflow/metrics/events_processed": {
+      "path": "/workflow/metrics",
+      "method": "GET",
+      "returns": "u64",
+      "jq_extract": ".events_processed",
+      "description": "Total events processed by the workflow engine"
+    },
+    "rpa-elysium://workflow/metrics/actions_executed": {
+      "path": "/workflow/metrics",
+      "method": "GET",
+      "returns": "u64",
+      "jq_extract": ".actions_executed",
+      "description": "Total actions executed"
+    },
+    "rpa-elysium://workflow/metrics/error_count": {
+      "path": "/workflow/metrics",
+      "method": "GET",
+      "returns": "u64",
+      "jq_extract": ".error_count",
+      "description": "Total errors encountered"
+    },
+    "rpa-elysium://workflow/watch_paths": {
+      "path": "/workflow/watch_paths",
+      "method": "GET",
+      "returns": "[WatchPath]",
+      "description": "List of watched directories with event counts"
+    },
+    "rpa-elysium://workflow/rules": {
+      "path": "/workflow/rules",
+      "method": "GET",
+      "returns": "[Rule]",
+      "description": "Active rules with match counts"
+    },
+    "rpa-elysium://workflow/events/timeline": {
+      "path": "/workflow/events?format=timeline",
+      "method": "GET",
+      "returns": "[TimelineEvent]",
+      "description": "Event timeline for the last hour"
+    },
+    "rpa-elysium://workflow/actions/recent": {
+      "path": "/workflow/actions?limit=25",
+      "method": "GET",
+      "returns": "[ActionResult]",
+      "description": "Recent action execution results"
+    },
+    "rpa-elysium://workflow/fsm/state": {
+      "path": "/workflow/fsm",
+      "method": "GET",
+      "returns": "FSMState",
+      "description": "proven-fsm workflow state machine current state"
+    },
+    "rpa-elysium://queue/state": {
+      "path": "/queue/state",
+      "method": "GET",
+      "returns": "QueueState",
+      "description": "proven-queueconn subscription state (for HAR integration)"
+    },
+    "rpa-elysium://plugins/count": {
+      "path": "/plugins/count",
+      "method": "GET",
+      "returns": "u64",
+      "description": "Number of loaded WASM plugins"
+    },
+    "rpa-elysium://plugins/list": {
+      "path": "/plugins",
+      "method": "GET",
+      "returns": "[PluginInfo]",
+      "description": "List of registered plugins with metadata"
+    },
+    "rpa-elysium://plugins/sandbox/memory_usage": {
+      "path": "/plugins/sandbox/memory",
+      "method": "GET",
+      "returns": "u64",
+      "description": "Total sandbox memory usage in bytes"
+    },
+    "rpa-elysium://plugins/logs/recent": {
+      "path": "/plugins/logs?limit=20",
+      "method": "GET",
+      "returns": "[PluginLog]",
+      "description": "Recent plugin execution log entries"
+    }
+  },
+  "panels": [
+    "panels/fs-workflow/panel.json",
+    "panels/plugin-status/panel.json"
+  ],
+  "capabilities": ["filesystem", "scheduling", "plugin"],
+  "clade": "automation/filesystem"
+}
