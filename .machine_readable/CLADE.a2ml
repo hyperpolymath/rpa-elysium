@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "8ea59509-ffc3-5ceb-8faf-09b62827d40d"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "rpa-elysium"
+prefixed-name = "dx-rpa-elysium"
+
+[clade]
+primary = "dx"
+secondary = ["ax"]
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/rpa-elysium"
+gitlab = "hyperpolymath/rpa-elysium"
+bitbucket = "hyperpolymath/rpa-elysium"
+
+[lineage]
+type = "standalone"
+parent = "Robotic Process Automation framework"
+born = "2026-03-16"
