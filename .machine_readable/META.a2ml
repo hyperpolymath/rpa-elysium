@@ -57,6 +57,18 @@ status = "accepted"
 date = "2026-03-17"
 rationale = "JSON panel definitions in panels/ enable integration with PanLL monitoring system. Two panels: fs-workflow (runtime) and plugin-status (sandbox)."
 
+[architecture-decisions.adr-009]
+title = "Event bus architecture — async pub/sub with lifecycle hooks"
+status = "accepted"
+date = "2026-03-17"
+rationale = "Async publish/subscribe event bus (rpa-events) decouples components and enables lifecycle hooks (pre/post execution callbacks). Supports error propagation through structured error types with recovery strategies. Enables future distributed event routing in Phase 7."
+
+[architecture-decisions.adr-010]
+title = "Resource pooling with semaphore-based allocation"
+status = "accepted"
+date = "2026-03-17"
+rationale = "Semaphore-based resource pooling (rpa-resources) provides bounded concurrency for shared resources (browser sessions, API connections, file handles). Prevents resource exhaustion under load while maintaining fairness. Integrates with rpa-scheduler for capacity-aware task scheduling."
+
 [development-practices]
 test-coverage-target = "80%"
 ci-pipelines = 17

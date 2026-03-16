@@ -7,11 +7,11 @@
 //! Nickel files are evaluated and converted to JSON for parsing.
 
 use crate::actions::ActionConfig;
+use rpa_config::ConfigLoader;
 use rpa_core::{Error, Result, Workflow};
 use rpa_plugin::{Permission, PermissionSet, SandboxConfig};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-use tracing::debug;
 
 /// Complete workflow configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -153,70 +153,16 @@ pub enum EventType {
 
 impl WorkflowConfig {
     /// Load configuration from a file (JSON or Nickel)
+    ///
+    /// Delegates file loading to [`rpa_config::ConfigLoader`] and then
+    /// deserialises the resulting JSON value into a [`WorkflowConfig`].
     pub fn load(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
-        let extension = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-
-        match extension {
-            "json" => Self::load_json(path),
-            "ncl" => Self::load_nickel(path),
-            _ => Err(Error::Config(format!(
-                "Unsupported config format: {}. Use .json or .ncl",
-                extension
-            ))),
-        }
-    }
-
-    /// Load from JSON file
-    fn load_json(path: &Path) -> Result<Self> {
-        debug!("Loading JSON config from {}", path.display());
-        let content = std::fs::read_to_string(path).map_err(|e| {
-            Error::Config(format!(
-                "Cannot read config file '{}': {}",
-                path.display(),
-                e
-            ))
-        })?;
-        let config: Self = serde_json::from_str(&content).map_err(|e| {
-            Error::Config(format!(
-                "Invalid JSON in '{}': {} (line {}, column {})",
-                path.display(),
-                e,
-                e.line(),
-                e.column()
-            ))
-        })?;
-        config.validate()?;
-        Ok(config)
-    }
-
-    /// Load from Nickel file
-    fn load_nickel(path: &Path) -> Result<Self> {
-        debug!("Loading Nickel config from {}", path.display());
-
-        // For initial implementation, we use nickel CLI to export to JSON
-        // Future: Use nickel-lang-core directly for better integration
-        let output = std::process::Command::new("nickel")
-            .args(["export", "--format", "json"])
-            .arg(path)
-            .output()
-            .map_err(|e| {
-                Error::Config(format!(
-                    "Failed to run nickel: {}. Ensure nickel is installed.",
-                    e
-                ))
-            })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(Error::Config(format!(
-                "Nickel evaluation failed: {}",
-                stderr
-            )));
-        }
-
-        let json = String::from_utf8_lossy(&output.stdout);
-        let config: Self = serde_json::from_str(&json)?;
+        let loader = ConfigLoader::new();
+        let value = loader
+            .load(path)
+            .map_err(|e| Error::Config(e.to_string()))?;
+        let config: Self = serde_json::from_value(value)?;
         config.validate()?;
         Ok(config)
     }

@@ -9,13 +9,15 @@ status = "active"
 
 [project-context]
 name = "rpa-elysium"
-completion-percentage = 30
-phase = "Phase 1 — Core Framework (In Progress)"
+completion-percentage = 55
+phase = "Phase 1 Complete — Phase 2 Planned"
 description = "Rust-based RPA toolkit with WASM plugin system"
 
 [current-position]
-milestone = "Phase 1.1 — Scaffolding"
-focus = "Multi-language scaffold, ABI/FFI layer, governance cleanup"
+milestone = "Phase 1 — Complete"
+focus = "Phase 2 planning — automation modules"
+
+# Phase 1.1 — Scaffolding
 rust-workspace = "done"
 abi-ffi-scaffold = "done"
 proven-fsm-bindings = "done"
@@ -24,17 +26,30 @@ ephapax-linear-types = "done"
 multi-lang-scaffold = "done"
 hypatia-workflow = "done"
 
+# Phase 1.2 — Bot Core
+rpa-core = "done"
+rpa-scheduler = "done"
+rpa-state = "done"
+rpa-resources = "done"
+rpa-config = "done"
+
+# Phase 1.3 — Event System
+rpa-events = "done"
+lifecycle-hooks = "done"
+error-propagation = "done"
+
 [blockers]
 # No active blockers
 
 [next-actions]
-priority-1 = "rpa-fs-workflow standalone release prep (--version, --dry-run, README)"
-priority-2 = "Extract rpa-config crate from rpa-fs-workflow"
-priority-3 = "Implement rpa-scheduler (cron-like task scheduling)"
-priority-4 = "Wire plugin host into rpa-fs-workflow runner"
-priority-5 = "Implement rpa-state persistence layer"
+priority-1 = "Phase 2.1 — Web automation: browser driver (CDP/WebDriver protocol)"
+priority-2 = "Phase 2.2 — Desktop automation: window management, input simulation"
+priority-3 = "Phase 2.3 — API integration: HTTP/GraphQL client, auth, rate limiting"
+priority-4 = "Phase 2.4 — Document processing: PDF, Excel/CSV, email"
+priority-5 = "Wire WASM plugin host into rpa-fs-workflow runner (Phase 2 stretch)"
 
 [session-history]
 # 2026-03-16: Governance cleanup, license alignment, ABI/FFI scaffold, multi-lang scaffold
 # 2026-03-17: Doc cleanup, security fixes (wasmtime 36.0.6), SPDX alignment, Hypatia rules config, CodeQL matrix fix, cruft removal
 # 2026-03-16: proven-fsm bindings (ProvenFSM.idr), proven-queueconn bindings (ProvenQueue.idr), Ephapax linear types (LinearDispatch.eph)
+# 2026-03-17: Phase 1 completion — all core framework crates done (rpa-core, rpa-config, rpa-events, rpa-resources, rpa-scheduler, rpa-state). Documentation updated for Phase 2 planning.

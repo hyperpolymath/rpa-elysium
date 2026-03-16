@@ -5,7 +5,12 @@
 resolver = "2"
 members = [
     "crates/rpa-core",
+    "crates/rpa-config",
+    "crates/rpa-events",
     "crates/rpa-plugin",
+    "crates/rpa-resources",
+    "crates/rpa-scheduler",
+    "crates/rpa-state",
     "crates/rpa-fs-workflow",
 ]
 

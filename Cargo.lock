@@ -1496,12 +1496,39 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 
 [[package]]
+name = "rpa-config"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "rpa-core",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
 name = "rpa-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
  "chrono",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rpa-events"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "rpa-core",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -1523,6 +1550,7 @@ dependencies = [
  "glob",
  "notify",
  "notify-debouncer-mini",
+ "rpa-config",
  "rpa-core",
  "rpa-plugin",
  "serde",
@@ -1552,6 +1580,51 @@ dependencies = [
  "tracing",
  "uuid",
  "wasmtime",
+]
+
+[[package]]
+name = "rpa-resources"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "rpa-core",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rpa-scheduler"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "rpa-core",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rpa-state"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "rpa-core",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

@@ -28,11 +28,12 @@ toc::[]
 
 [IMPORTANT]
 ====
-*Current Phase*: Core Framework (Phase 1 — In Progress)
+*Current Phase*: Phase 2 — Automation Modules (Next)
 
-This repository contains:
+Phase 1 (Core Framework) completed 2026-03-17. This repository contains:
 
-* Rust workspace with 3 crates (rpa-core, rpa-plugin, rpa-fs-workflow)
+* Rust workspace with 8 crates (rpa-core, rpa-config, rpa-events, rpa-plugin, rpa-resources, rpa-scheduler, rpa-state, rpa-fs-workflow)
+* Bot framework with scheduling, state management, event bus, and resource pooling
 * Working filesystem automation CLI (rpa-fs-workflow)
 * CI/CD infrastructure and governance workflows (17 workflows)
 * Language policy and development standards
@@ -174,7 +175,7 @@ See link:ROADMAP.adoc[ROADMAP.adoc] for detailed development phases.
 
 |*1. Core Framework*
 |Bot framework, task scheduling, state management
-|In Progress
+|✓ Complete
 
 |*2. Automation Modules*
 |Web, desktop, API, document automation

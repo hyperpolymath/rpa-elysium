@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
 <!-- TOPOLOGY.md — Project architecture map and completion dashboard -->
-<!-- Last updated: 2026-03-16 -->
+<!-- Last updated: 2026-03-17 -->
 
 # RPA Elysium — Project Topology
 
@@ -62,7 +62,12 @@ COMPONENT                          STATUS              NOTES
 ─────────────────────────────────  ──────────────────  ─────────────────────────────────
 RUST WORKSPACE
   rpa-core                          ██████████ 100%    Types, traits, error handling
-  rpa-plugin                        ████████░░  85%    WASM sandbox, host, permissions
+  rpa-config                        ██████████ 100%    Configuration loading, Nickel integration
+  rpa-events                        ██████████ 100%    Async pub/sub event bus, lifecycle hooks
+  rpa-plugin                        ████████░░  85%    WASM sandbox, host, permissions (host not wired — Phase 2)
+  rpa-resources                     ██████████ 100%    Resource allocation, semaphore-based pooling
+  rpa-scheduler                     ██████████ 100%    Cron-like task scheduling
+  rpa-state                         ██████████ 100%    Bot state management, persistence
   rpa-fs-workflow                   █████████░  95%    CLI, watcher, 6 action types
 
 PLATFORM (PLANNED)
@@ -93,7 +98,7 @@ REPO INFRASTRUCTURE
   Language Policy (CCCP)            ██████████ 100%    RSR stack verified
 
 ─────────────────────────────────────────────────────────────────────────────
-OVERALL:                            ███░░░░░░░  ~30%   Phase 1 In Progress
+OVERALL:                            █████░░░░░  ~55%   Phase 1 Complete, Phase 2 Planned
 ```
 
 ## Key Dependencies
