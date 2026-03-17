@@ -34,6 +34,7 @@
 //! host.load_plugin(config)?;
 //! ```
 
+#![forbid(unsafe_code)]
 pub mod api;
 pub mod error;
 pub mod host;

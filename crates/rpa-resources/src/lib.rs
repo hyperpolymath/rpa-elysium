@@ -7,6 +7,7 @@
 //! concurrent workflow executions. Prevents resource exhaustion and ensures
 //! fair allocation.
 
+#![forbid(unsafe_code)]
 use async_trait::async_trait;
 use rpa_core::Result;
 use std::collections::HashMap;

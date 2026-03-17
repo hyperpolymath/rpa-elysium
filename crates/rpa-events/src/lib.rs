@@ -17,6 +17,7 @@
 //!                └─→ Post-hooks (audit, metrics)
 //! ```
 
+#![forbid(unsafe_code)]
 use async_trait::async_trait;
 use rpa_core::{Event, Result};
 use std::sync::Arc;

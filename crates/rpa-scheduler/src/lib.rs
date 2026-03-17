@@ -6,6 +6,7 @@
 //! Evaluates cron expressions and dispatches scheduled events to the
 //! event bus or directly to workflow runners.
 
+#![forbid(unsafe_code)]
 use async_trait::async_trait;
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use rpa_core::Result;

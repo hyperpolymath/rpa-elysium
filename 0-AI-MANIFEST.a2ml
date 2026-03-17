@@ -21,15 +21,15 @@
 - Examples: `examples/`
 
 ## Critical Invariants
-- NEVER create STATE.scm, META.scm, ECOSYSTEM.scm in the repository root
+- NEVER create .machine_readable/6a2/STATE.a2ml, .machine_readable/6a2/META.a2ml, .machine_readable/6a2/ECOSYSTEM.a2ml in the repository root
 - NEVER use TypeScript, Node.js, npm, Go, or Python
 - NEVER use MIT license — this project is PMPL-1.0-or-later
 - All actions SHA-pinned in workflows
 - SPDX headers on all source files
 
 ## Workflow
-1. Read `.machine_readable/STATE.a2ml` for blockers and next actions.
-2. Respect constraints in `.machine_readable/AGENTIC.a2ml` when tooling changes are requested.
+1. Read `.machine_readable/6a2/STATE.a2ml` for blockers and next actions.
+2. Respect constraints in `.machine_readable/6a2/AGENTIC.a2ml` when tooling changes are requested.
 3. After edits, update STATE with outcomes and commit with a concise, imperative message.
 
 ## Delivery Promises

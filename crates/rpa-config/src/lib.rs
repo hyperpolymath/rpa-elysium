@@ -11,6 +11,7 @@
 //! [`Validator`] trait, with built-in validators for required fields and
 //! type checking.
 
+#![forbid(unsafe_code)]
 pub mod loader;
 pub mod nickel;
 pub mod types;

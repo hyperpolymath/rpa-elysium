@@ -12,6 +12,7 @@
 //! - [`backend`] - Storage backend trait and implementations (`StateBackend`, `JsonFileBackend`)
 //! - [`snapshot`] - Workflow state snapshots (`Snapshot`)
 
+#![forbid(unsafe_code)]
 pub mod backend;
 pub mod snapshot;
 pub mod store;

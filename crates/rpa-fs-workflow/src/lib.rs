@@ -8,6 +8,7 @@
 //! - Execute actions based on file events (create, modify, delete, rename)
 //! - Supported actions: copy, move, archive, delete, rename patterns
 
+#![forbid(unsafe_code)]
 pub mod actions;
 pub mod config;
 pub mod runner;
