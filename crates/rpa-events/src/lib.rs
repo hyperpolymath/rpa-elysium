@@ -24,6 +24,11 @@ use std::sync::Arc;
 use tokio::sync::broadcast;
 use tracing::{debug, info};
 
+// Groove notification backend — sends voice alerts via Burble's groove
+// protocol when event handlers fail. Wire as a post-hook on the EventBus.
+// Groove connectors formally verified via Idris2 (Gossamer's Groove.idr).
+pub mod groove;
+
 /// Maximum number of events buffered in the bus channel
 const DEFAULT_CHANNEL_CAPACITY: usize = 1024;
 
