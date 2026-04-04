@@ -60,6 +60,21 @@ pub enum EventKind {
     Scheduled { schedule: String },
 }
 
+impl std::fmt::Display for EventKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EventKind::FileCreated { path } => write!(f, "FileCreated({})", path.display()),
+            EventKind::FileModified { path } => write!(f, "FileModified({})", path.display()),
+            EventKind::FileDeleted { path } => write!(f, "FileDeleted({})", path.display()),
+            EventKind::FileRenamed { from, to } => {
+                write!(f, "FileRenamed({} -> {})", from.display(), to.display())
+            }
+            EventKind::Manual => write!(f, "Manual"),
+            EventKind::Scheduled { schedule } => write!(f, "Scheduled({})", schedule),
+        }
+    }
+}
+
 fn generate_event_id() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
     let now = SystemTime::now()

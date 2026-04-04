@@ -11,9 +11,11 @@
 //!
 //! Wire this hook into the EventBus as a post-hook:
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use rpa_events::groove::GrooveNotifyHook;
-//! bus.add_post_hook(Arc::new(GrooveNotifyHook::new()));
+//! use std::sync::Arc;
+//! // Assuming you have an event bus instance:
+//! // bus.add_post_hook(Arc::new(GrooveNotifyHook::new()));
 //! ```
 //!
 //! # Groove Protocol

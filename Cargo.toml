@@ -14,6 +14,18 @@ members = [
     "crates/rpa-fs-workflow",
 ]
 
+[package]
+name = "rpa-elysium"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "RPA Elysium - Comprehensive test suite for filesystem automation"
+
+[[bench]]
+name = "rpa_benchmarks"
+harness = false
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
@@ -57,3 +69,8 @@ chrono = { version = "0.4", features = ["serde"] }
 wasmtime = "36.0.6"
 wit-bindgen = "0.36"
 uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Testing
+tempfile = "3.10"
+proptest = "1.4"
+criterion = { version = "0.5", features = ["html_reports"] }
