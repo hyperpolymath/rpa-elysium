@@ -1,5 +1,7 @@
 # TEST-NEEDS: rpa-elysium - COMPLETED CRG C
 
+## CRG Grade: C — ACHIEVED 2026-04-04
+
 ## Current State (COMPLETE)
 
 | Category | Count | Details |
