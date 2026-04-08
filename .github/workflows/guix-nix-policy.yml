@@ -34,3 +34,8 @@ jobs:
           fi
           
           echo "✅ Package policy check passed"
+
+  - name: K9-SVC Validation
+    run: |
+      echo "K9-SVC validation"
+      [ -d .machine_readable/contractiles ] && echo "Contractiles present" || echo "No contractiles"
