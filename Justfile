@@ -6,6 +6,8 @@
 set shell := ["bash", "-uc"]
 set dotenv-load := true
 
+import? "contractile.just"
+
 project := "rpa-elysium"
 
 # Show all recipes
