@@ -76,7 +76,7 @@ impl GrooveNotifyHook {
 
         let addr = format!("127.0.0.1:{}", BURBLE_PORT);
         let stream = match TcpStream::connect_timeout(
-            &addr.parse().unwrap(),
+            &addr.parse().expect("TODO: handle error"),
             CONNECT_TIMEOUT,
         ) {
             Ok(s) => s,
@@ -97,7 +97,7 @@ impl GrooveNotifyHook {
     fn send_alert(&self, json: &str) {
         let addr = format!("127.0.0.1:{}", BURBLE_PORT);
         let mut stream = match TcpStream::connect_timeout(
-            &addr.parse().unwrap(),
+            &addr.parse().expect("TODO: handle error"),
             CONNECT_TIMEOUT,
         ) {
             Ok(s) => s,

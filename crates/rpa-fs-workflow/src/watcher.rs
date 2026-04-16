@@ -166,8 +166,8 @@ mod tests {
 
     #[test]
     fn test_watch_directory() {
-        let dir = tempdir().unwrap();
-        let mut watcher = FsWatcher::new(false).unwrap();
+        let dir = tempdir().expect("TODO: handle error");
+        let mut watcher = FsWatcher::new(false).expect("TODO: handle error");
 
         let result = watcher.watch(dir.path());
         assert!(result.is_ok());

@@ -231,8 +231,8 @@ mod tests {
     #[test]
     fn test_json_roundtrip() {
         let config = WorkflowConfig::example();
-        let json = serde_json::to_string_pretty(&config).unwrap();
-        let parsed: WorkflowConfig = serde_json::from_str(&json).unwrap();
+        let json = serde_json::to_string_pretty(&config).expect("TODO: handle error");
+        let parsed: WorkflowConfig = serde_json::from_str(&json).expect("TODO: handle error");
         assert_eq!(parsed.workflow.name, config.workflow.name);
     }
 }

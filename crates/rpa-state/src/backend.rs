@@ -185,10 +185,10 @@ mod tests {
         let backend = JsonFileBackend::new(tmp.path().to_path_buf());
 
         backend.put("deleteme", b"data").await.expect("put failed");
-        assert!(backend.get("deleteme").await.unwrap().is_some());
+        assert!(backend.get("deleteme").await.expect("TODO: handle error").is_some());
 
         backend.delete("deleteme").await.expect("delete failed");
-        assert_eq!(backend.get("deleteme").await.unwrap(), None);
+        assert_eq!(backend.get("deleteme").await.expect("TODO: handle error"), None);
     }
 
     #[tokio::test]
