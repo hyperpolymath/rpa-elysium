@@ -66,7 +66,7 @@ zip = "0.6"
 chrono = { version = "0.4", features = ["serde"] }
 
 # Plugin system (WASM sandbox)
-wasmtime = "36.0.7"
+wasmtime = "36.0.8"
 wit-bindgen = "0.36"
 uuid = { version = "1.6", features = ["v4", "serde"] }
 
