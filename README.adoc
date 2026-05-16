@@ -90,7 +90,7 @@ RPA Elysium is a comprehensive robotic process automation toolkit designed to st
 │                        Bot Framework (Rust)                     │
 │      Task Scheduling │ State Management │ Resource Allocation   │
 ├─────────────────────────────────────────────────────────────────┤
-│                     Automation Modules (Rust/ReScript)          │
+│                     Automation Modules (Rust/AffineScript)          │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
 │  │   Web    │ │ Desktop  │ │   API    │ │ Document/Email   │   │
 │  │Automation│ │Automation│ │Integration│ │   Processing    │   │
@@ -143,7 +143,7 @@ Per the link:.claude/CLAUDE.md[Hyperpolymath Language Policy]:
 
 === What We *Don't* Use
 
-* No TypeScript (ReScript instead)
+* No TypeScript (AffineScript instead)
 * No Node.js/npm/Bun (Deno instead)
 * No Go (Rust instead)
 * No Python except SaltStack (ReScript/Rust instead)
