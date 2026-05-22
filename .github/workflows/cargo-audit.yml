@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: MPL-2.0
+# Prevention workflow - audits Rust dependencies for vulnerabilities
+name: Cargo Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+  pull_request:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday
+
+permissions: read-all
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Run cargo audit
+        run: cargo audit --deny warnings
+
+      - name: Check for unmaintained crates
+        run: cargo audit --deny unmaintained
+
+  # Optional: Create issues for vulnerabilities
+  create-issue:
+    runs-on: ubuntu-latest
+    needs: audit
+    if: failure()
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Create vulnerability issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh issue list --label "security,dependencies" --state open --json number -q '.[0].number')
+          if [ -z "$EXISTING" ]; then
+            gh issue create \
+              --title "Security: Dependency vulnerabilities detected" \
+              --body "cargo audit found vulnerabilities. Run \`cargo audit\` locally for details." \
+              --label "security,dependencies"
+          fi
