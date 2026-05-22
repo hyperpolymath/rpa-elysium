@@ -10,7 +10,7 @@
   title = {rpa-elysium},
   year = {2026},
   url = {https://github.com/hyperpolymath/rpa-elysium},
-  license = {PMPL-1.0-or-later}
+  license = {MPL-2.0}
 }
 ----
 

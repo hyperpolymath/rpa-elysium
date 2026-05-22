@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 = RPA Elysium Development Roadmap
@@ -73,7 +73,7 @@ Phase 1 completed 2026-03-17. The repository contains project infrastructure, CI
 |✓ Done
 
 |Licensing
-|PMPL-1.0-or-later (MPL-2.0 fallback)
+|MPL-2.0 (MPL-2.0 fallback)
 |✓ Done
 |===
 
@@ -789,7 +789,7 @@ See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 == License
 
-This roadmap and the RPA Elysium project are licensed under PMPL-1.0-or-later.
+This roadmap and the RPA Elysium project are licensed under MPL-2.0.
 
 ---
 

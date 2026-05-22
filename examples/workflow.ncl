@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Example RPA Elysium Filesystem Workflow (Nickel).
 #
 # This module defines an automated filesystem management policy using 

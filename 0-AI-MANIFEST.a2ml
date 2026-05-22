@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # 0-AI-MANIFEST.a2ml — Universal AI agent entry point for rpa-elysium
 
 ## Repository Focus
@@ -23,7 +23,7 @@
 ## Critical Invariants
 - NEVER create .machine_readable/6a2/STATE.a2ml, .machine_readable/6a2/META.a2ml, .machine_readable/6a2/ECOSYSTEM.a2ml in the repository root
 - NEVER use TypeScript, Node.js, npm, Go, or Python
-- NEVER use MIT license — this project is PMPL-1.0-or-later
+- NEVER use MIT license — this project is MPL-2.0
 - All actions SHA-pinned in workflows
 - SPDX headers on all source files
 

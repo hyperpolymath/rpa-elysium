@@ -1,4 +1,4 @@
-;;; SPDX-License-Identifier: PMPL-1.0-or-later
+;;; SPDX-License-Identifier: MPL-2.0
 ;;; SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 ;;;
 ;;; guix.scm — GNU Guix package definition for RPA Elysium
@@ -36,5 +36,5 @@
 built in Rust, featuring a WASM plugin system, filesystem automation,
 and multi-language bindings via Idris2 ABI and Zig FFI.")
   (home-page "https://github.com/hyperpolymath/rpa-elysium")
-  ;; PMPL-1.0-or-later — using mpl2.0 as closest Guix-known equivalent
+  ;; MPL-2.0 — using mpl2.0 as closest Guix-known equivalent
   (license mpl2.0))

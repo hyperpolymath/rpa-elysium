@@ -1,6 +1,6 @@
 image:[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 = RPA Elysium
@@ -213,7 +213,7 @@ rpa-elysium/
 ├── services/             # Backend services (Gleam)
 ├── docs/                 # Documentation
 ├── examples/             # Example workflow configs
-├── LICENSE               # PMPL-1.0-or-later
+├── LICENSE               # MPL-2.0
 ├── README.adoc           # This file
 ├── ROADMAP.adoc          # Development roadmap
 └── justfile              # Build automation
@@ -245,7 +245,7 @@ All contributions must adhere to the link:.claude/CLAUDE.md[Hyperpolymath Langua
 
 == License
 
-Palimpsest License (PMPL-1.0-or-later)
+Palimpsest License (MPL-2.0)
 2025-2026 Jonathan D.A. Jewell
 
 == Author

@@ -5,7 +5,7 @@
   "rules": {
     "SPDX-AGPL-BANNED": {
       "severity": "error",
-      "description": "Block AGPL-3.0 license headers — replaced by PMPL-1.0-or-later",
+      "description": "Block AGPL-3.0 license headers — replaced by MPL-2.0",
       "pattern": "AGPL-3.0",
       "file_types": ["*.rs", "*.idr", "*.zig", "*.gleam", "*.yml"]
     },

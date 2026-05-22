@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
 <!-- SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk> -->
 
 # Contributing to RPA Elysium
@@ -88,7 +88,7 @@ Scopes: `core`, `plugin`, `fs-workflow`, `abi`, `ffi`, `services`, `ci`
 
 1. Fork the repository and create a feature branch
 2. Ensure `just check` passes (fmt, lint, test)
-3. All SPDX headers must be `PMPL-1.0-or-later`
+3. All SPDX headers must be `MPL-2.0`
 4. All GitHub Actions must be SHA-pinned
 5. No banned language code introduced
 6. Submit PR against `main` with descriptive title and body
@@ -118,4 +118,4 @@ Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md). I
 
 ## License
 
-All contributions are licensed under PMPL-1.0-or-later.
+All contributions are licensed under MPL-2.0.

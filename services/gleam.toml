@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Gleam backend service configuration for RPA Elysium
 
 name = "rpa_elysium_services"

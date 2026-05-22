@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 = RPA Elysium — Show Me The Receipts
@@ -224,7 +224,7 @@ The WASM plugin system has critical limitations:
 | **Hyperpolymath Language Policy** | Rust for framework (required), no TypeScript, no Node.js, no Go
 | Compliant; tokio async runtime is exception for compatibility
 
-| **PMPL-1.0-or-later License** | Primary license; all Rust files carry header
+| **MPL-2.0 License** | Primary license; all Rust files carry header
 | Declared at repo root and in every .rs file
 
 | **HAR Integration** | RPA Elysium is a target for Hybrid Automation Router (proven-queueconn protocol)
