@@ -19,23 +19,25 @@ ____
 The filesystem automation engine (`crates/rpa-fs-workflow/`) implements a complete task automation pipeline:
 
 1. **Workflow Definition**: Users write a YAML/JSON workflow config (example: `examples/sync-and-archive.json`):
-   ```json
-   {
-     "workflow_id": "sync_archive_001",
-     "rules": [
-       {
-         "trigger": "file.created",
-         "watch_path": "/data/inbox/*",
-         "patterns": ["*.pdf"],
-         "actions": [
-           {"type": "copy", "dest": "/archive/{date}"},
-           {"type": "extract-metadata", "tool": "exiftool"},
-           {"type": "http-post", "url": "https://api.example.com/log"}
-         ]
-       }
-     ]
-   }
-   ```
++
+[source,json]
+----
+{
+  "workflow_id": "sync_archive_001",
+  "rules": [
+    {
+      "trigger": "file.created",
+      "watch_path": "/data/inbox/*",
+      "patterns": ["*.pdf"],
+      "actions": [
+        {"type": "copy", "dest": "/archive/{date}"},
+        {"type": "extract-metadata", "tool": "exiftool"},
+        {"type": "http-post", "url": "https://api.example.com/log"}
+      ]
+    }
+  ]
+}
+----
 
 2. **File System Watcher**: `notify` crate (Rust) monitors `watch_path` for create/modify/delete/rename events. On match, extracts event metadata (path, timestamp, file size).
 
@@ -247,22 +249,28 @@ The WASM plugin system has critical limitations:
 === Build & Run the CLI
 
 1. Clone and build:
-   ```bash
-   cd /var/mnt/eclipse/repos/rpa-elysium
-   cargo build --release -p rpa-fs-workflow
-   ```
++
+[source,bash]
+----
+cd /var/mnt/eclipse/repos/rpa-elysium
+cargo build --release -p rpa-fs-workflow
+----
 
 2. Watch a folder for file creation:
-   ```bash
-   ./target/release/rpa-fs \
-     --workflow examples/sync-and-archive.json \
-     --watch /tmp/inbox
-   ```
++
+[source,bash]
+----
+./target/release/rpa-fs \
+  --workflow examples/sync-and-archive.json \
+  --watch /tmp/inbox
+----
 
 3. In another terminal, create a file:
-   ```bash
-   touch /tmp/inbox/test.pdf
-   ```
++
+[source,bash]
+----
+touch /tmp/inbox/test.pdf
+----
 
 4. Observe the CLI:
    - Logs file creation event
@@ -273,11 +281,13 @@ The WASM plugin system has critical limitations:
 === Test Type Safety
 
 1. Intentionally break a workflow config:
-   ```bash
-   # Missing required field "watch_path"
-   cargo run -p rpa-fs-workflow -- --workflow broken.json
-   # Error: ConfigError::MissingField("watch_path")
-   ```
++
+[source,bash]
+----
+# Missing required field "watch_path"
+cargo run -p rpa-fs-workflow -- --workflow broken.json
+# Error: ConfigError::MissingField("watch_path")
+----
 
 2. Rust compile-time prevents task mismatches:
    - If a task expects a file path input but receives an HTTP response, compilation fails
@@ -286,15 +296,19 @@ The WASM plugin system has critical limitations:
 === Test Plugin System
 
 1. Write a WASM plugin (example: sum numbers):
-   ```bash
-   # Use provided Wasm template or bring your own
-   wasm-pack build --target web plugin-example/
-   ```
++
+[source,bash]
+----
+# Use provided Wasm template or bring your own
+wasm-pack build --target web plugin-example/
+----
 
 2. Reference plugin in workflow:
-   ```json
-   {"type": "plugin", "name": "sum-numbers", "input": {"values": [1, 2, 3]}}
-   ```
++
+[source,json]
+----
+{"type": "plugin", "name": "sum-numbers", "input": {"values": [1, 2, 3]}}
+----
 
 3. Run workflow and observe JSON I/O to plugin
 
