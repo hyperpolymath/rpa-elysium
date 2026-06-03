@@ -13,7 +13,7 @@ jobs:
       matrix:
         sanitizer: [address, undefined]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v4
       - uses: google/clusterfuzzlite/actions/build_fuzzers@884713a6c30a92e5e8544c39945cd7cb630abcd1 # v1
         with:
           sanitizer: ${{ matrix.sanitizer }}
@@ -25,7 +25,7 @@ jobs:
           sanitizer: ${{ matrix.sanitizer }}
           mode: batch
           output-sarif: true
-      - uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3
+      - uses: github/codeql-action/upload-sarif@87557b9c84dde89fdd9b10e88954ac2f4248e463 # v3
         if: always()
         with:
           sarif_file: vulnerabilities.sarif
