@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Post-audit Status Report: rpa-elysium
 - **Date:** 2026-04-15
 - **Status:** Complete (M5 Sweep)

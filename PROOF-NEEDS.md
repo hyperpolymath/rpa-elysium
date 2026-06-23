@@ -1,6 +1,8 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # PROOF-NEEDS.md
-<!-- SPDX-License-Identifier: MPL-2.0 -->
-
 ## Current State
 
 - **LOC**: ~7,870
