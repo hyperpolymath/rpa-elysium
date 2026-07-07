@@ -8,6 +8,14 @@
 -- to RPA Elysium workflows; this module provides the type-safe queue
 -- interface for receiving and processing those routed events.
 --
+-- ADOPTION (2026-07-07): this module is now a *binding of the shared queue ABI*
+-- (abi_version=1) whose normative source is HAR's `abi/SHARED-QUEUE-ABI.adoc`
+-- and Rust binding `har-abi`, NOT an independently authored copy. Tag values
+-- MUST match that spec (in particular QueueError is 0=NoError + 1..7, the
+-- canonical proven-queueconn C-ABI layout). The wire codec is `RoutedEnvelope`
+-- / `RoutedReceipt` and the inbound subject is `har.rpa-elysium.inbound`; see
+-- `LinearDispatch.eph`.
+--
 -- Mapping:
 --   QueueState        →  subscription lifecycle for receiving routed events
 --   MessageState      →  tracking individual automation events through processing
@@ -173,40 +181,48 @@ Show MessageState where
 
 ---------------------------------------------------------------------------
 -- QueueError — error categories for event queue operations.
--- Matches proven-queueconn QueueConn.Types.QueueError exactly.
+-- Matches the canonical proven-queueconn QueueConn.Types.QueueError exactly:
+-- tag 0 is the NoError success sentinel (proven-queueconn's NONE), and the
+-- seven real errors are 1..7. (Corrected 2026-07-07 to adopt the shared-queue
+-- ABI, abi_version=1: the previous 0..6 numbering diverged from the canonical
+-- C header. See har-abi / abi/SHARED-QUEUE-ABI.adoc.)
 ---------------------------------------------------------------------------
 
 ||| Error categories that the event queue connector can report.
 public export
 data QueueError : Type where
+  ||| No error — the success sentinel the C ABI returns (proven-queueconn NONE).
+  NoError            : QueueError  -- proven-queueconn tag: 0
   ||| The connection to the event router was lost.
-  ConnectionLost     : QueueError  -- proven-queueconn tag: 0
+  ConnectionLost     : QueueError  -- proven-queueconn tag: 1
   ||| The specified queue does not exist.
-  QueueNotFound      : QueueError  -- proven-queueconn tag: 1
+  QueueNotFound      : QueueError  -- proven-queueconn tag: 2
   ||| The event payload exceeds the maximum allowed size.
-  MessageTooLarge    : QueueError  -- proven-queueconn tag: 2
+  MessageTooLarge    : QueueError  -- proven-queueconn tag: 3
   ||| The queue or account quota has been exceeded.
-  QuotaExceeded      : QueueError  -- proven-queueconn tag: 3
+  QuotaExceeded      : QueueError  -- proven-queueconn tag: 4
   ||| The acknowledgement was not received within the timeout window.
-  AckTimeout         : QueueError  -- proven-queueconn tag: 4
+  AckTimeout         : QueueError  -- proven-queueconn tag: 5
   ||| The caller lacks permission for this queue operation.
-  Unauthorized       : QueueError  -- proven-queueconn tag: 5
+  Unauthorized       : QueueError  -- proven-queueconn tag: 6
   ||| The event payload could not be serialised or deserialised.
-  SerializationError : QueueError  -- proven-queueconn tag: 6
+  SerializationError : QueueError  -- proven-queueconn tag: 7
 
-||| C ABI tag values — MUST match proven-queueconn encoding.
+||| C ABI tag values — MUST match the canonical proven-queueconn encoding.
 public export
 queueErrorTag : QueueError -> Bits8
-queueErrorTag ConnectionLost     = 0
-queueErrorTag QueueNotFound      = 1
-queueErrorTag MessageTooLarge    = 2
-queueErrorTag QuotaExceeded      = 3
-queueErrorTag AckTimeout         = 4
-queueErrorTag Unauthorized       = 5
-queueErrorTag SerializationError = 6
+queueErrorTag NoError            = 0
+queueErrorTag ConnectionLost     = 1
+queueErrorTag QueueNotFound      = 2
+queueErrorTag MessageTooLarge    = 3
+queueErrorTag QuotaExceeded      = 4
+queueErrorTag AckTimeout         = 5
+queueErrorTag Unauthorized       = 6
+queueErrorTag SerializationError = 7
 
 public export
 Show QueueError where
+  show NoError            = "NoError"
   show ConnectionLost     = "ConnectionLost"
   show QueueNotFound      = "QueueNotFound"
   show MessageTooLarge    = "MessageTooLarge"
