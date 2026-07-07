@@ -26,6 +26,15 @@ module RpaElysium.Abi.LinearDispatch
 --- exactly one handler — it cannot be duplicated or silently dropped.
 --- The `linear` qualifier ensures the compiler rejects code paths that
 --- would lose or duplicate the event.
+---
+--- This is the consumer-side view of the shared ABI's `RoutedEnvelope`
+--- (abi/SHARED-QUEUE-ABI.adoc, abi_version=1; Rust binding `har-abi`). Field
+--- correspondence: `eventId`↔`event_id`, `kind`↔`category`, `source`↔the
+--- `source` header, `payload`↔the opaque (base64-on-wire) `payload`. The wire
+--- envelope additionally carries `abi_version`, `priority`, `guarantee`,
+--- `content_type`, `headers`, and `created_at`; a real decoding consumer (a
+--- follow-up Rust crate) will surface those. This linear type is retained as
+--- the proof-level exactly-once contract over the decoded event.
 type RoutedEvent linear =
   { eventId     : String
   , source      : String
@@ -138,8 +147,10 @@ fn releaseLease (lease : QueueLease) -> LeaseReceipt =
 --- start and automatically released at the end, ensuring no leak even
 --- if the processing function raises an error.
 ---
---- This is the idiomatic pattern for consuming routed events:
----   withLease "rpa-events" AtLeastOnce now \lease ->
+--- This is the idiomatic pattern for consuming routed events. The queue name
+--- is the canonical shared-ABI inbound subject `har.<target_id>.inbound`
+--- (retiring the old ad-hoc `rpa-events`):
+---   withLease "har.rpa-elysium.inbound" AtLeastOnce now \lease ->
 ---     let! event = receiveEvent lease in
 ---     processEvent event
 fn withLease
