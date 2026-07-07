@@ -7,7 +7,7 @@
 -- These types mirror the Rust rpa-core types (Event, Action, Workflow, Error)
 -- and provide formal proofs of their properties via dependent types.
 
-module RpaElysium.Abi.Types
+module Types
 
 import Data.Vect
 import Data.String
@@ -54,11 +54,11 @@ eventKindTag (Scheduled _)      = 5
 ||| Proof that event kind tags are within valid range
 public export
 eventKindTagValid : (ek : EventKind) -> LTE (cast (eventKindTag ek)) 5
-eventKindTagValid (FileCreated _)    = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagValid (FileModified _)   = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagValid (FileDeleted _)    = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagValid (FileRenamed _ _)  = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagValid Manual             = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
+eventKindTagValid (FileCreated _)    = LTEZero
+eventKindTagValid (FileModified _)   = LTESucc LTEZero
+eventKindTagValid (FileDeleted _)    = LTESucc (LTESucc LTEZero)
+eventKindTagValid (FileRenamed _ _)  = LTESucc (LTESucc (LTESucc LTEZero))
+eventKindTagValid Manual             = LTESucc (LTESucc (LTESucc (LTESucc LTEZero)))
 eventKindTagValid (Scheduled _)      = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
 
 ||| Timestamp as Unix epoch seconds + nanoseconds

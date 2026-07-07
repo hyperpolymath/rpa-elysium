@@ -18,9 +18,9 @@
 --   EventDisposition           →  used when events arrive at the workflow engine
 --   ValidMachineTransition     →  defines which workflow state transitions are legal
 
-module RpaElysium.Abi.ProvenFSM
+module ProvenFSM
 
-import RpaElysium.Abi.Types
+import Types
 
 %default total
 

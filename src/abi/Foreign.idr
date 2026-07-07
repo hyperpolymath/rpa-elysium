@@ -9,12 +9,61 @@
 ||| All functions are declared here with type signatures and safety proofs.
 ||| Implementations live in ffi/zig/
 
-module RpaElysium.ABI.Foreign
+module Foreign
 
-import RpaElysium.ABI.Types
-import RpaElysium.ABI.Layout
+import Types
+import Layout
 
 %default total
+
+--------------------------------------------------------------------------------
+-- FFI glue types (must match ffi/zig and the generated C header)
+--------------------------------------------------------------------------------
+
+||| FFI result codes returned across the C ABI. Tag values MUST match the Zig
+||| implementation (ffi/zig): Ok=0, Error=1, InvalidParam=2, OutOfMemory=3,
+||| NullPointer=4.
+public export
+data Result : Type where
+  Ok           : Result
+  Error        : Result
+  InvalidParam : Result
+  OutOfMemory  : Result
+  NullPointer  : Result
+
+public export
+Show Result where
+  show Ok           = "Ok"
+  show Error        = "Error"
+  show InvalidParam = "InvalidParam"
+  show OutOfMemory  = "OutOfMemory"
+  show NullPointer  = "NullPointer"
+
+||| The C-ABI tag byte for a result code.
+public export
+resultTag : Result -> Bits32
+resultTag Ok           = 0
+resultTag Error        = 1
+resultTag InvalidParam = 2
+resultTag OutOfMemory  = 3
+resultTag NullPointer  = 4
+
+||| An opaque handle to a library instance, wrapping the raw C pointer as a
+||| Bits64. Constructed only via `createHandle`, which rejects the null pointer.
+public export
+data Handle : Type where
+  MkHandle : Bits64 -> Handle
+
+||| Construct a handle from a raw pointer; `Nothing` for the null pointer.
+public export
+createHandle : Bits64 -> Maybe Handle
+createHandle 0 = Nothing
+createHandle p = Just (MkHandle p)
+
+||| The raw C pointer backing a handle.
+public export
+handlePtr : Handle -> Bits64
+handlePtr (MkHandle p) = p
 
 --------------------------------------------------------------------------------
 -- Library Lifecycle
@@ -178,7 +227,8 @@ buildInfo = do
 -- Callback Support
 --------------------------------------------------------------------------------
 
-||| Callback function type (C ABI)
+||| Callback function type (C ABI) — the shape a registered callback must
+||| have: `(context : Bits64) -> (event : Bits32) -> (result : Bits32)`.
 public export
 Callback : Type
 Callback = Bits64 -> Bits32 -> Bits32
@@ -186,13 +236,16 @@ Callback = Bits64 -> Bits32 -> Bits32
 ||| Register a callback
 export
 %foreign "C:rpa_elysium_register_callback, librpa_elysium"
-prim__registerCallback : Bits64 -> AnyPtr -> PrimIO Bits32
+prim__registerCallback : Bits64 -> Bits64 -> PrimIO Bits32
 
-||| Safe callback registration
+||| Safe callback registration. The callback is passed as a raw pointer to a
+||| C-callable function of type `Callback`: an Idris closure cannot be handed to
+||| C directly (that needs a foreign export), so the caller supplies the
+||| already-C-callable function pointer (`cbPtr`).
 export
-registerCallback : Handle -> Callback -> IO (Either Result ())
-registerCallback h cb = do
-  result <- primIO (prim__registerCallback (handlePtr h) (cast cb))
+registerCallback : Handle -> (cbPtr : Bits64) -> IO (Either Result ())
+registerCallback h cbPtr = do
+  result <- primIO (prim__registerCallback (handlePtr h) cbPtr)
   pure $ case resultFromInt result of
     Just Ok => Right ()
     Just err => Left err

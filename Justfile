@@ -30,6 +30,21 @@ test:
 test-verbose:
     cargo test --workspace -- --nocapture
 
+# Build + typecheck the Idris2 ABI layer (src/abi/) via its package.
+verify-abi:
+    idris2 --build rpa-elysium-abi.ipkg
+
+# Build the Zig FFI shared + static libraries (ffi/zig/).
+build-ffi:
+    cd ffi/zig && zig build
+
+# Run the Zig FFI unit tests.
+test-ffi:
+    cd ffi/zig && zig build test
+
+# Verify the whole ABI/FFI layer compiles (Idris proofs + Zig libs + tests).
+verify-abi-ffi: verify-abi build-ffi test-ffi
+
 # Clean build artifacts
 clean:
     cargo clean

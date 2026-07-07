@@ -1,0 +1,21 @@
+-- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+-- Owner: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+--
+-- Idris2 package for the RPA Elysium ABI layer (src/abi/). Wires the
+-- previously-uncompiled ABI modules into a buildable package:
+--   idris2 --build rpa-elysium-abi.ipkg
+--
+-- Module names are flattened to match the src/abi/ layout (sourcedir below),
+-- mirroring HAR's har-abi.ipkg. LinearDispatch.eph is Ephapax, not Idris, and
+-- is built by its own toolchain — it is intentionally not listed here.
+
+package rpa-elysium-abi
+
+sourcedir = "src/abi"
+
+modules = Types
+        , Layout
+        , Foreign
+        , ProvenFSM
+        , ProvenQueue
