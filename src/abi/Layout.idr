@@ -7,9 +7,10 @@
 -- Ensures that type representations are consistent across the
 -- Idris2 ABI definitions and the Zig FFI implementation.
 
-module RpaElysium.Abi.Layout
+module Layout
 
-import RpaElysium.Abi.Types
+import Types
+import Data.Nat
 
 %default total
 
@@ -73,9 +74,9 @@ timestampAlignValid = Align8
 ||| Proof that all event kind tags fit in a single byte
 public export
 eventKindTagFitsInByte : (ek : EventKind) -> LTE (cast (eventKindTag ek)) 255
-eventKindTagFitsInByte (FileCreated _)    = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagFitsInByte (FileModified _)   = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagFitsInByte (FileDeleted _)    = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagFitsInByte (FileRenamed _ _)  = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
-eventKindTagFitsInByte Manual             = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))
+eventKindTagFitsInByte (FileCreated _)    = LTEZero
+eventKindTagFitsInByte (FileModified _)   = LTESucc LTEZero
+eventKindTagFitsInByte (FileDeleted _)    = LTESucc (LTESucc LTEZero)
+eventKindTagFitsInByte (FileRenamed _ _)  = LTESucc (LTESucc (LTESucc LTEZero))
+eventKindTagFitsInByte Manual             = LTESucc (LTESucc (LTESucc (LTESucc LTEZero)))
 eventKindTagFitsInByte (Scheduled _)      = LTESucc (LTESucc (LTESucc (LTESucc (LTESucc LTEZero))))

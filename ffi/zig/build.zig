@@ -13,32 +13,35 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    // Shared library for FFI consumers
-    const lib = b.addSharedLibrary(.{
-        .name = "rpa_ffi",
+    // The root module shared by every artifact (Zig 0.15 build API).
+    const mod = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+        // main.zig uses std.heap.c_allocator for C-ABI-owned allocations.
+        .link_libc = true,
     });
 
-    // Also produce a static library for embedding
-    const static_lib = b.addStaticLibrary(.{
+    // Shared library for FFI consumers.
+    const lib = b.addLibrary(.{
         .name = "rpa_ffi",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = mod,
+        .linkage = .dynamic,
     });
 
-    // Install both artifacts
+    // Also produce a static library for embedding.
+    const static_lib = b.addLibrary(.{
+        .name = "rpa_ffi",
+        .root_module = mod,
+        .linkage = .static,
+    });
+
+    // Install both artifacts.
     b.installArtifact(lib);
     b.installArtifact(static_lib);
 
-    // Unit tests
-    const main_tests = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
+    // Unit tests.
+    const main_tests = b.addTest(.{ .root_module = mod });
 
     const run_main_tests = b.addRunArtifact(main_tests);
     const test_step = b.step("test", "Run unit tests");

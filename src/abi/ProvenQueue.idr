@@ -22,9 +22,9 @@
 --   DeliveryGuarantee →  configurable per-workflow
 --   QueueOp           →  operations the workflow engine can perform
 
-module RpaElysium.Abi.ProvenQueue
+module ProvenQueue
 
-import RpaElysium.Abi.Types
+import Types
 
 %default total
 
