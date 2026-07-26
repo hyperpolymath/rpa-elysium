@@ -5,6 +5,7 @@ on:
     paths:
       - '**/*.rs'
 permissions:
+  actions: read
   contents: read
 jobs:
   PR:
