@@ -1,162 +1,60 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Governance Model
-:toc: preamble
+== Governance
 
-This document describes the governance model for this repository.
+=== Overview
 
-== Overview
+This project is governed by the following principles and structures to
+ensure transparent, inclusive, and effective decision-making.
 
-This repository follows a **Sole Maintainer Governance Model**:
+=== Roles and Responsibilities
 
-* Single maintainer (@hyperpolymath) has full authority over the project
-* All contributions are welcome and reviewed by the maintainer
-* Decisions are made transparently through GitHub issues and discussions
-* The project adheres to the hyperpolymath estate policies where applicable
+==== Maintainers
 
-== Core Principles
+Maintainers are responsible for: - Reviewing and merging pull requests -
+Managing releases and versioning - Ensuring code quality and standards -
+Triaging issues and bug reports - Community engagement and support
 
-[cols="1,2"]
-|===
-| Principle | Description
+==== Contributors
 
-| **Benevolent Dictatorship** | Maintainer has final decision authority but seeks community input
+Contributors are expected to: - Follow the code of conduct - Submit
+well-documented pull requests - Write tests for new functionality -
+Maintain existing tests - Update documentation as needed
 
-| **Meritocracy** | Contributions are judged on technical merit, not contributor identity
+=== Decision Making
 
-| **Transparency** | All significant decisions are documented publicly
+==== Minor Changes
 
-| **Consensus-Seeking** | Maintainer prefers consensus but will decide when necessary
+* Can be made by any maintainer
+* Include bug fixes, documentation updates, dependency updates
 
-| **Open Contribution** | Anyone can contribute via fork and pull request
+==== Major Changes
 
-|===
+* Require discussion in issues or pull requests
+* Include new features, architectural changes, API changes
+* Need approval from at least 2 maintainers
 
-== Roles and Permissions
+==== Breaking Changes
 
-[cols="1,2,2"]
-|===
-| Role | Permissions | Assignment
+* Require RFC (Request for Comments) process
+* Need approval from majority of maintainers
+* Must include migration guide
 
-| **Maintainer** | Write access, merge rights, admin | @hyperpolymath
-| **Contributors** | Read access, fork, submit PRs | All GitHub users
-| **Users** | Use the software, report issues | All GitHub users
+=== Code of Conduct
 
-|===
+All participants are expected to follow our Code of Conduct. Violations
+can be reported to the maintainers.
 
-== Decision Making Framework
+=== Communication
 
-=== Routine Decisions
+* *Issues*: For bug reports and feature requests
+* *Discussions*: For questions and general discussion
+* *Pull Requests*: For code contributions
 
-* Bug fixes
-* Documentation improvements
-* Minor feature additions
-* Dependency updates
+=== Licensing
 
-**Process**: Maintainer reviews and merges PRs that meet quality standards.
+All contributions are made under the terms of the repository’s LICENSE
+file. By submitting a pull request, you agree to license your
+contributions accordingly.
 
-=== Significant Changes
+'''''
 
-* New major features
-* API changes
-* Architecture modifications
-* Breaking changes
-
-**Process**:
-. Open issue describing the change
-. Discuss with community (minimum 72 hours)
-. Maintainer makes final decision
-. Document rationale in issue/PR
-
-=== Structural Decisions
-
-* Repository purpose/renaming
-* License changes
-* Ownership transfer
-* Deprecation/archival
-
-**Process**: 
-. Extended discussion (minimum 1 week)
-. Maintainer makes final decision
-. Document in CHANGELOG and governance docs
-
-== Contribution Lifecycle
-
-[cols="1,2"]
-|===
-| Stage | Process
-
-| **Ideation** | Open issue, discuss feasibility
-
-| **Development** | Fork, implement, test thoroughly
-
-| **Review** | Submit PR, maintainer reviews within 7 days
-
-| **Merge** | Maintainer merges or requests changes
-
-| **Release** | Maintainer publishes according to project conventions
-
-|===
-
-== Conflict Resolution
-
-In case of disagreements:
-
-. Discuss in the relevant GitHub issue or PR
-. Provide technical justification for positions
-. Maintainer mediates and makes final decision
-. Decision is documented and can be revisited later
-
-== Project Policies
-
-This repository adheres to hyperpolymath estate-wide policies:
-
-* **License**: MPL-2.0 for code, CC-BY-SA-4.0 for prose (per standards/LICENCE-POLICY.adoc)
-* **Code of Conduct**: Follows hyperpolymath CODE_OF_CONDUCT.md
-* **Security**: Follows hyperpolymath SECURITY.md
-* **Contributing**: Follows hyperpolymath CONTRIBUTING.adoc conventions
-
-== Repository-Specific Conventions
-
-[cols="1,2"]
-|===
-| Convention | Description
-
-| **Signing** | All commits must be signed (SSH or GPG)
-
-| **SPDX Headers** | All source files must have SPDX license identifiers
-
-| **Contractiles** | Mustfile, Trustfile, Intendfile, Adjustfile in root
-
-| **Machine Readable** | META.a2ml in .machine_readable/6a2/
-
-| **CI/CD** | GitHub Actions workflows in .github/workflows/
-
-|===
-
-== Governance Evolution
-
-As the project grows, this governance model may evolve:
-
-* **Adding Co-Maintainers**: When contribution volume warrants it
-* **Forming a Team**: For complex multi-maintainer projects
-* **Adopting TPCF**: For large, multi-repository projects (see rhodium-standard-repositories)
-
-Changes to this document require the same process as Significant Changes above.
-
-== See Also
-
-* link:MAINTAINERS.adoc[Maintainers]
-* link:CODE_OF_CONDUCT.md[Code of Conduct]
-* link:CONTRIBUTING.adoc[Contributing Guide]
-* link:https://github.com/hyperpolymath/standards/blob/main/LICENCE-POLICY.adoc[Estate License Policy]
-* link:https://github.com/hyperpolymath/standards[rhodium-standard-repositories (TPCF)]
-
-== Changelog
-
-[cols="1,1,1"]
-|===
-| Date | Change | By
-
-| 2026-06-07 | Initial governance model established | @hyperpolymath
-|===
+_Last updated: 2026-07-18_
