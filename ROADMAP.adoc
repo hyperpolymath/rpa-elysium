@@ -784,7 +784,7 @@ Contributions are welcome once Phase 1 begins. Priority areas:
 4. Documentation and examples
 5. Testing and quality assurance
 
-See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+See link:.github/CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 ---
 

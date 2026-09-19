@@ -39,7 +39,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 ## Language Policy
 
 This project follows the [Hyperpolymath Language
-Policy](.claude/CLAUDE.md):
+Policy](../.claude/CLAUDE.md):
 
 | Allowed      | Use Case                  |
 |--------------|---------------------------|
