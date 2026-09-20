@@ -270,7 +270,10 @@ fn test_concurrent_file_access_handling() {
 
     // File should still be readable at the end
     let result = fs::read_to_string(&file);
-    assert!(result.is_ok(), "should be able to read file after concurrent access");
+    assert!(
+        result.is_ok(),
+        "should be able to read file after concurrent access"
+    );
 }
 
 /// Test handling of metadata access on missing file
@@ -280,7 +283,10 @@ fn test_metadata_missing_file_handling() {
     let missing = temp.path().join("missing.txt");
 
     let result = fs::metadata(&missing);
-    assert!(result.is_err(), "should fail to get metadata of missing file");
+    assert!(
+        result.is_err(),
+        "should fail to get metadata of missing file"
+    );
 }
 
 /// Test handling of operations on empty directory

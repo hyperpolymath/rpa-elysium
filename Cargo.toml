@@ -26,6 +26,15 @@ description = "RPA Elysium - Comprehensive test suite for filesystem automation"
 name = "rpa_benchmarks"
 harness = false
 
+# Dev-dependencies for the root bench target (benches/rpa_benchmarks.rs).
+# Without these the CI `cargo check --all-targets` gate fails to compile
+# the bench (unresolved criterion / rpa_core / rpa_plugin / serde_json).
+[dev-dependencies]
+criterion = { workspace = true }
+rpa-core = { path = "crates/rpa-core" }
+rpa-plugin = { path = "crates/rpa-plugin" }
+serde_json = { workspace = true }
+
 [workspace.package]
 version = "0.1.0"
 edition = "2021"

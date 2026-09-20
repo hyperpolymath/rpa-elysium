@@ -24,12 +24,18 @@ fn test_e2e_file_creation_and_rename_workflow() {
     fs::rename(&test_file, &renamed_file).expect("rename file");
 
     // Verify old file is gone
-    assert!(!test_file.exists(), "old file should not exist after rename");
+    assert!(
+        !test_file.exists(),
+        "old file should not exist after rename"
+    );
     assert!(renamed_file.exists(), "renamed file should exist");
 
     // Verify content is preserved
     let content = fs::read_to_string(&renamed_file).expect("read renamed file");
-    assert_eq!(content, "test content", "content should be preserved after rename");
+    assert_eq!(
+        content, "test content",
+        "content should be preserved after rename"
+    );
 }
 
 /// Test complete file copy workflow
@@ -47,7 +53,10 @@ fn test_e2e_file_copy_workflow() {
 
     // Verify both files exist
     assert!(source_file.exists(), "source file should still exist");
-    assert!(dest_file.exists(), "destination file should exist after copy");
+    assert!(
+        dest_file.exists(),
+        "destination file should exist after copy"
+    );
 
     // Verify content matches
     let source_content = fs::read_to_string(&source_file).expect("read source");
@@ -79,7 +88,10 @@ fn test_e2e_file_move_workflow() {
     // Verify file is in archive with content intact
     assert!(archived_file.exists(), "archived file should exist");
     let archived_content = fs::read_to_string(&archived_file).expect("read archived file");
-    assert_eq!(archived_content, content, "content should be preserved in archive");
+    assert_eq!(
+        archived_content, content,
+        "content should be preserved in archive"
+    );
 }
 
 /// Test complete file deletion workflow
@@ -149,7 +161,10 @@ fn test_e2e_workflow_with_file_operations_on_large_file() {
 
     // Verify copy integrity
     let copy_content = fs::read(&copy).expect("read copy");
-    assert_eq!(copy_content, large_content, "large file copy should be identical");
+    assert_eq!(
+        copy_content, large_content,
+        "large file copy should be identical"
+    );
 
     // Clean up original
     fs::remove_file(&large_file).expect("delete original");
@@ -301,7 +316,11 @@ fn test_e2e_workflow_with_empty_files() {
     assert!(!empty_file.exists());
     assert!(renamed.exists());
     let renamed_metadata = fs::metadata(&renamed).expect("get renamed metadata");
-    assert_eq!(renamed_metadata.len(), 0, "renamed file should still be empty");
+    assert_eq!(
+        renamed_metadata.len(),
+        0,
+        "renamed file should still be empty"
+    );
 }
 
 /// Test workflow cleanup

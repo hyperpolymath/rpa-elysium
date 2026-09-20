@@ -143,10 +143,7 @@ fn test_concurrent_workflow_state_error_recording() {
 
     // Verify final count
     let state = state.lock().unwrap();
-    assert_eq!(
-        state.error_count, 1000,
-        "should have recorded 1000 errors"
-    );
+    assert_eq!(state.error_count, 1000, "should have recorded 1000 errors");
 }
 
 /// Test concurrent mixed operations on WorkflowState
@@ -210,7 +207,10 @@ fn test_high_concurrency_event_creation() {
                 );
 
                 // Verify event invariants immediately
-                assert!(event.id.starts_with("evt_"), "event ID should start with evt_");
+                assert!(
+                    event.id.starts_with("evt_"),
+                    "event ID should start with evt_"
+                );
                 assert_eq!(event.source, format!("/test/{}/{}", thread_id, i));
 
                 events.lock().unwrap().push(event);

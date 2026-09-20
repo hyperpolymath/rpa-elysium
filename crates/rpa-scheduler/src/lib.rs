@@ -247,24 +247,39 @@ mod tests {
     #[test]
     fn test_cron_every_minute() {
         let expr = CronExpr::parse("* * * * *").expect("TODO: handle error");
-        let dt = Utc.with_ymd_and_hms(2026, 3, 17, 10, 30, 0).expect("TODO: handle error");
+        let dt = Utc
+            .with_ymd_and_hms(2026, 3, 17, 10, 30, 0)
+            .single()
+            .expect("valid datetime");
         assert!(expr.matches(&dt));
     }
 
     #[test]
     fn test_cron_weekday_morning() {
         let expr = CronExpr::parse("0 9 * * 1-5").expect("TODO: handle error");
-        let monday = Utc.with_ymd_and_hms(2026, 3, 16, 9, 0, 0).expect("TODO: handle error");
+        let monday = Utc
+            .with_ymd_and_hms(2026, 3, 16, 9, 0, 0)
+            .single()
+            .expect("valid datetime");
         assert!(expr.matches(&monday));
-        let sunday = Utc.with_ymd_and_hms(2026, 3, 15, 9, 0, 0).expect("TODO: handle error");
+        let sunday = Utc
+            .with_ymd_and_hms(2026, 3, 15, 9, 0, 0)
+            .single()
+            .expect("valid datetime");
         assert!(!expr.matches(&sunday));
     }
 
     #[test]
     fn test_cron_list() {
         let expr = CronExpr::parse("0,30 * * * *").expect("TODO: handle error");
-        let at_0 = Utc.with_ymd_and_hms(2026, 3, 17, 10, 0, 0).expect("TODO: handle error");
-        let at_15 = Utc.with_ymd_and_hms(2026, 3, 17, 10, 15, 0).expect("TODO: handle error");
+        let at_0 = Utc
+            .with_ymd_and_hms(2026, 3, 17, 10, 0, 0)
+            .single()
+            .expect("valid datetime");
+        let at_15 = Utc
+            .with_ymd_and_hms(2026, 3, 17, 10, 15, 0)
+            .single()
+            .expect("valid datetime");
         assert!(expr.matches(&at_0));
         assert!(!expr.matches(&at_15));
     }
