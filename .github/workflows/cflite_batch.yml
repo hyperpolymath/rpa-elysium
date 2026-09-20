@@ -11,7 +11,7 @@ permissions:
 jobs:
   BatchFuzzing:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +30,9 @@ jobs:
           mode: batch
           output-sarif: true
       - uses: github/codeql-action/upload-sarif@v4.38.0
-        if: always()
+        # ClusterFuzzLite only emits vulnerabilities.sarif when there are
+        # findings; uploading unconditionally failed clean runs with
+        # "Path does not exist".
+        if: always() && hashFiles('vulnerabilities.sarif') != ''
         with:
           sarif_file: vulnerabilities.sarif
