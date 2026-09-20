@@ -189,12 +189,12 @@ mod tests {
         assert!(backend
             .get("deleteme")
             .await
-            .expect("TODO: handle error")
+            .expect("get before delete")
             .is_some());
 
         backend.delete("deleteme").await.expect("delete failed");
         assert_eq!(
-            backend.get("deleteme").await.expect("TODO: handle error"),
+            backend.get("deleteme").await.expect("get after delete"),
             None
         );
     }
