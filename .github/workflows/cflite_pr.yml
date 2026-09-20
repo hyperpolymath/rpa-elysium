@@ -1,9 +1,10 @@
-# This workflow is managed by gh actions-lock.
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 # This workflow is managed by gh actions-lock.
 # This workflow is managed by gh actions-lock.
 name: ClusterFuzzLite PR
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - '**/*.rs'
