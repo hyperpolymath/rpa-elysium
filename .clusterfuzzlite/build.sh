@@ -8,7 +8,7 @@
 #   'nightly' is not installed".
 # * $SANITIZER is exported by ClusterFuzzLite (address | undefined) and must
 #   be forwarded so each matrix build instruments for its own sanitizer.
-# * cargo-fuzz is installed by the root Dockerfile.
+# * cargo-fuzz ships pre-installed in base-builder-rust (CFL rust docs).
 cd "$SRC/project"
 cargo fuzz build --release --sanitizer "$SANITIZER"
 # Copy only the fuzz binary — the `fuzz_*` glob also matched .d files.
