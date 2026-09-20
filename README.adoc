@@ -244,7 +244,7 @@ This project is mirrored across multiple forges:
 
 == Contributing
 
-Contributions welcome once implementation begins. See link:.github/CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+Contributions welcome once implementation begins. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] for guidelines.
 
 All contributions must adhere to the link:.claude/CLAUDE.md[Hyperpolymath Language Policy].
 

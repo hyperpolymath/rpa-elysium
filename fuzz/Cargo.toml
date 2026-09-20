@@ -7,11 +7,13 @@ edition = "2021"
 [package.metadata]
 cargo-fuzz = true
 
+# Standalone workspace: the enclosing root workspace does not list this
+# package as a member, and without this table cargo refuses to build from
+# inside fuzz/ ("current package believes it's in a workspace").
+[workspace]
+
 [dependencies]
 libfuzzer-sys = "0.4"
-
-[dependencies.rpa-elysium]
-path = ".."
 
 [[bin]]
 name = "fuzz_main"

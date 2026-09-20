@@ -104,3 +104,6 @@ htmlcov/
 /tmp/
 *.tmp
 *.bak
+
+# cargo-fuzz build artifacts
+fuzz/target/

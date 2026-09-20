@@ -270,7 +270,7 @@ mod tests {
             count: count.clone(),
         }));
 
-        let result = bus.publish(test_event()).await.expect("TODO: handle error");
+        let result = bus.publish(test_event()).await.expect("publish event");
         assert_eq!(result.handlers_invoked, 1);
         assert_eq!(result.handlers_succeeded, 1);
         assert_eq!(count.load(Ordering::SeqCst), 1);
@@ -291,7 +291,7 @@ mod tests {
             count: count2.clone(),
         }));
 
-        bus.publish(test_event()).await.expect("TODO: handle error");
+        bus.publish(test_event()).await.expect("publish event");
         assert_eq!(count1.load(Ordering::SeqCst), 1);
         assert_eq!(count2.load(Ordering::SeqCst), 1);
     }
@@ -309,12 +309,12 @@ mod tests {
 
         // Manual event should be filtered
         let manual_event = Event::new(EventKind::Manual, "manual");
-        let result = bus.publish(manual_event).await.expect("TODO: handle error");
+        let result = bus.publish(manual_event).await.expect("publish event");
         assert!(result.filtered);
         assert_eq!(count.load(Ordering::SeqCst), 0);
 
         // File event should pass through
-        let result = bus.publish(test_event()).await.expect("TODO: handle error");
+        let result = bus.publish(test_event()).await.expect("publish event");
         assert!(!result.filtered);
         assert_eq!(count.load(Ordering::SeqCst), 1);
     }
@@ -324,8 +324,8 @@ mod tests {
         let bus = EventBus::new();
         let mut rx = bus.receiver();
 
-        bus.publish(test_event()).await.expect("TODO: handle error");
-        let received = rx.recv().await.expect("TODO: handle error");
+        bus.publish(test_event()).await.expect("publish event");
+        let received = rx.recv().await.expect("receive published event");
         assert!(received.id.starts_with("evt_"));
     }
 

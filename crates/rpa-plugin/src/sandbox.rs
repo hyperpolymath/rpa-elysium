@@ -368,7 +368,7 @@ impl Sandbox {
 
         match func.call(&mut store, &[], &mut results) {
             Ok(_) => {
-                let state = state.lock().expect("TODO: handle error");
+                let state = state.lock().expect("plugin state mutex poisoned");
                 let elapsed = start.elapsed();
 
                 debug!("Plugin action '{}' completed in {:?}", action, elapsed);

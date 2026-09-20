@@ -107,12 +107,14 @@ mod tests {
 
     #[test]
     fn test_load_json() {
-        let mut tmp = NamedTempFile::with_suffix(".json").expect("TODO: handle error");
-        writeln!(tmp, r#"{{"name": "test", "version": 1}}"#).expect("TODO: handle error");
-        tmp.flush().expect("TODO: handle error");
+        let mut tmp = NamedTempFile::with_suffix(".json").expect("create temp config file");
+        writeln!(tmp, r#"{{"name": "test", "version": 1}}"#).expect("write temp config");
+        tmp.flush().expect("flush temp config");
 
         let loader = ConfigLoader::new();
-        let value = loader.load_json(tmp.path()).expect("TODO: handle error");
+        let value = loader
+            .load_json(tmp.path())
+            .expect("load valid JSON config");
         assert_eq!(value["name"], "test");
         assert_eq!(value["version"], 1);
     }

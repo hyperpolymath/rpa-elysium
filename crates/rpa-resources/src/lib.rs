@@ -206,10 +206,10 @@ mod tests {
         let pool = ResourcePool::new("test", 2);
         assert_eq!(pool.available_permits(), 2);
 
-        let lease1 = pool.acquire().await.expect("TODO: handle error");
+        let lease1 = pool.acquire().await.expect("acquire first lease");
         assert_eq!(pool.available_permits(), 1);
 
-        let lease2 = pool.acquire().await.expect("TODO: handle error");
+        let lease2 = pool.acquire().await.expect("acquire second lease");
         assert_eq!(pool.available_permits(), 0);
 
         drop(lease1);
@@ -247,11 +247,11 @@ mod tests {
         let lease = manager
             .acquire("connections")
             .await
-            .expect("TODO: handle error");
+            .expect("acquire from manager pool");
         assert_eq!(
             manager
                 .pool("connections")
-                .expect("TODO: handle error")
+                .expect("pool should exist")
                 .available_permits(),
             4
         );

@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_cron_every_minute() {
-        let expr = CronExpr::parse("* * * * *").expect("TODO: handle error");
+        let expr = CronExpr::parse("* * * * *").expect("valid cron expression");
         let dt = Utc
             .with_ymd_and_hms(2026, 3, 17, 10, 30, 0)
             .single()
@@ -256,7 +256,7 @@ mod tests {
 
     #[test]
     fn test_cron_weekday_morning() {
-        let expr = CronExpr::parse("0 9 * * 1-5").expect("TODO: handle error");
+        let expr = CronExpr::parse("0 9 * * 1-5").expect("valid cron expression");
         let monday = Utc
             .with_ymd_and_hms(2026, 3, 16, 9, 0, 0)
             .single()
@@ -271,7 +271,7 @@ mod tests {
 
     #[test]
     fn test_cron_list() {
-        let expr = CronExpr::parse("0,30 * * * *").expect("TODO: handle error");
+        let expr = CronExpr::parse("0,30 * * * *").expect("valid cron expression");
         let at_0 = Utc
             .with_ymd_and_hms(2026, 3, 17, 10, 0, 0)
             .single()
@@ -292,14 +292,14 @@ mod tests {
 
     #[test]
     fn test_schedule_entry() {
-        let entry = ScheduleEntry::new("test", "* * * * *").expect("TODO: handle error");
+        let entry = ScheduleEntry::new("test", "* * * * *").expect("valid schedule entry");
         let now = Utc::now();
         assert!(entry.should_fire(&now));
     }
 
     #[test]
     fn test_no_double_fire() {
-        let mut entry = ScheduleEntry::new("test", "* * * * *").expect("TODO: handle error");
+        let mut entry = ScheduleEntry::new("test", "* * * * *").expect("valid schedule entry");
         let now = Utc::now();
         assert!(entry.should_fire(&now));
         entry.last_run = Some(now);
