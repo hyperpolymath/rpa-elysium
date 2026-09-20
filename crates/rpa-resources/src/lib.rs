@@ -244,8 +244,17 @@ mod tests {
         assert!(manager.pool("connections").is_some());
         assert!(manager.pool("nonexistent").is_none());
 
-        let lease = manager.acquire("connections").await.expect("TODO: handle error");
-        assert_eq!(manager.pool("connections").expect("TODO: handle error").available_permits(), 4);
+        let lease = manager
+            .acquire("connections")
+            .await
+            .expect("TODO: handle error");
+        assert_eq!(
+            manager
+                .pool("connections")
+                .expect("TODO: handle error")
+                .available_permits(),
+            4
+        );
         drop(lease);
     }
 

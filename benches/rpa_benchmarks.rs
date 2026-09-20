@@ -81,7 +81,7 @@ fn bench_workflow_state(c: &mut Criterion) {
         let mut state = WorkflowState::new("test");
         state.start();
         b.iter(|| {
-            state.record_error(black_box("error"));
+            state.record_error();
         });
     });
 
@@ -93,21 +93,15 @@ fn bench_permission_checking(c: &mut Criterion) {
     let mut group = c.benchmark_group("permissions");
 
     group.bench_function("permission_check_read_path", |b| {
-        let set = PermissionSet::empty()
-            .with(Permission::read_path("/tmp/data"));
+        let set = PermissionSet::empty().with(Permission::read_path("/tmp/data"));
 
-        b.iter(|| {
-            set.check(black_box(&Permission::read_path("/tmp/data/file.txt")))
-        });
+        b.iter(|| set.check(black_box(&Permission::read_path("/tmp/data/file.txt"))));
     });
 
     group.bench_function("permission_check_denied", |b| {
-        let set = PermissionSet::empty()
-            .with(Permission::read_path("/tmp/data"));
+        let set = PermissionSet::empty().with(Permission::read_path("/tmp/data"));
 
-        b.iter(|| {
-            set.check(black_box(&Permission::write_path("/tmp/data")))
-        });
+        b.iter(|| set.check(black_box(&Permission::write_path("/tmp/data"))));
     });
 
     group.bench_function("permission_set_creation_small", |b| {
@@ -137,9 +131,7 @@ fn bench_permission_checking(c: &mut Criterion) {
             Permission::Random,
         ]);
 
-        b.iter(|| {
-            set.check(black_box(&Permission::read_path("/tmp/file.txt")))
-        });
+        b.iter(|| set.check(black_box(&Permission::read_path("/tmp/file.txt"))));
     });
 
     group.finish();

@@ -28,10 +28,7 @@ fn arb_event_kind() -> impl Strategy<Value = EventKind> {
             .prop_map(|s| PathBuf::from(format!("/tmp/{}", s)))
             .prop_map(|p| EventKind::FileDeleted { path: p }),
         // FileRenamed events
-        (
-            "[a-z]+\\.rs",
-            "[a-z]+\\.rs",
-        )
+        ("[a-z]+\\.rs", "[a-z]+\\.rs",)
             .prop_map(|(f1, f2)| {
                 (
                     PathBuf::from(format!("/tmp/{}", f1)),
@@ -40,8 +37,7 @@ fn arb_event_kind() -> impl Strategy<Value = EventKind> {
             })
             .prop_map(|(from, to)| EventKind::FileRenamed { from, to }),
         // Scheduled events - just simple time strings
-        Just("10:30".to_string())
-            .prop_map(|s| EventKind::Scheduled { schedule: s }),
+        Just("10:30".to_string()).prop_map(|s| EventKind::Scheduled { schedule: s }),
     ]
 }
 

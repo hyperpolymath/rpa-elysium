@@ -5,48 +5,61 @@
 //! Comprehensive security tests for WASM sandbox plugin isolation and capability enforcement
 
 use rpa_plugin::permissions::{Permission, PermissionSet};
-use rpa_plugin::sandbox::{SandboxBuilder, SandboxConfig, DEFAULT_MEMORY_LIMIT, DEFAULT_TIMEOUT_MS};
+use rpa_plugin::sandbox::{
+    SandboxBuilder, SandboxConfig, DEFAULT_MEMORY_LIMIT, DEFAULT_TIMEOUT_MS,
+};
 use std::fs;
 
 /// Test that sandbox cannot read files outside allowed paths
 #[test]
 fn test_sandbox_read_restriction_outside_allowed_path() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::read_path("/tmp/allowed"));
+    let config = SandboxConfig::new().with_permission(Permission::read_path("/tmp/allowed"));
 
     // Plugin tries to read /etc/passwd (not in allowed set)
-    assert!(!config.permissions.check(&Permission::read_path("/etc/passwd")));
-    assert!(config.permissions.check(&Permission::read_path("/tmp/allowed")));
+    assert!(!config
+        .permissions
+        .check(&Permission::read_path("/etc/passwd")));
+    assert!(config
+        .permissions
+        .check(&Permission::read_path("/tmp/allowed")));
 }
 
 /// Test that sandbox cannot read files in subdirectories without parent permission
 #[test]
 fn test_sandbox_read_subdir_permission_isolation() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::read_path("/home/user/public"));
+    let config = SandboxConfig::new().with_permission(Permission::read_path("/home/user/public"));
 
     // Should have permission for /home/user/public
-    assert!(config.permissions.check(&Permission::read_path("/home/user/public")));
+    assert!(config
+        .permissions
+        .check(&Permission::read_path("/home/user/public")));
 
     // Should have permission for subdirectories
-    assert!(config.permissions.check(&Permission::read_path("/home/user/public/file.txt")));
+    assert!(config
+        .permissions
+        .check(&Permission::read_path("/home/user/public/file.txt")));
 
     // Should NOT have permission for parent directory
-    assert!(!config.permissions.check(&Permission::read_path("/home/user")));
+    assert!(!config
+        .permissions
+        .check(&Permission::read_path("/home/user")));
 
     // Should NOT have permission for sibling directory
-    assert!(!config.permissions.check(&Permission::read_path("/home/user/private")));
+    assert!(!config
+        .permissions
+        .check(&Permission::read_path("/home/user/private")));
 }
 
 /// Test that sandbox cannot write files outside allowed paths
 #[test]
 fn test_sandbox_write_restriction_outside_allowed_path() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::write_path("/tmp/work"));
+    let config = SandboxConfig::new().with_permission(Permission::write_path("/tmp/work"));
 
     // Plugin tries to write to root (not in allowed set)
     assert!(!config.permissions.check(&Permission::write_path("/root")));
-    assert!(config.permissions.check(&Permission::write_path("/tmp/work")));
+    assert!(config
+        .permissions
+        .check(&Permission::write_path("/tmp/work")));
 }
 
 /// Test that read and write permissions are independent
@@ -57,23 +70,30 @@ fn test_sandbox_read_write_permission_independence() {
         .with_permission(Permission::write_path("/tmp/output"));
 
     // Can read from /tmp/data
-    assert!(config.permissions.check(&Permission::read_path("/tmp/data")));
+    assert!(config
+        .permissions
+        .check(&Permission::read_path("/tmp/data")));
 
     // Cannot write to /tmp/data (only read permission)
-    assert!(!config.permissions.check(&Permission::write_path("/tmp/data")));
+    assert!(!config
+        .permissions
+        .check(&Permission::write_path("/tmp/data")));
 
     // Can write to /tmp/output
-    assert!(config.permissions.check(&Permission::write_path("/tmp/output")));
+    assert!(config
+        .permissions
+        .check(&Permission::write_path("/tmp/output")));
 
     // Cannot read from /tmp/output (only write permission)
-    assert!(!config.permissions.check(&Permission::read_path("/tmp/output")));
+    assert!(!config
+        .permissions
+        .check(&Permission::read_path("/tmp/output")));
 }
 
 /// Test that environment variable access is controlled
 #[test]
 fn test_sandbox_env_permission_isolation() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::env("HOME"));
+    let config = SandboxConfig::new().with_permission(Permission::env("HOME"));
 
     // Can access HOME
     assert!(config.permissions.check(&Permission::env("HOME")));
@@ -81,14 +101,15 @@ fn test_sandbox_env_permission_isolation() {
     // Cannot access other env vars
     assert!(!config.permissions.check(&Permission::env("PATH")));
     assert!(!config.permissions.check(&Permission::env("SECRET_KEY")));
-    assert!(!config.permissions.check(&Permission::env("AWS_SECRET_ACCESS_KEY")));
+    assert!(!config
+        .permissions
+        .check(&Permission::env("AWS_SECRET_ACCESS_KEY")));
 }
 
 /// Test that AllEnv permission covers any specific env var
 #[test]
 fn test_sandbox_all_env_permission() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::AllEnv);
+    let config = SandboxConfig::new().with_permission(Permission::AllEnv);
 
     // Should be able to access any environment variable
     assert!(config.permissions.check(&Permission::env("HOME")));
@@ -99,8 +120,7 @@ fn test_sandbox_all_env_permission() {
 /// Test that missing permissions are correctly identified
 #[test]
 fn test_sandbox_missing_permissions_detection() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::read_path("/tmp"));
+    let config = SandboxConfig::new().with_permission(Permission::read_path("/tmp"));
 
     let requested = PermissionSet::new([
         Permission::read_path("/tmp/file.txt"),
@@ -111,41 +131,56 @@ fn test_sandbox_missing_permissions_detection() {
     let missing = config.permissions.missing(&requested);
 
     assert_eq!(missing.len(), 2);
-    assert!(missing.iter().any(|p| matches!(p, Permission::WritePath { .. })));
-    assert!(missing.iter().any(|p| matches!(p, Permission::Env { name } if name == "HOME")));
+    assert!(missing
+        .iter()
+        .any(|p| matches!(p, Permission::WritePath { .. })));
+    assert!(missing
+        .iter()
+        .any(|p| matches!(p, Permission::Env { name } if name == "HOME")));
 }
 
 /// Test capability leakage: plugin cannot escalate own permissions
 #[test]
 fn test_sandbox_cannot_escalate_permissions() {
-    let limited_config = SandboxConfig::new()
-        .with_permission(Permission::read_path("/tmp/safe"));
+    let limited_config = SandboxConfig::new().with_permission(Permission::read_path("/tmp/safe"));
 
     // Sandbox cannot grant itself more permissions
     // (This would be enforced by the execute() method checking permissions on each request)
-    assert!(!limited_config.permissions.check(&Permission::read_path("/etc")));
-    assert!(!limited_config.permissions.check(&Permission::write_path("/root")));
+    assert!(!limited_config
+        .permissions
+        .check(&Permission::read_path("/etc")));
+    assert!(!limited_config
+        .permissions
+        .check(&Permission::write_path("/root")));
     assert!(!limited_config.permissions.check(&Permission::AllEnv));
 
     // Permissions remain as configured
-    assert!(limited_config.permissions.check(&Permission::read_path("/tmp/safe")));
+    assert!(limited_config
+        .permissions
+        .check(&Permission::read_path("/tmp/safe")));
 }
 
 /// Test plugin isolation: crash in one sandbox doesn't affect config of another
 #[test]
 fn test_sandbox_isolation_independent_configs() {
-    let config1 = SandboxConfig::new()
-        .with_permission(Permission::read_path("/tmp/plugin1"));
+    let config1 = SandboxConfig::new().with_permission(Permission::read_path("/tmp/plugin1"));
 
-    let config2 = SandboxConfig::new()
-        .with_permission(Permission::read_path("/tmp/plugin2"));
+    let config2 = SandboxConfig::new().with_permission(Permission::read_path("/tmp/plugin2"));
 
     // Each sandbox has independent permissions
-    assert!(config1.permissions.check(&Permission::read_path("/tmp/plugin1")));
-    assert!(!config1.permissions.check(&Permission::read_path("/tmp/plugin2")));
+    assert!(config1
+        .permissions
+        .check(&Permission::read_path("/tmp/plugin1")));
+    assert!(!config1
+        .permissions
+        .check(&Permission::read_path("/tmp/plugin2")));
 
-    assert!(config2.permissions.check(&Permission::read_path("/tmp/plugin2")));
-    assert!(!config2.permissions.check(&Permission::read_path("/tmp/plugin1")));
+    assert!(config2
+        .permissions
+        .check(&Permission::read_path("/tmp/plugin2")));
+    assert!(!config2
+        .permissions
+        .check(&Permission::read_path("/tmp/plugin1")));
 }
 
 /// Test memory limits are respected
@@ -200,20 +235,20 @@ fn test_sandbox_symlink_escape_prevention() {
         // Permission for allowed_dir DOES NOT cover the symlink target when canonicalized
         // because canonicalize() follows symlinks
         let mut config = SandboxConfig::new();
-        config.permissions = PermissionSet::empty()
-            .with(Permission::read_path(&allowed_dir));
+        config.permissions = PermissionSet::empty().with(Permission::read_path(&allowed_dir));
 
         // Accessing the symlink is NOT allowed because after canonicalization
         // it points to external_file which is not in allowed_dir
         assert!(!config.permissions.check(&Permission::read_path(&symlink)));
 
         // But accessing external_dir content directly is still not allowed
-        assert!(!config.permissions.check(&Permission::read_path(&external_file)));
+        assert!(!config
+            .permissions
+            .check(&Permission::read_path(&external_file)));
 
         // To access the symlink, need explicit permission to its canonical target
         let mut config2 = SandboxConfig::new();
-        config2.permissions = PermissionSet::empty()
-            .with(Permission::read_path(&external_file));
+        config2.permissions = PermissionSet::empty().with(Permission::read_path(&external_file));
 
         // Now accessing the symlink works because its target is allowed
         assert!(config2.permissions.check(&Permission::read_path(&symlink)));
@@ -223,16 +258,19 @@ fn test_sandbox_symlink_escape_prevention() {
 /// Test environment variable isolation: plugin can't read ungranted vars
 #[test]
 fn test_sandbox_env_isolation_no_host_leakage() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::env("PUBLIC_VAR"));
+    let config = SandboxConfig::new().with_permission(Permission::env("PUBLIC_VAR"));
 
     // Can access granted env var
     assert!(config.permissions.check(&Permission::env("PUBLIC_VAR")));
 
     // Cannot access sensitive vars even if they exist on the host
-    assert!(!config.permissions.check(&Permission::env("AWS_ACCESS_KEY_ID")));
+    assert!(!config
+        .permissions
+        .check(&Permission::env("AWS_ACCESS_KEY_ID")));
     assert!(!config.permissions.check(&Permission::env("GITHUB_TOKEN")));
-    assert!(!config.permissions.check(&Permission::env("DATABASE_PASSWORD")));
+    assert!(!config
+        .permissions
+        .check(&Permission::env("DATABASE_PASSWORD")));
 }
 
 /// Test Random/UUID permission is separate from Time
@@ -258,32 +296,45 @@ fn test_sandbox_random_time_permission_independence() {
 /// Test network permission granularity
 #[test]
 fn test_sandbox_network_permission_granularity() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::network("api.example.com", Some(443)));
+    let config =
+        SandboxConfig::new().with_permission(Permission::network("api.example.com", Some(443)));
 
     // Can access granted host:port
-    assert!(config.permissions.check(&Permission::network("api.example.com", Some(443))));
+    assert!(config
+        .permissions
+        .check(&Permission::network("api.example.com", Some(443))));
 
     // Cannot access different port on same host
-    assert!(!config.permissions.check(&Permission::network("api.example.com", Some(80))));
+    assert!(!config
+        .permissions
+        .check(&Permission::network("api.example.com", Some(80))));
 
     // Cannot access same port on different host
-    assert!(!config.permissions.check(&Permission::network("other.example.com", Some(443))));
+    assert!(!config
+        .permissions
+        .check(&Permission::network("other.example.com", Some(443))));
 }
 
 /// Test network permission without port covers any port
 #[test]
 fn test_sandbox_network_any_port_permission() {
-    let config = SandboxConfig::new()
-        .with_permission(Permission::network("api.example.com", None));
+    let config = SandboxConfig::new().with_permission(Permission::network("api.example.com", None));
 
     // Can access any port on granted host
-    assert!(config.permissions.check(&Permission::network("api.example.com", Some(80))));
-    assert!(config.permissions.check(&Permission::network("api.example.com", Some(443))));
-    assert!(config.permissions.check(&Permission::network("api.example.com", Some(8080))));
+    assert!(config
+        .permissions
+        .check(&Permission::network("api.example.com", Some(80))));
+    assert!(config
+        .permissions
+        .check(&Permission::network("api.example.com", Some(443))));
+    assert!(config
+        .permissions
+        .check(&Permission::network("api.example.com", Some(8080))));
 
     // Still cannot access other hosts
-    assert!(!config.permissions.check(&Permission::network("other.example.com", Some(443))));
+    assert!(!config
+        .permissions
+        .check(&Permission::network("other.example.com", Some(443))));
 }
 
 /// Test execute permission is tracked but restricted
@@ -300,10 +351,9 @@ fn test_sandbox_execute_permission_restriction() {
     }));
 
     // With permission, only specific command is allowed
-    let config_with_exec = SandboxConfig::new()
-        .with_permission(Permission::Execute {
-            command: "bash".to_string()
-        });
+    let config_with_exec = SandboxConfig::new().with_permission(Permission::Execute {
+        command: "bash".to_string(),
+    });
 
     assert!(config_with_exec.permissions.check(&Permission::Execute {
         command: "bash".to_string()
@@ -387,8 +437,12 @@ fn test_sandbox_permission_iteration() {
     assert_eq!(perms.len(), 4);
 
     // Verify all permission types are present
-    assert!(perms.iter().any(|p| matches!(p, Permission::ReadPath { .. })));
-    assert!(perms.iter().any(|p| matches!(p, Permission::WritePath { .. })));
+    assert!(perms
+        .iter()
+        .any(|p| matches!(p, Permission::ReadPath { .. })));
+    assert!(perms
+        .iter()
+        .any(|p| matches!(p, Permission::WritePath { .. })));
     assert!(perms.iter().any(|p| **p == Permission::Time));
     assert!(perms.iter().any(|p| **p == Permission::Random));
 }
@@ -399,9 +453,7 @@ fn test_sandbox_with_working_directory() {
     let temp = tempfile::tempdir().expect("create temp dir");
     let work_dir = temp.path();
 
-    let sandbox = SandboxBuilder::new()
-        .work_dir(work_dir)
-        .build();
+    let sandbox = SandboxBuilder::new().work_dir(work_dir).build();
 
     assert!(sandbox.is_ok());
     let sb = sandbox.unwrap();
