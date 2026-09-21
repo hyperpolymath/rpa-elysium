@@ -86,7 +86,7 @@ jobs:
             cat <<'EOF' >> "$GITHUB_STEP_SUMMARY"
           ## K9 Contract Validation
 
-          :warning: **No .a2ml/.deed manifest files found.** Every RSR-compliant repo should have a repo deed (`<reponame>_chora.deed`) at its root.
+          :warning: **No K9 contract files found.** Repos with configuration files should have K9 contracts.
 
           Generate contracts with: `k9iser generate .`
           EOF
