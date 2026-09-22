@@ -16,15 +16,15 @@ workflows:
         - 'haskell-actions/setup@v2.12.0'
     '.github/workflows/cflite_batch.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@1c5b675653bb5c22dbe9b12b556ec555138e09fd'
+        - 'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63'
         - 'google/clusterfuzzlite@v1'
     '.github/workflows/cflite_pr.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@1c5b675653bb5c22dbe9b12b556ec555138e09fd'
+        - 'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63'
         - 'google/clusterfuzzlite@v1'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@1c5b675653bb5c22dbe9b12b556ec555138e09fd'
+        - 'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63'
     '.github/workflows/dogfood-gate.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/governance.yml':
@@ -116,9 +116,9 @@ dependencies:
         commit: 'sha1-54075bcc5e249e4758d363f27d099f55d843f124'
         owner_id: 47606891
         repo_id: 331103973
-    'github/codeql-action@1c5b675653bb5c22dbe9b12b556ec555138e09fd':
-        ref: 'v4.38.1'
-        commit: 'sha1-1c5b675653bb5c22dbe9b12b556ec555138e09fd'
+    'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63':
+        ref: 'v4.38.0'
+        commit: 'sha1-b96794f015dfd88f77b49b1c93e0fa7110f94c63'
         owner_id: 9919
         repo_id: 259445878
     'github/codeql-action@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28':
