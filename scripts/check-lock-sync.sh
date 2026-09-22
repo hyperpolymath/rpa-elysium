@@ -209,6 +209,33 @@ END {
     if (!found) { printf "FAIL %s\n     lockfile entry for a workflow file that does not exist\n", p; bad = 1 }
   }
 
+  # --- clause 4: COVERAGE. Every workflow FILE must have a key in the lockfile,
+  #     including one with no uses: at all - the value is then an empty list.
+  #     MEASURED 2026-09-22, single-variable flip on two independent repos:
+  #     hyperpolymath/verisimdb's lock-sync-gate.yml was startup_failure 7 times
+  #     running with ZERO uses: refs, and adding
+  #         '.github/workflows/lock-sync-gate.yml': []
+  #     flipped it to success; reproduced on hyperpolymath/blocky-writer, 2 of 2.
+  #     `gh actions-lock` already emits this empty-list form for other zero-uses:
+  #     workflows (labels.yml), so it is the generator's own convention, not ours.
+  #     Clauses 1-3 CANNOT catch this: they ask "is every uses: locked?", and a
+  #     workflow with no uses: satisfies them vacuously while GitHub still refuses
+  #     to start it. 13 repos passed clauses 1-3 with exactly this gap.
+  nunlisted = 0; unlisted = ""
+  for (i = 1; i < ARGC; i++) {
+    q = ARGV[i]; if (q == lockfile) continue
+    sub(/.*\//, "", q); q = ".github/workflows/" q
+    if (q in seen_path) continue
+    nunlisted++; unlisted = unlisted "\n       " q
+  }
+  if (nunlisted > 0) {
+    printf "FAIL actions.lock: UNLISTED WORKFLOWS\n"
+    printf "     %d workflow file(s) have no key in the lockfile. GitHub refuses such a\n", nunlisted
+    printf "     run at startup (jobs=0) even when the workflow has no uses: at all.\n"
+    printf "     The entry for a zero-uses: workflow is an empty list:%s\n", unlisted
+    bad = 1
+  }
+
   # --- clause 3: TRANSITIVE CLOSURE. Every ref named anywhere in the lockfile
   #     must resolve to a top-level dependencies: record. A dangling edge makes
   #     GitHub refuse the run at startup with jobs=0. ---
@@ -246,12 +273,17 @@ END {
     print "  3. Nested `uses:` entries must be bare OWNER/REPO@REF. A subpath pin such as"
     print "     github/codeql-action/upload-sarif@<sha> is REJECTED by the schema; collapse it"
     print "     to github/codeql-action@<sha>."
+    print "  4. For any UNLISTED WORKFLOWS above, add the path as a lockfile key. A workflow"
+    print "     with no uses: takes an empty list:  \x27.github/workflows/x.yml\x27: []"
+    print "     `gh actions-lock` has been observed to OMIT such a workflow entirely; that"
+    print "     omission is itself the defect, so re-running the tool may not add it."
     exit 1
   }
   printf "actions.lock is in sync and transitively closed:\n"
   printf "  * every uses: is locked under its own workflow path (job-level reusable refs included)\n"
   printf "  * every lockfile entry is still referenced\n"
   printf "  * every ref named in the lockfile resolves to a dependencies: record (0 dangling edges)\n"
+  printf "  * every workflow file has a lockfile key (zero-uses: workflows included)\n"
   if (nunref > 0)
     printf "  note: %d dependencies: record(s) are unreferenced - harmless, but prunable.\n", nunref
 }
