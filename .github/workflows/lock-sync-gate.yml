@@ -40,7 +40,7 @@ jobs:
       - name: Check out without actions/checkout
         env:
           REPO: ${{ github.repository }}
-          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SHA: ${{ github.sha }}
           TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
