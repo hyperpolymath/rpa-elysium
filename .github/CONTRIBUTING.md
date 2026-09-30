@@ -6,7 +6,7 @@ at the repository root (estate policy: AsciiDoc by default).
 This `.github/` copy exists only so GitHub surfaces a pointer on the
 issue/PR templates; edit the root AsciiDoc guide, not this file.
 
-## Signed Commits
+## Signed commits
 
 Every commit that reaches the default branch must be signed; a ruleset refuses
 unsigned pushes. Estate policy:
@@ -16,7 +16,9 @@ unsigned pushes. Estate policy:
   as a *signing* key (`gpg.format=ssh`, `commit.gpgsign=true`). The committer
   email must be verified on that account.
 - **Apps, bots and workflows** never `git push` local commits. They write
-  through the API (`createCommitOnBranch`, the estate `signed-push` action, or a
-  squash merge) so that GitHub signs the commit.
-- Merge PRs with **squash**. Rebase-merge replays commits unsigned and is
-  disabled.
+  through the API (`createCommitOnBranch` or the estate `signed-push` action)
+  so that GitHub signs each commit.
+- Merge PRs with **squash**. The ruleset checks every commit on the PR branch,
+  not just the result, so one unsigned commit blocks the merge. Re-create such a
+  branch with signed commits (`git cherry-pick -S`) and open a new PR.
+  Rebase-merge replays commits unsigned and is disabled.
