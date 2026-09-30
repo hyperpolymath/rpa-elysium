@@ -1,0 +1,152 @@
+= CI Guard Cures — Theory Applied to the 2026-09-29 Triage — 2026-09-29
+:toc: preamble
+
+*Source:* issue #138 triage (2 pre-existing red `lint-workflows` checks surfaced
+by the actions.lock cure, PR #137). *Companion:* https://github.com/hyperpolymath/standards/issues/994[standards#994]
+(cross-cutting classes), https://github.com/hyperpolymath/standards/issues/968[standards#968]
+(campaign roll-up), https://github.com/hyperpolymath/standards/issues/993[standards#993]
+(lock policy). This file records the *theory pass* the triage asked for — what
+the estate's formal-methods repos say about the nature of these failures — and
+the cures that pass produced here. It is knowledge, not decoration: every
+mapping below changed at least one line of the fix.
+
+== The failure, in one sentence
+
+Two governors claimed the same byte (line 1 of every workflow file) with
+incompatible invariants, a robot's promise was trusted in place of an
+enforceable assertion, and a cure that fixed *state* without fixing the *source*
+was defeated by the clock.
+
+== Theory → practice
+
+[cols="1,2,3", options="header"]
+|===
+| Estate repo | Concept taken | How it changed this fix
+
+| https://github.com/hyperpolymath/pons-asinorum[pons-asinorum]
+| The two species: *wasted work* and *contradiction*; never dress a heuristic
+  up as a proof; every rule ships a negative corpus that falsifies it.
+| The `lint-workflows` red is a textbook *contradiction*: `gh actions-lock`
+  inserts its managed-by banner at line 1 whenever it mints a lock, while the
+  local linter demanded SPDX on line 1 — two governors asserting incompatible
+  things about one byte. The duplicated divergent copies of one predicate
+  (local `workflow-linter.yml` vs the canonical `governance-reusable.yml`
+  check) are the *wasted work* species. Cure: converge to the canonical
+  predicate, and give it a negative corpus (`--self-test`) so it can never
+  again be silently re-tightened or loosened.
+
+| https://github.com/hyperpolymath/absolute-zero[absolute-zero]
+| CNO (Certified Null Operation): a program that provably computes nothing.
+  OND: honest residue lists at the proof boundary.
+| A gate that cannot kill its mutant is a CNO wearing a gate's clothes. The
+  2026-08-07 estate measurement — the line-1 test reported 27 hypatia + 13
+  other workflows as missing headers they all had — was exactly that: a check
+  computing nothing true about the world. Every predicate touched here now
+  ships expected-rejection controls that run *first* in the job, so vacuous
+  green is structurally impossible. The triage report keeps an OND-style
+  residue list: what remains red and out of scope is named, not erased.
+
+| https://github.com/hyperpolymath/januskey[januskey]
+| Operations carry their own inversion metadata; `delete ; create ≡ CNO`;
+  divergent copies converge through a shared core, not more copies.
+| Every cure in this triage has a written inverse (revert the commit; close
+  the heal PR; edit one table line to re-freeze). The `lint-workflows` disease
+  *was* copy divergence: a stale local mutant of a predicate whose canonical
+  form had been fixed upstream five weeks earlier. The proposed estate cure
+  is januskey's own move — one canonical `check-workflow-headers.sh` in
+  `hyperpolymath/standards`, consumers pinned to it, no per-repo copies to
+  rot.
+
+| https://github.com/hyperpolymath/echo-types[echo-types]
+| Irreversible maps leave structured loss; the fiber of a lossy summary still
+  constrains what was lost. Honesty infrastructure: retraction ledgers.
+| A red/green bit is a lossy map of a failure. The triage issue said the
+  second `lint-workflows` was "a matrix leg" — it is not; it is the same job
+  on two events (`push` + `pull_request`), and the residue matters for what a
+  fix must clear. Worse: Dependabot's SHA bump moved `b96794f0 → 2892aa5e`
+  while *copying the `# v4.38.0` comment verbatim* — the comment, the witness
+  of intent, survived the map while its meaning inverted. Cure: never trust a
+  comment a rewrite did not update; resolve the claim (the SHA is a
+  2026-09-24 `update-v4.38.2` merge) and let a gate, not prose, hold the
+  intent.
+
+| https://github.com/hyperpolymath/epistemic-types[epistemic-types]
+| Knowledge (factive) vs belief vs warrant; transported proof becomes a
+  receipt and requires a sound check of the *receiver's* claim meaning.
+| The whole actions.lock saga is one claim-meaning mismatch: the gate asked
+  "is every `uses:` locked?" while GitHub asked "is every workflow *file*
+  covered and every locked ref *resolvable*?" (PR #137's clause-4 lesson;
+  standards#993's flipped-bit lesson). And a Dependabot ignore rule is
+  *warrant*, not knowledge — twice measurably bypassed (nexia-list#101
+  versions-scope, nexia-list#104 unconditional hold, then rpa-elysium#140).
+  Cure: policy becomes knowledge only when a check on *this* side of the
+  boundary can fail — `scripts/check-frozen-pins.sh`. The heal PR carries a
+  *receipt*: check-lock-sync.sh output pasted into the body, obtained on the
+  regenerated tree before the PR is opened.
+
+| https://github.com/hyperpolymath/choreographic-types[choreographic-types]
+| Global choreography projected to endpoints; K-CUT caution: local guarantees
+  do not automatically compose across an inconsistent frontier (cut).
+| The estate policy (standards) is the choreography; each repo's workflows
+  are endpoint projections. The "frontier" of a Dependabot bump is
+  inconsistent by construction — YAML moved, lock did not — and no per-repo
+  green composes across it: GitHub refuses the run outright
+  (`startup_failure`, jobs=0). Cure: treat YAML+lock as ONE cut — the heal
+  workflow converges them in the same breath, and the gate (clause 4) is the
+  cut-consistency check.
+
+| https://github.com/hyperpolymath/occupancy-types[occupancy-types]
+| Expected-rejection controls as part of the gate contract; rung contracts
+  with kill criteria — a check may not stay undetermined.
+| Issue #138's own acceptance criteria are a rung contract (fix / retire /
+  exempt; never mute; may not stay undetermined). The new `--self-test`
+  steps are occupancy-types' expected-rejection controls, promoted from
+  one-off mutation notes in a PR body (PR #137's manual mutants) to a control
+  that runs on every push.
+
+| https://github.com/hyperpolymath/panic-attack[panic-attack]
+| Logic-based bug *signatures*; stress that reproduces failure classes, not
+  incidents.
+| This incident is stamped with three signatures so future triage matches the
+  class, not the symptom: (1) `TWO-GOVERNORS-ONE-INVARIANT` — two tools
+  asserting incompatible predicates over one artifact; (2)
+  `ROBOT-PROMISE-WITHOUT-GATE` — policy held only by a third party's ignore
+  list; (3) `STATE-CURE-WITHOUT-SOURCE-CURE` — a repair defeated by the
+  recurring process that produced the damage. Any new red matching a
+  signature gets the class cure, not a bespoke patch.
+|===
+
+== What landed here (the inverses included)
+
+* `scripts/check-workflow-headers.sh` — the canonical header-block predicate
+  (SPDX in the leading comment block, tolerating the lock banner; top-level
+  `permissions:`) with `--self-test` fixtures in both directions.
+  Inverse: `git revert`.
+* `scripts/check-frozen-pins.sh` — the codeql-action freeze as a gate with its
+  own mutants. Lifting the freeze is a one-line table edit in its own commit.
+  Inverse: revert that edit.
+* `lint-workflows` (`workflow-linter.yml`) — converged to the canonical
+  predicate; job name kept (contexts must not be renamed casually); the check
+  stays blocking. Inverse: revert.
+* Freeze-violating pins reverted to `b96794f0` (v4.38.0 — the SHA
+  `hyperpolymath/standards` main still pins). Inverse: revert the revert, but
+  only with the freeze lifted deliberately first.
+* `actions.lock` re-synced (`haskell-actions/setup@v2.12.1` blessed; new
+  healer key). Inverse: revert.
+* `lock-sync-heal.yml` — the source cure: `gh actions-lock` (the sanctioned
+  writer named in the lockfile's own header) on every workflow change and on
+  a weekly backstop, opening one standing refresh PR whose body is a receipt.
+  Inverse: close the PR; disable the workflow.
+
+== Recommended next moves (estate)
+
+. One canonical `scripts/check-workflow-headers.sh` in `hyperpolymath/standards`,
+  executed by `governance-reusable.yml` and by repo-local linters alike —
+  januskey's shared-core move; kills the `lint-workflows` class at the root
+  (the stale copy lives in `rsr-template-repo`, which mints it into every new
+  repo).
+. Gate-enforced pin freezes over Dependabot ignore rules, estate-wide —
+  the ignore rule was bypassed twice in eight days.
+. Expected-rejection controls (`--self-test`) as part of the estate gate
+  contract for every governance check — a check that cannot kill its mutant
+  is a CNO (absolute-zero) and must be retired or repaired, never trusted.
