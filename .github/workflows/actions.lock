@@ -13,7 +13,7 @@ workflows:
         - 'actions/configure-pages@v6.0.0'
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
-        - 'haskell-actions/setup@v2.12.0'
+        - 'haskell-actions/setup@v2.12.1'
     '.github/workflows/cflite_batch.yml':
         - 'actions/checkout@v7.0.1'
         - 'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63'
@@ -36,6 +36,8 @@ workflows:
     '.github/workflows/label-triage.yml': []
     '.github/workflows/labels.yml': []
     '.github/workflows/lock-sync-gate.yml': []
+    '.github/workflows/lock-sync-heal.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/mirror.yml':
         - 'hyperpolymath/standards@84355587cb2a1f86e6882de83514a32db2646e7a'
     '.github/workflows/push-email-notify.yml':
@@ -131,9 +133,9 @@ dependencies:
         commit: 'sha1-884713a6c30a92e5e8544c39945cd7cb630abcd1'
         owner_id: 1342004
         repo_id: 400046858
-    'haskell-actions/setup@v2.12.0':
-        ref: 'v2.12.0'
-        commit: 'sha1-6037f33647c3f17758a2356c80fc4a53d7e0685d'
+    'haskell-actions/setup@v2.12.1':
+        ref: 'v2.12.1'
+        commit: 'sha1-0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d'
         owner_id: 75048950
         repo_id: 623796603
     'hyperpolymath/smtp-notify-action@v0.3.0':

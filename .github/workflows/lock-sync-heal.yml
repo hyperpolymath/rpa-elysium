@@ -1,0 +1,174 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# lock-sync-heal.yml — converge actions.lock with the workflow YAML.
+#
+# ── Why this exists (the source, not the state) ────────────────────────────
+# The actions.lock campaign (standards#968) cured the estate's lock desyncs
+# once; Dependabot re-desynced this repository within seven days (PR #140,
+# 2026-09-29: bumped `uses:` refs, never regenerates the lock). Measured in
+# standards' own tooling: "60 of 60 sampled repos have Dependabot AND a
+# lockfile AND no regeneration step — repos appear to go bad again after
+# being fixed; nobody broke them, the clock did." A state cure without a
+# source cure is a countdown. This workflow is the source cure.
+#
+# ── Design (STD-R-3: an applier converges and keeps converging) ────────────
+# The lockfile's own header names the sanctioned writer (`gh actions-lock`),
+# so the heal is that writer and nothing else — no hand edits. When the
+# regenerated lock differs from the committed one, the job opens (or updates)
+# a single standing PR from the branch `bot/actions-lock-sync`. The PR body
+# carries the checker's output as a RECEIPT (epistemic-types: proof transported
+# across a boundary must arrive with a sound check of the receiver's claim —
+# here check-lock-sync.sh clause 4, COVERAGE, which asks the same question
+# GitHub's startup enforcement asks). The inverse of the operation is closing
+# the PR or reverting its commit (januskey: every operation carries its
+# inversion; nothing here is a one-way door).
+#
+# If the generator or the permission to open PRs is unavailable, the job
+# FAILS LOUDLY with the remedy in the log — it never warns-and-continues,
+# because a silent desync is exactly the failure mode this replaces.
+
+name: Lock Sync Heal
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+  schedule:
+    # Weekly backstop for anything the push trigger cannot see (e.g. a ref
+    # that moved under a pinned tag). Off the hour; the estate's scheduled
+    # jobs cluster on :00.
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'audit (default, reports drift and writes nothing) or fix (opens/updates the refresh PR)'
+        type: choice
+        options: [audit, fix]
+        default: audit
+
+concurrency:
+  group: lock-sync-heal
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # A heal commit touches only actions.lock; it must not re-trigger itself
+    # into work (it would find no diff and exit, but never ask for work you
+    # have already proved is empty).
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Decide mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          else
+            # push and schedule converge by default; audit is for hands-on runs.
+            echo "mode=fix" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regenerate actions.lock with the sanctioned generator
+        id: regen
+        run: |
+          set -euo pipefail
+          if ! gh actions-lock --help >/dev/null 2>&1; then
+            echo "::error::gh actions-lock is not available on this runner; cannot regenerate the lock with the sanctioned writer. Refusing to continue silently."
+            exit 1
+          fi
+          gh actions-lock
+          if git diff --quiet -- .github/workflows/actions.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "actions.lock is already in sync with the workflow YAML."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "actions.lock was out of sync; the generator produced a refresh:"
+            git --no-pager diff -- .github/workflows/actions.lock
+          fi
+
+      - name: Verify the regenerated tree (receipt for the PR body)
+        id: verify
+        if: steps.regen.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          bash scripts/check-lock-sync.sh > /tmp/receipt.txt 2>&1 || {
+            cat /tmp/receipt.txt
+            echo "::error::the regenerated lock fails check-lock-sync.sh; not opening a PR for a tree that is still red"
+            exit 1
+          }
+          cat /tmp/receipt.txt
+
+      - name: Open or update the refresh PR
+        if: steps.regen.outputs.changed == 'true' && steps.mode.outputs.mode == 'fix'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BRANCH=bot/actions-lock-sync
+
+          cat > /tmp/pr-title.txt <<'TITLE'
+          fix(actions.lock): regenerate with gh actions-lock
+          TITLE
+          cat > /tmp/pr-body-head.md <<'HEAD'
+          ## What this is
+
+          An automatic lock refresh from the **Lock Sync Heal** workflow. A
+          workflow-YAML change (usually a Dependabot action bump) landed
+          without regenerating `.github/workflows/actions.lock`; GitHub
+          refuses to start workflows whose step-level `uses:` refs are not
+          recorded under their own path (standards#968), so this PR closes
+          the gap with the sanctioned generator (`gh actions-lock`), nothing
+          else.
+
+          ## Receipt — check-lock-sync.sh on the regenerated tree
+
+          ~~~
+          HEAD
+          cat > /tmp/pr-body-tail.md <<'TAIL'
+          ~~~
+
+          The inverse of this PR is closing it (or reverting its commit).
+
+          Opened by `.github/workflows/lock-sync-heal.yml`.
+          TAIL
+          cat /tmp/pr-body-head.md /tmp/receipt.txt /tmp/pr-body-tail.md > /tmp/pr-body.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add .github/workflows/actions.lock
+          git commit -F - <<'MSG'
+          fix(actions.lock): regenerate with gh actions-lock
+
+          Converges actions.lock after a workflow-YAML change that did not
+          regenerate it (Dependabot bumps re-acquire this fault; see
+          standards#968). Generated by the Lock Sync Heal workflow; the
+          inverse of this commit is its revert.
+          MSG
+          git push -f origin "$BRANCH"
+          if gh pr view "$BRANCH" >/dev/null 2>&1; then
+            gh pr edit "$BRANCH" --body-file /tmp/pr-body.md
+            echo "Updated existing PR for $BRANCH"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "$(head -1 /tmp/pr-title.txt)" \
+              --body-file /tmp/pr-body.md
+          fi
+
+      - name: Report (audit mode, or nothing to do)
+        if: steps.regen.outputs.changed != 'true' || steps.mode.outputs.mode != 'fix'
+        run: |
+          if [ "${{ steps.regen.outputs.changed }}" = "true" ]; then
+            echo "::warning::actions.lock is out of sync (audit mode: nothing written). Re-run this workflow with mode=fix to open the refresh PR."
+          else
+            echo "No action needed."
+          fi
