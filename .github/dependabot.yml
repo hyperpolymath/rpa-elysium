@@ -15,16 +15,5 @@ updates:
       # SHA-form re-bump bypassed versions-scoped ignores - see
       # nexia-list#101/#104). Hold until upstream clears 4.38.1 or a
       # newer release verifies green; revisit deliberately.
-      #
-      # MEASURED 2026-09-29: this unconditional hold was bypassed ANYWAY —
-      # PR #140 moved b96794f0 (v4.38.0) to 2892aa5e (a 2026-09-24
-      # releases/v4 "update-v4.38.2" merge) in SHA form, leaving the inline
-      # version comment a lie (rpa-elysium#138 triage). Reverted in the
-      # same triage. This ignore rule is therefore treated as an ADVISORY
-      # REQUEST ONLY. The enforced invariant is the CI gate
-      # scripts/check-frozen-pins.sh (run by workflow-linter.yml /
-      # `lint-workflows`), which fails any pull request moving a frozen pin.
-      # Lifting the freeze is a deliberate edit of that script's table, not
-      # a removal of this comment.
       - dependency-name: "github/codeql-action"
 
