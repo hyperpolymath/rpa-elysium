@@ -19,28 +19,26 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Check SPDX headers
-        run: |
-          errors=0
-          for f in .github/workflows/*.yml .github/workflows/*.yaml; do
-            [ -f "$f" ] || continue
-            if ! head -1 "$f" | grep -q "SPDX-License-Identifier"; then
-              echo "ERROR: $f missing SPDX header"
-              errors=$((errors + 1))
-            fi
-          done
-          exit $errors
-      - name: Check permissions declaration
-        run: |
-          errors=0
-          for f in .github/workflows/*.yml .github/workflows/*.yaml; do
-            [ -f "$f" ] || continue
-            if ! grep -q "^permissions:" "$f"; then
-              echo "ERROR: $f missing permissions declaration"
-              errors=$((errors + 1))
-            fi
-          done
-          exit $errors
+      # Expected-rejection controls run FIRST: a predicate that cannot kill
+      # its own mutant must not be allowed to judge the tree. If these fail,
+      # the predicate drifted (or was re-tightened to line-1 form, which
+      # fights the `gh actions-lock` banner — see issue #138) and the job
+      # stops here with the reason named.
+      - name: Self-test the header predicate (negative corpus)
+        run: bash scripts/check-workflow-headers.sh --self-test
+      - name: Self-test the frozen-pin gate (negative corpus)
+        run: bash scripts/check-frozen-pins.sh --self-test
+      # The canonical predicate: SPDX anywhere in the leading comment block
+      # (tolerating the `gh actions-lock` managed-by banner), plus top-level
+      # permissions:. Byte-faithful to hyperpolymath/standards
+      # governance-reusable.yml since 2026-08-07; see the script header.
+      - name: Check SPDX headers + permissions
+        run: bash scripts/check-workflow-headers.sh .github/workflows
+      # Policy this repository enforces itself, not a Dependabot ignore
+      # request (those were bypassed twice — nexia-list#101/#104; rpa-elysium
+      # #140). See scripts/check-frozen-pins.sh.
+      - name: Check frozen action pins
+        run: bash scripts/check-frozen-pins.sh .github/workflows
       - name: Check pinned actions
         run: |
           errors=0
