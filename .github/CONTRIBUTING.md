@@ -20,4 +20,3 @@ unsigned pushes. Estate policy:
   squash merge) so that GitHub signs the commit.
 - Merge PRs with **squash**. Rebase-merge replays commits unsigned and is
   disabled.
-

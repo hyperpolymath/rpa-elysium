@@ -156,4 +156,3 @@ https://github.com/hyperpolymath/standards/blob/main/docs/SIGNING-POLICY.adoc[SI
   squash merge) so that GitHub signs the commit.
 * Merge PRs with **squash**. Rebase-merge replays commits unsigned and is
   disabled.
-
