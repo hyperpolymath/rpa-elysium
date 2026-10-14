@@ -17,7 +17,15 @@ cat > "$scratch/bin/gh" <<'STUB'
 # copies any --body-file it is handed so the tests can inspect the report.
 printf '%s\n' "$*" >> "$GH_STUB_LOG"
 if [ "$1 $2" = "issue list" ]; then
-  cat "$GH_STUB_ISSUES"
+  issues="$(cat "$GH_STUB_ISSUES")"
+  prev=""
+  for arg in "$@"; do
+    if [ "$prev" = "--label" ]; then
+      issues="$(jq --arg l "$arg" '[.[] | select(any(.labels[]?; .name == $l))]' <<< "$issues")"
+    fi
+    prev="$arg"
+  done
+  printf '%s\n' "$issues"
   exit 0
 fi
 prev=""
@@ -40,8 +48,9 @@ RUN2="https://github.com/hyperpolymath/rpa-elysium/actions/runs/456"
 reset_log() { : > "$GH_STUB_LOG"; }
 
 run_reconcile() { # status event
-  bash "$SCRIPT" --status "$1" --event "$2" --run "$RUN" \
-    --summary "$scratch/summary.txt" --repo hyperpolymath/rpa-elysium
+  local status="$1" event="$2"; shift 2
+  bash "$SCRIPT" --status "$status" --event "$event" --run "$RUN" \
+    --summary "$scratch/summary.txt" --repo hyperpolymath/rpa-elysium "$@"
 }
 
 expect_calls() { # description expected-substring...
@@ -116,6 +125,8 @@ jq -n --arg m "$MARKER" --arg r "$RUN" \
 reset_log
 run_reconcile 1 push > /dev/null
 expect_calls 'the same failing run does not duplicate the comment' 'issue list' 'issue edit 143'
+grep -q -- '--add-label security --add-label dependencies' "$GH_STUB_LOG" || {
+  echo "FAIL: the same failing run did not restore missing labels"; exit 1; }
 
 # 7. Pull-request events never touch issues.
 printf '%s' '[]' > "$GH_STUB_ISSUES"
@@ -148,4 +159,58 @@ grep -q 'cargo audit --deny warnings' "$WF" || { echo "FAIL: the workflow lost t
 grep -q 'exit "\$status"' "$WF" || { echo "FAIL: the audit step no longer propagates its failure"; exit 1; }
 echo "PASS: the workflow calls the reconciler and stays blocking"
 
-echo '10 audit-issue reconciliation controls passed.'
+# 11. Both audit outcomes find marked and legacy issues regardless of labels,
+#     adding only missing labels to the same issue without opening a duplicate.
+for status in 0 1; do
+  for match in marked legacy; do
+    for labels in none security dependencies both; do
+      jq -n --arg m "$MARKER" --arg r "$RUN2" --arg match "$match" --arg labels "$labels" \
+        '[{number: 143,
+           title: (if $match == "legacy" then "Security: Dependency vulnerabilities detected" else "Renamed audit issue" end),
+           body: (if $match == "marked" then $m + " <!-- last-run: " + $r + " -->" else "Legacy audit report" end),
+           labels: (if $labels == "both" then [{name: "security"}, {name: "dependencies"}]
+                    elif $labels == "none" then [] else [{name: $labels}] end)}]' > "$GH_STUB_ISSUES"
+      reset_log
+      run_reconcile "$status" push > /dev/null
+      action='issue comment 143'
+      [ "$status" -ne 0 ] || action='issue close 143'
+      expect_calls "status=$status $match issue with $labels labels is reconciled" \
+        'issue list' 'issue edit 143' "$action"
+      if head -1 "$GH_STUB_LOG" | grep -q -- '--label'; then
+        echo "FAIL: issue lookup filters by labels"; exit 1
+      fi
+      for label in security dependencies; do
+        if [ "$labels" = both ] || [ "$labels" = "$label" ]; then
+          if grep -q -- "--add-label $label" "$GH_STUB_LOG"; then
+            echo "FAIL: an existing $label label was added again"; exit 1
+          fi
+        else
+          grep -q -- "--add-label $label" "$GH_STUB_LOG" || {
+            echo "FAIL: missing $label label was not restored"; exit 1; }
+        fi
+      done
+    done
+  done
+done
+
+# 12. Explicit labels are restored on the selected marker match, even when a
+#     legacy title match appears first; unrelated existing labels are kept.
+for status in 0 1; do
+  jq -n --arg m "$MARKER" --arg r "$RUN2" \
+    '[{number: 113, title: "Security: Dependency vulnerabilities detected", body: "Legacy audit report", labels: []},
+      {number: 143, title: "Renamed audit issue", body: ($m + " <!-- last-run: " + $r + " -->"),
+       labels: [{name: "security"}, {name: "dependencies"}]}]' > "$GH_STUB_ISSUES"
+  reset_log
+  run_reconcile "$status" push --label security --label triage > /dev/null
+  action='issue comment 143'
+  [ "$status" -ne 0 ] || action='issue close 143'
+  expect_calls "status=$status restores custom labels on the marker match" \
+    'issue list' 'issue edit 143' "$action"
+  grep -q -- '--add-label triage' "$GH_STUB_LOG" || {
+    echo "FAIL: missing custom label was not restored"; exit 1; }
+  if grep -Eq -- '--add-label (security|dependencies)|--remove-label' "$GH_STUB_LOG"; then
+    echo "FAIL: labels already on the selected issue were changed"; exit 1
+  fi
+done
+
+echo '12 audit-issue reconciliation controls passed.'
