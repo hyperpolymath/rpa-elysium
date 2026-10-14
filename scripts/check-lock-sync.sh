@@ -31,6 +31,8 @@ for file in "${files[@]}"; do
 done
 jq -s '.' "$scratch/refs.jsonl" > "$scratch/refs.json"
 jq -L "$(dirname "${BASH_SOURCE[0]}")" -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs.json" '
+  # The shared graph module folds owner/repo case, preserves ref case, omits
+  # local/Docker refs and rejects malformed inputs; reachability handles cycles.
   include "lock-graph";
   $lock[0] as $l | $workflows[0] as $ws |
   ($l.dependencies | normal_dependencies) as $deps |

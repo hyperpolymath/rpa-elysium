@@ -33,6 +33,9 @@ GH_BIN="${GH_BIN:-gh}"
 SNAPSHOT="$(mktemp -d)"
 COMPLETE=false
 
+# Copy top-level regular .yml and .yaml files from WF_DIR into the directory
+# given by $1, creating it if needed and overwriting files with matching names.
+# Directory creation, discovery or copy failures return a non-zero status.
 snapshot_workflows() {
   destination=$1
   mkdir -p "$destination"
@@ -43,6 +46,9 @@ snapshot_workflows() {
     done
 }
 
+# Copy top-level regular files from the snapshot directory given by $1 back
+# into WF_DIR, overwriting matching names without removing additional files.
+# Discovery or copy failures return a non-zero status.
 restore_workflows() {
   source=$1
 
@@ -125,6 +131,12 @@ is_advisory_category() {
   esac
 }
 
+# Run GH_BIN's local verifier, which may modify workflows and actions.lock;
+# the caller restores those inputs. With jq, return 0 for valid:true or for
+# valid:false explained solely by the three exceptions below and optional
+# sha-as-ref advisories; advisories alone cannot explain valid:false.
+# Missing or malformed output returns the tool's non-zero status, or 1 if it exited 0;
+# unaccepted findings return 1. Without jq, propagate the plain verifier status.
 verify_lock_coverage() {
   # gh-actions-lock (v0.1.6, and still v0.2.0) does not recognise
   # reusable-workflow `uses:` paths. GitHub's startup enforcement nevertheless
@@ -200,6 +212,9 @@ verify_lock_coverage() {
   fi
 }
 
+# EXIT handler: unless COMPLETE is true, restore saved workflows and the lock
+# (or remove the lock if none was saved), then remove SNAPSHOT and exit with
+# the entry status. A restoration or removal failure can terminate this early.
 cleanup() {
   status=$?
   if [ "$COMPLETE" != true ]; then

@@ -74,7 +74,7 @@ export FAKE_VERDICT=true
 bash "$SCRIPTS/update-actions-lock.sh"
 [ "$(head -1 .github/workflows/example.yml)" = '# SPDX-License-Identifier: MPL-2.0' ]
 if grep -q verifier-only .github/workflows/example.yml .github/workflows/actions.lock; then
-  echo 'FAIL: verifier-only mutations survived'; exit 1
+  echo 'FAIL: verifier mutations survived'; exit 1
 fi
 bash "$SCRIPTS/check-lock-sync.sh"
 echo 'PASS: update preserves reusable closure, SPDX ordering, and discards verifier mutations'
