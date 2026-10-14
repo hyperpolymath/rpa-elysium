@@ -65,6 +65,8 @@ team, stable-release backports or third-party legal immunity without evidence.
   HTTPS/authenticated integration with a bounded request, JSON-safe inputs and
   block-mode egress restricted by `BOJ_BUILD_ALLOWED_ENDPOINTS`.
   It is not a claimed working deployment until a maintainer configures it.
+* Environment definitions provision pinned Bun first as required by the estate
+  runtime policy; this does not claim a JavaScript application capability.
 * Developer tasks now fail on the actual Rust failure instead of falling back
   to unrelated runtimes. Unused generic Python/Go/Java/yarn tooling was removed.
 * `just ci-check` validates the lock graph, regression controls and local
@@ -98,6 +100,8 @@ hide real source, or weaken the upstream checker to report a false pass.
 
 Resolve these layout differences through a reviewed source/build migration or
 upstream capability-table support for workspace/named-package alternatives.
+The concrete capability decision and generated-output gap are tracked in
+https://github.com/hyperpolymath/standards/issues/1262[Standards #1262].
 Rust CI does not compile all Idris2/Zig targets; use `just verify-abi-ffi` with
 those toolchains and record evidence before claiming that tier validated.
 Latest Standards HEAD also adds a JS-runtime checker whose build previously

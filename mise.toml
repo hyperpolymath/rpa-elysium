@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # Minimal Rust development environment; ABI/site tools are installed only when used.
 [tools]
+# Estate environment policy provisions Bun first, even in Rust workspaces.
+bun = "1.4.2"
 rust = "stable"
 
 [tasks.build]
