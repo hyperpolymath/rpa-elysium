@@ -141,7 +141,7 @@ verify_lock_coverage() {
   status=$?
   set -e
 
-  if [ -z "$result" ] || ! printf '%s' "$result" | jq -e -s 'length == 1 and (.[0] | type == "object" and .valid != null and (.findings | type == "array"))' >/dev/null 2>&1; then
+  if [ -z "$result" ] || ! printf '%s' "$result" | jq -e -s 'length == 1 and (.[0] | type == "object" and (.valid | type == "boolean") and (.findings | type == "array"))' >/dev/null 2>&1; then
     printf '%s\n' "$result"
     [[ "$status" -ne 0 ]] && return "$status"
     return 1
@@ -222,8 +222,11 @@ fi
 # migrating local `./` action paths to an invalid `$/` spelling). Preserve the
 # post-update state, run verification, then discard verifier-only mutations.
 snapshot_workflows "$SNAPSHOT/preverify-workflows"
+cp "$WF_DIR/actions.lock" "$SNAPSHOT/preverify.lock"
 verify_lock_coverage
 restore_workflows "$SNAPSHOT/preverify-workflows"
+# --verify-local is observational for the lockfile too, not just YAML.
+cp "$SNAPSHOT/preverify.lock" "$WF_DIR/actions.lock"
 # Neither upstream advisory handling nor its reusable-workflow exception can
 # waive direct-ref drift, missing dependency records, or a corrupt commit.
 bash "$(dirname "${BASH_SOURCE[0]}")/check-lock-sync.sh" "$WF_DIR"

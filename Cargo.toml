@@ -81,7 +81,7 @@ chrono = { version = "0.4", features = ["serde"] }
 # unmaintained (RUSTSEC-2025-0057) and fails `cargo audit --deny unmaintained`.
 # The plugin sandbox uses core-Wasm runtime + fuel metering only, so the
 # guest-profiler machinery is dead weight here.
-wasmtime = { version = "36.0.8", default-features = false, features = [
+wasmtime = { version = "36.0.16", default-features = false, features = [
     "cranelift",
     "runtime",
     "std",

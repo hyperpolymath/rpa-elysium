@@ -13,7 +13,12 @@ scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
 # Fail closed on tool failure, malformed YAML or unsupported schema.
 "$YQ_BIN" -o=json '.' "$WF_DIR/actions.lock" > "$scratch/lock.json"
-jq -e '(.version == "v0.0.2" or .version == "v0.0.3") and (.workflows | type == "object") and (.dependencies | type == "object")' "$scratch/lock.json" >/dev/null
+jq -e '(.version == "v0.0.2" or .version == "v0.0.3") and (.workflows | type == "object") and (.dependencies | type == "object") and
+  all(.dependencies | to_entries[];
+    (.key | test("^[^/@]+/[^/@]+@[^@[:space:]]+$")) and
+    (.value | type == "object") and
+    (.value.owner_id | type == "number") and (.value.owner_id > 0) and
+    (.value.repo_id | type == "number") and (.value.repo_id > 0))' "$scratch/lock.json" >/dev/null
 shopt -s nullglob
 files=("$WF_DIR"/*.yml "$WF_DIR"/*.yaml)
 [ ${#files[@]} -gt 0 ] || { echo '::error::No workflows found'; exit 1; }
@@ -30,9 +35,10 @@ jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs
   def norm:
     if type != "string" then error("uses/ref must be a string")
     elif startswith("./") or startswith("docker://") then empty
-    else capture("^(?<owner>[^/@]+)/(?<repo>[^/@]+)(?:/[^@]+)?@(?<ref>[^@[:space:]]+)$")
+    elif test("^[^/@]+/[^/@]+(?:/[^@]+)?@[^@[:space:]]+$") then
+      capture("^(?<owner>[^/@]+)/(?<repo>[^/@]+)(?:/[^@]+)?@(?<ref>[^@[:space:]]+)$")
       | ((.owner + "/" + .repo | ascii_downcase) + "@" + .ref)
-    end;
+    else error("invalid external uses/ref: " + .) end;
   def refs: if type != "array" then error("lock refs must be arrays") else map(norm) | unique end;
   $lock[0] as $l | $workflows[0] as $ws |
   ($l.dependencies | to_entries | map({key: (.key | norm), value: .value}) | from_entries) as $deps |
@@ -41,8 +47,8 @@ jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs
       ($l.workflows[$w.path] // [] | refs) as $got |
       if $want != $got then {type: "lock-drift", workflow: $w.path, missing: ($want - $got), stale: ($got - $want)} else empty end),
     ($l.workflows | keys[] | . as $p | select(all($ws[]; .path != $p)) | {type: "orphan-workflow", workflow: $p}),
-    (($l.workflows[] | refs[]), ($l.dependencies[] | (.uses // []) | refs[])) as $ref |
-      select($deps[$ref] == null) | {type: "dangling-edge", ref: $ref},
+    (((($l.workflows[] | refs[]), ($l.dependencies[] | (.uses // []) | refs[])) as $ref |
+      select($deps[$ref] == null) | {type: "dangling-edge", ref: $ref})), 
     ($deps | to_entries[] | select((.value.commit | type != "string") or ((.value.commit // "") | test("^sha1-[0-9a-f]{40}$") | not)) |
       {type: "invalid-commit", ref: .key})
   ] | unique
