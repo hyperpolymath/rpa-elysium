@@ -91,4 +91,17 @@ fixture; sed -i "s/owner\/shared@v1/owner\/shared@V1/" "$WF/actions.lock"
 assert_status fail 'refs remain case-sensitive'
 fixture; sed -i "s@.github/workflows/example.yml@.github/workflows/deleted.yml@" "$WF/actions.lock"
 assert_status fail 'deleted workflow entry blocks'
-echo '15 lock-sync regression controls passed (plus observational byte comparison).'
+fixture
+cat >> "$WF/actions.lock" <<'YAML'
+  'owner/dead@v1':
+    ref: v1
+    commit: sha1-3333333333333333333333333333333333333333
+    owner_id: 1
+    repo_id: 4
+YAML
+assert_status fail 'unreferenced dependency records block'
+fixture
+# A dependency back-edge must terminate, not hang the validator.
+sed -i '/repo_id: 3/a\    uses: ['owner/shared@v1']' "$WF/actions.lock"
+assert_status pass 'reachable cyclic dependency graph terminates'
+echo '17 lock-sync regression controls passed (plus observational byte comparison).'

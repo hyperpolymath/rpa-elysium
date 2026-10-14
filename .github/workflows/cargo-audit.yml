@@ -14,15 +14,18 @@ on:
       - '**/Cargo.lock'
   schedule:
     - cron: '0 6 * * 1' # Weekly on Monday
-permissions: read-all
+permissions:
+  contents: read
 jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked
+        run: cargo install cargo-audit --version 0.22.2 --locked
       - name: Run cargo audit
         run: cargo audit --deny warnings
       - name: Check for unmaintained crates
@@ -32,11 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: audit
-    if: failure()
+    if: failure() && github.event_name != 'pull_request'
     permissions:
+      contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Create vulnerability issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

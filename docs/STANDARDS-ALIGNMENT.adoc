@@ -1,0 +1,108 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Standards and RSR-template alignment
+:toc:
+
+== Authority and applicability
+
+Audited 2026-10-14 against:
+
+* https://github.com/hyperpolymath/standards/tree/80014df42eb81f09396c948299febb258cec4719[Standards `80014df...`]:
+  `0-canon/TEMPLATE-APPLICABILITY-POLICY.adoc`,
+  `.machine_readable/template-capability-gates.toml`,
+  `3-practice/LICENCE-POLICY.adoc`, security guidance and reusable workflows.
+* https://github.com/hyperpolymath/rsr-template-repo/tree/c9bce256a3812575f509c9c90c64a1277a999a3b[RSR template `c9bce256...`]:
+  community-health surfaces, issue forms, PR checklist and Cargo update policy.
+
+Template adoption is *capability-based*, not a byte-for-byte clone of the maximal
+spine. The application is not the template or Standards canon and claims no
+carrier exemptions. `.machine_readable/rsr-profile.a2ml` declares the actual Rust
+workspace/CLI/library, Zig/Idris ABI/FFI source, Gleam source, Bash tooling,
+benchmarks, site workflow and governance. It does not claim a deployed API,
+mobile/web application, registry release or reproducible Guix build.
+
+== Community health
+
+GitHub's community-profile endpoint already reported *100%* before this repair,
+but Code of Conduct and PR-template surfaces came from the owner-wide `.github`
+repository and there was no local issue form. That score is not a certification
+of policy correctness or security.
+
+Local GitHub surfaces now include an instantiated conduct policy with a private
+contact and four enforcement levels, private-security and support/governance
+pointers, bug/feature forms, a security-aware PR checklist, correct CODEOWNERS
+paths and one funding configuration preserving both existing sponsor identities.
+Root AsciiDoc remains canonical for project guidance; GitHub-recognized Markdown
+surfaces link to it. Code/config/scripts use MPL-2.0; new or revised prose uses
+CC-BY-SA-4.0, with both licence texts retained.
+
+`.well-known/` points to the site's existing `www/.well-known/` source and
+`.machine_readable/descriptiles/` points to the existing `6a2/` metadata.
+These are compatibility views of single sources, not divergent duplicate files.
+Security contact, policy URL and expiry are consistent. The security policy no
+longer claims end-to-end encryption, a verified PGP key, a multi-person response
+team, stable-release backports or third-party legal immunity without evidence.
+
+== Quality and CI security
+
+* PR-review findings are addressed: the diagnostic checkout is pinned to the
+  reviewed v7.0.1 SHA and checkout credentials are not persisted; stale lock
+  records are pruned by graph reachability; the mutation assertion fails
+  explicitly instead of using a vacuous negated command.
+* The graph walker terminates on cycles, retains reachable transitive nodes,
+  and rejects dangling/unreferenced dependency records. Regeneration restores
+  only reachable established reusable coverage and never fabricates new pins.
+* Security-sensitive failures use explicit status capture, not global errexit
+  disabling. Cargo.lock diffs are visible for dependency review.
+* Read-only local lint/audit jobs have contents-only permissions. Audit tooling
+  is pinned to cargo-audit 0.22.2; Cargo security-only Dependabot configurations
+  match the template for the workspace and fuzz manifest. No auto-merge bot or
+  privileged PR execution has been added.
+* Audit issue creation is disabled for PR events, where writable issue tokens
+  may be unavailable; the audit remains blocking on PRs.
+* The broken, unauthenticated HTTP BoJ trigger is replaced by a manual opt-in
+  HTTPS/authenticated integration with a bounded request and JSON-safe inputs.
+  It is not a claimed working deployment until a maintainer configures it.
+* Developer tasks now fail on the actual Rust failure instead of falling back
+  to unrelated runtimes. Unused generic Python/Go/Java/yarn tooling was removed.
+* `just ci-check` validates the lock graph, regression controls and local
+  community-health baseline. Workflow lint runs on every PR, including
+  policy-only changes. `just audit` rejects security warnings/unmaintained crates.
+
+== Live GitHub controls and limitations
+
+On 2026-10-14 the API confirmed private vulnerability reporting enabled,
+Discussions/issues enabled, squash-only merging and automatic merged-branch
+cleanup. CODEOWNERS had no reported errors. Active rulesets include Base,
+Branch-Floor, Immutable-Tags, Require-Linear-History, Require-Signed-Commits and
+Secret-Scan-Floor. Base requires emitted Hypatia/baseline contexts and CodeQL /
+Hypatia scanning thresholds. Existing rules were read, not weakened or replaced.
+
+The vulnerability-alerts endpoint returned *403 Resource not accessible by
+integration*. Dependency-alert/secret-protection settings and a highest possible
+OpenSSF score are therefore not asserted. Configuration changes requiring those
+permissions need maintainer verification. Local file presence is not evidence
+that every remote setting is enabled.
+
+== Explicit remaining canonical-layout gaps
+
+The current Standards profile checker expects Rust at `src/**/*.rs` rather than
+workspace `crates/*/src/`, FFI at `src/interface/ffi/`, an `abi.ipkg`, Idris at
+`src/interface/abi/` and a `src/interface/generated/` tree. This repository uses
+`crates/`, `ffi/zig/`, `rpa-elysium-abi.ipkg` and `src/abi/`; no generated ABI
+artefacts are claimed. The exact upstream checker therefore reports these as
+*MISSING*. We do not create empty scaffolds, change declared capabilities to
+hide real source, or weaken the upstream checker to report a false pass.
+
+Resolve these layout differences through a reviewed source/build migration or
+upstream capability-table support for workspace/named-package alternatives.
+Rust CI does not compile all Idris2/Zig targets; use `just verify-abi-ffi` with
+those toolchains and record evidence before claiming that tier validated.
+Latest Standards HEAD also adds a JS-runtime checker whose build previously
+failed (see `CI-CD-REPAIR.adoc`); governance retains the tested compatibility
+commit `c11c255...`, not an unvalidated HEAD bump.
+
+Thus this change aligns the *community/security baseline and applicable policy*
+and records genuine residual work. It does not claim full RSR certification,
+complete canonical layout conformity, estate-wide propagation, or a perfect
+security score. Estate rollout remains tracked in
+https://github.com/hyperpolymath/standards/issues/1261[Standards #1261].

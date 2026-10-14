@@ -6,7 +6,13 @@
 * @hyperpolymath
 
 # Security-sensitive files require explicit ownership
-SECURITY.md @hyperpolymath
+SECURITY.adoc @hyperpolymath
+.github/SECURITY.md @hyperpolymath
+www/.well-known/security.txt @hyperpolymath
+scripts/ @hyperpolymath
+Cargo.toml @hyperpolymath
+Cargo.lock @hyperpolymath
+crates/rpa-plugin/ @hyperpolymath
 .github/workflows/ @hyperpolymath
 .machine_readable/ @hyperpolymath
 contractiles/ @hyperpolymath
@@ -30,5 +36,4 @@ ROADMAP* @hyperpolymath
 
 # Build and CI
 Justfile @hyperpolymath
-Makefile @hyperpolymath
 *.sh @hyperpolymath

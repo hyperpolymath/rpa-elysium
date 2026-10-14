@@ -30,18 +30,11 @@ for file in "${files[@]}"; do
   ' "$scratch/workflow.json" >> "$scratch/refs.jsonl"
 done
 jq -s '.' "$scratch/refs.jsonl" > "$scratch/refs.json"
-jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs.json" '
-  # Owner/repo is case-insensitive; refs remain case-sensitive. Subpaths collapse.
-  def norm:
-    if type != "string" then error("uses/ref must be a string")
-    elif startswith("./") or startswith("docker://") then empty
-    elif test("^[^/@]+/[^/@]+(?:/[^@]+)?@[^@[:space:]]+$") then
-      capture("^(?<owner>[^/@]+)/(?<repo>[^/@]+)(?:/[^@]+)?@(?<ref>[^@[:space:]]+)$")
-      | ((.owner + "/" + .repo | ascii_downcase) + "@" + .ref)
-    else error("invalid external uses/ref: " + .) end;
-  def refs: if type != "array" then error("lock refs must be arrays") else map(norm) | unique end;
+jq -L "$(dirname "${BASH_SOURCE[0]}")" -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs.json" '
+  include "lock-graph";
   $lock[0] as $l | $workflows[0] as $ws |
-  ($l.dependencies | to_entries | map({key: (.key | norm), value: .value}) | from_entries) as $deps |
+  ($l.dependencies | normal_dependencies) as $deps |
+  reachable([$l.workflows[] | .[]]; $deps) as $live |
   [
     ($ws[] | . as $w | ($w.refs | refs) as $want |
       ($l.workflows[$w.path] // [] | refs) as $got |
@@ -51,6 +44,7 @@ jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs
       select($deps[$ref] == null) | {type: "dangling-edge", ref: $ref})),
     ($deps | to_entries[] | select((.value.commit | type != "string") or ((.value.commit // "") | test("^sha1-[0-9a-f]{40}$") | not)) |
       {type: "invalid-commit", ref: .key})
+    , (($deps | keys) - $live | .[] | {type: "unreferenced-dependency", ref: .})
   ] | unique
 ' > "$scratch/findings.json"
 if ! jq -e 'length == 0' "$scratch/findings.json" >/dev/null; then

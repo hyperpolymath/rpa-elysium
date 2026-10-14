@@ -1,4 +1,5 @@
-== Governance
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Governance
 
 === Overview
 
@@ -30,12 +31,13 @@ Maintain existing tests - Update documentation as needed
 
 * Require discussion in issues or pull requests
 * Include new features, architectural changes, API changes
-* Need approval from at least 2 maintainers
+* Require approval from the current maintainer after public discussion;
+this project currently has one maintainer, not a two-person committee
 
 ==== Breaking Changes
 
 * Require RFC (Request for Comments) process
-* Need approval from majority of maintainers
+* Require maintainer approval after an RFC discussion
 * Must include migration guide
 
 === Code of Conduct
@@ -51,8 +53,8 @@ can be reported to the maintainers.
 
 === Licensing
 
-All contributions are made under the terms of the repository’s LICENSE
-file. By submitting a pull request, you agree to license your
+Code contributions use MPL-2.0 and prose uses CC-BY-SA-4.0, as described
+in `LICENSES/` and the Standards licence policy. By submitting a pull request, you agree to license your
 contributions accordingly.
 
 '''''

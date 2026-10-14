@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MPL-2.0
+[rsr-profile]
+capabilities = ["rust", "zig", "idris2", "gleam", "bash", "cli", "library", "ffi", "abi", "docs-site", "benchmarks", "governance-tier"]
+
+[rationale]
+rust = "Eight-crate workspace under crates/, with Rust CI and filesystem CLI."
+ffi = "Existing ffi/zig/ C ABI implementation, not empty template scaffolding."
+abi = "Existing src/abi/ Idris2 modules and rpa-elysium-abi.ipkg; canonical layout/generated-output gaps remain explicit in docs/STANDARDS-ALIGNMENT.adoc."
+gleam = "services/src/ contains source; it is not a deployed API service."
+docs-site = "Casket-based Pages workflow and www/ source."
+governance-tier = "Maintainer governance, reviewed audit and bounded affirmation."
+
+[alignment]
+standards-revision = "80014df42eb81f09396c948299febb258cec4719"
+template-revision = "c9bce256a3812575f509c9c90c64a1277a999a3b"
+evidence = "docs/STANDARDS-ALIGNMENT.adoc"

@@ -4,18 +4,18 @@
 name: Workflow Security Linter
 on:
   pull_request:
-    paths:
-      - '.github/workflows/**'
   push:
-    paths:
-      - '.github/workflows/**'
-permissions: read-all
+    branches: [main, master]
+permissions:
+  contents: read
 jobs:
   lint-workflows:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Check SPDX headers
         run: |
           errors=0
@@ -38,13 +38,9 @@ jobs:
             fi
           done
           exit $errors
-      - name: Check pinned actions
+      - name: Verify immutable direct and transitive action graph
+        run: bash scripts/check-lock-sync.sh
+      - name: Check community health and standards baseline
         run: |
-          errors=0
-          for f in .github/workflows/*.yml .github/workflows/*.yaml; do
-            [ -f "$f" ] || continue
-            # Look for uses: without SHA
-            if grep -E "uses:.*@v[0-9]" "$f" | grep -v "#"; then
-              echo "WARNING: $f has unpinned actions (missing SHA comment)"
-            fi
-          done
+          bash scripts/check-repository-health.sh
+          bash scripts/tests/repository-health-test.sh

@@ -22,6 +22,12 @@ dependencies:
     commit: sha1-1111111111111111111111111111111111111111
     owner_id: 1
     repo_id: 2
+    uses: ['owner/transitive@v1']
+  'owner/transitive@v1':
+    ref: v1
+    commit: sha1-2222222222222222222222222222222222222222
+    owner_id: 1
+    repo_id: 3
 YAML
 cp .github/workflows/example.yml original.yml
 cp .github/workflows/actions.lock original.lock
@@ -55,9 +61,22 @@ if bash "$SCRIPTS/update-actions-lock.sh" --verify-local; then echo 'FAIL: malfo
 cmp original.yml .github/workflows/example.yml
 cmp original.lock .github/workflows/actions.lock
 echo 'PASS: malformed verdict fails closed and restores inputs'
+# Seed obsolete data only for the update test; the verifier must prune it,
+# while retaining the real transitive node above.
+cat >> .github/workflows/actions.lock <<'YAML'
+  'owner/dead@v1':
+    ref: v1
+    commit: sha1-3333333333333333333333333333333333333333
+    owner_id: 1
+    repo_id: 4
+YAML
 export FAKE_VERDICT=true
 bash "$SCRIPTS/update-actions-lock.sh"
 [ "$(head -1 .github/workflows/example.yml)" = '# SPDX-License-Identifier: MPL-2.0' ]
-! grep -q verifier-only .github/workflows/example.yml .github/workflows/actions.lock
+if grep -q verifier-only .github/workflows/example.yml .github/workflows/actions.lock; then
+  echo 'FAIL: verifier-only mutations survived'; exit 1
+fi
 bash "$SCRIPTS/check-lock-sync.sh"
 echo 'PASS: update preserves reusable closure, SPDX ordering, and discards verifier mutations'
+yq -o=json '.' .github/workflows/actions.lock | jq -e '.dependencies["owner/transitive@v1"] != null and .dependencies["owner/dead@v1"] == null' >/dev/null
+echo 'PASS: restore retains reachable transitive nodes and prunes stale old records'

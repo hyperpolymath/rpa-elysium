@@ -1,21 +1,28 @@
 # SPDX-License-Identifier: MPL-2.0
-# This workflow is managed by gh actions-lock.
 name: BoJ Server Build Trigger
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
-jobs:
-  trigger-boj:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-      - name: Trigger BoJ Server (Casket/ssg-mcp)
-        run: |
-          # Send a secure trigger to boj-server to build this repository
-          curl -X POST "http://boj-server.local:7700/cartridges/ssg-mcp/invoke"             -H "Content-Type: application/json"             -d "{\"repo\": \"${{ github.repository }}\", \"branch\": \"${{ github.ref_name }}\", \"engine\": \"casket\\"}"}
-        continue-on-error: true
 permissions:
   contents: read
+jobs:
+  trigger-boj:
+    # Opt-in: public runners cannot reach the old unauthenticated .local service.
+    if: vars.BOJ_BUILD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger the configured build service securely
+        env:
+          BUILD_URL: ${{ vars.BOJ_BUILD_URL }}
+          BUILD_TOKEN: ${{ secrets.BOJ_BUILD_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$BUILD_URL" == https://* ]] || { echo '::error::BOJ_BUILD_URL must use HTTPS'; exit 1; }
+          [[ -n "$BUILD_TOKEN" ]] || { echo '::error::BOJ_BUILD_TOKEN is required'; exit 1; }
+          payload=$(jq -n --arg repo "$REPOSITORY" --arg branch "$REF_NAME" \
+            '{repo:$repo, branch:$branch, engine:"casket"}')
+          curl --fail --silent --show-error --max-time 30 --output /dev/null \
+            -H "Authorization: Bearer $BUILD_TOKEN" -H 'Content-Type: application/json' \
+            --data "$payload" "$BUILD_URL"

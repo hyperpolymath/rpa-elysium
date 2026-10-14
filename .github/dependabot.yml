@@ -11,3 +11,14 @@ updates:
           - "*"
     # v4.38.3 runs successfully on PR #144 (actions and rust analysis).
     # Do not retain the estate-wide blanket hold for the older v4.38.1 issue.
+  # Estate Cargo policy: automated security updates, not routine major churn.
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+  - package-ecosystem: "cargo"
+    directory: "/fuzz"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0

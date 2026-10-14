@@ -24,9 +24,16 @@ for file in "$wf_dir"/*.yml "$wf_dir"/*.yaml; do
   ' >> "$scratch/reusables.jsonl"
 done
 jq -s '.' "$scratch/reusables.jsonl" > "$scratch/reusables.json"
-jq --slurpfile old "$scratch/old.json" --slurpfile refs "$scratch/reusables.json" '
-  .dependencies = ($old[0].dependencies + .dependencies) |
-  reduce $refs[0][] as $r (.; .workflows[$r.workflow] = ((.workflows[$r.workflow] // []) + [$r.dependency] | unique))
+jq -L "$(dirname "${BASH_SOURCE[0]}")" --slurpfile old "$scratch/old.json" --slurpfile refs "$scratch/reusables.json" '
+  include "lock-graph";
+  ($old[0].dependencies | normal_dependencies) as $olddeps |
+  reachable([$refs[0][].dependency]; $olddeps) as $keep |
+  .dependencies = (($olddeps | with_entries(select(.key as $k | $keep | index($k)))) + (.dependencies | normal_dependencies)) |
+  reduce $refs[0][] as $r (.; .workflows[$r.workflow] = ((.workflows[$r.workflow] // []) + [$r.dependency] | unique)) |
+  # A regenerated graph may contain obsolete direct records too. Prune only
+  # after roots are restored; never drop a reachable transitive record.
+  reachable([.workflows[] | .[]]; .dependencies) as $live |
+  .dependencies |= with_entries(select(.key as $k | $live | index($k)))
 ' "$scratch/current.json" > "$scratch/merged.json"
 # Write only when parsing and merging both succeeded. The parent updater owns
 # rollback if its subsequent authoritative or structural verification fails.

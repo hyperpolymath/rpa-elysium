@@ -142,10 +142,8 @@ verify_lock_coverage() {
     return
   }
 
-  set +e
-  result=$("$GH_BIN" actions-lock --verify-local --json=valid,findings)
-  status=$?
-  set -e
+  status=0
+  result=$("$GH_BIN" actions-lock --verify-local --json=valid,findings) || status=$?
 
   if [ -z "$result" ] || ! printf '%s' "$result" | jq -e -s 'length == 1 and (.[0] | type == "object" and (.valid | type == "boolean") and (.findings | type == "array"))' >/dev/null 2>&1; then
     printf '%s\n' "$result"

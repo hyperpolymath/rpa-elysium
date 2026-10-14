@@ -1,24 +1,8 @@
-== Contributor Covenant Code of Conduct
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Code of Conduct
 
-=== Our Pledge
+The authoritative Contributor Covenant 2.1 policy is
+link:.github/CODE_OF_CONDUCT.md[the repository Code of Conduct].
 
-We pledge to make participation a harassment-free experience for
-everyone.
-
-=== Our Standards
-
-*Positive behavior:* * Using welcoming language * Being respectful of
-differing viewpoints * Accepting constructive criticism * Focusing on
-what is best for the community
-
-*Unacceptable behavior:* * Harassment, trolling, or personal attacks *
-Publishing private information without permission
-
-=== Enforcement
-
-Report issues to the maintainers. All complaints will be reviewed.
-
-=== Attribution
-
-Adapted from https://www.contributor-covenant.org/[Contributor Covenant]
-v2.1.
+Report conduct concerns privately to j.d.a.jewell@open.ac.uk.
+Do not publish another person's private information in issues or discussions.

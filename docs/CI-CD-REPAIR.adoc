@@ -1,7 +1,7 @@
 = CI/CD repair and estate rollout — 2026-10-14
 :toc:
 
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 
 == Scope and status
 
@@ -68,7 +68,7 @@ job/step refs with jq. It no longer uses a GNU-awk line parser. It:
 * does not fabricate dependencies for zero-external-ref workflows;
 * never modifies the workflows or lockfile.
 
-Fifteen positive/negative regression controls run in the Lock Sync Gate.
+Seventeen positive/negative regression controls run in the Lock Sync Gate.
 `actions-lock-update-test.sh` additionally verifies observational verification,
 rollback, malformed-verdict rejection and reusable-graph preservation.
 Neither source code from a PR nor a PR-owned updater is executed under a
@@ -100,8 +100,8 @@ SPDX first. It runs both upstream verification and structural closure checks.
 A *new* reusable ref with no resolved dependency graph remains a failure: the
 helper preserves established coverage, it does not invent a new commit or
 pretend a missing graph is resolved. Resolve and review those records before
-merging a reusable pin change, as was done for this PR. Existing unreferenced
-records may be retained; they cannot satisfy a different missing ref.
+merging a reusable pin change, as was done for this PR. Existing records are retained only when reachable from the restored reusable
+roots; unreferenced records are pruned and rejected by structural verification.
 
 `annotate-clippy.sh` keeps clippy's exit status and emits compiler diagnostics
 through the Checks API. The extra diagnostic job runs only after Rust CI fails;

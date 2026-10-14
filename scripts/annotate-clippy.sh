@@ -5,10 +5,8 @@
 set -euo pipefail
 messages=$(mktemp)
 trap 'rm -f "$messages"' EXIT
-set +e
-cargo clippy --locked --all-targets --message-format=json -- -D warnings > "$messages"
-status=$?
-set -e
+status=0
+cargo clippy --locked --all-targets --message-format=json -- -D warnings > "$messages" || status=$?
 cat "$messages"
 jq -r '
   def escape: tostring | gsub("%"; "%25") | gsub("\r"; "%0D") | gsub("\n"; "%0A");
