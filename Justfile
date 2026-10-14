@@ -163,13 +163,33 @@ crg-badge:
 secret-scan-trufflehog:
     @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true
 
-# Offline repository quality and lock regression controls (mikefarah yq v4 + jq).
+# Offline repository quality, lock and CI-ledger controls (mikefarah yq v4 + jq).
 ci-check:
     bash scripts/check-lock-sync.sh
     bash scripts/tests/check-lock-sync-test.sh
     bash scripts/tests/actions-lock-update-test.sh
     bash scripts/check-repository-health.sh
     bash scripts/tests/repository-health-test.sh
+    bash scripts/ci-check-ledger.sh --check
+    bash scripts/tests/ci-check-ledger-test.sh
+    bash scripts/tests/reconcile-audit-issue-test.sh
+    bash scripts/tests/mirror-config-test.sh
+
+# Recorded state and written determination for every workflow (offline).
+ci-ledger-check:
+    bash scripts/ci-check-ledger.sh --check
+
+# Refresh the ledger from the latest runs on the default branch. Human fields
+# (determination, reason, owner_action, issue, review_by) are left alone: a new
+# red has to be determined by hand, which is the point.
+ci-ledger-write:
+    bash scripts/ci-check-ledger.sh --write
+
+# Name each enabled-but-undeclared and enabled-but-unconfigured mirror. The
+# mirror variables only exist in Actions, so locally this reports the declared
+# set as switched off.
+check-mirror-config:
+    bash scripts/check-mirror-config.sh
 
 # Pin the security-audit tool and reject warnings/unmaintained crates.
 audit:
