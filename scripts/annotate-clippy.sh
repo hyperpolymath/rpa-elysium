@@ -11,7 +11,9 @@ status=$?
 set -e
 cat "$messages"
 jq -r '
+  # Stringify the input and escape %, CR and LF for an annotation message.
   def escape: tostring | gsub("%"; "%25") | gsub("\r"; "%0D") | gsub("\n"; "%0A");
+  # Apply message escaping and escape commas and colons for property values.
   def property: escape | gsub(","; "%2C") | gsub(":"; "%3A");
   select(.reason == "compiler-message") | .message as $m |
   select($m.level == "error" or $m.level == "warning") |

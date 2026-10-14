@@ -31,7 +31,9 @@ for file in "${files[@]}"; do
 done
 jq -s '.' "$scratch/refs.jsonl" > "$scratch/refs.json"
 jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs.json" '
-  # Owner/repo is case-insensitive; refs remain case-sensitive. Subpaths collapse.
+  # Normalise external refs to owner/repo@ref, folding owner/repo case and
+  # dropping subpaths while preserving ref case. Local ./ and docker:// refs
+  # yield no value; non-strings and malformed external refs raise jq errors.
   def norm:
     if type != "string" then error("uses/ref must be a string")
     elif startswith("./") or startswith("docker://") then empty
@@ -39,6 +41,8 @@ jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs
       capture("^(?<owner>[^/@]+)/(?<repo>[^/@]+)(?:/[^@]+)?@(?<ref>[^@[:space:]]+)$")
       | ((.owner + "/" + .repo | ascii_downcase) + "@" + .ref)
     else error("invalid external uses/ref: " + .) end;
+  # Return a sorted, deduplicated array of normalised refs, omitting local and
+  # Docker refs. Non-arrays and errors from norm abort validation.
   def refs: if type != "array" then error("lock refs must be arrays") else map(norm) | unique end;
   $lock[0] as $l | $workflows[0] as $ws |
   ($l.dependencies | to_entries | map({key: (.key | norm), value: .value}) | from_entries) as $deps |
