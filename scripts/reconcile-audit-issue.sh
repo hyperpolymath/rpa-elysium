@@ -92,8 +92,8 @@ label_args=()
 for label in "${LABELS[@]}"; do label_args+=(--label "$label"); done
 
 if [ "$DRY_RUN" -eq 0 ]; then
-  if ! gh issue list --repo "$REPO" --state open "${label_args[@]}" --limit 100 \
-       --json number,title,body > "$TMP/open.json" 2> "$TMP/open.err"; then
+  if ! gh issue list --repo "$REPO" --state open --limit 100 \
+       --json number,title,body,labels > "$TMP/open.json" 2> "$TMP/open.err"; then
     printf 'reconcile-audit-issue: cannot list issues: %s\n' "$(head -1 "$TMP/open.err")" >&2
     exit 1
   fi
@@ -104,10 +104,21 @@ fi
 number="$(jq -r --arg m "$MARKER" '[.[] | select(.body | contains($m))][0].number // ""' "$TMP/open.json")"
 adopted=""
 if [ -z "$number" ]; then
-  # Adopt an issue created by the previous, markerless publisher: same title,
-  # same labels, no findings. Otherwise the old issue would never close.
+  # Adopt an issue created by the previous, markerless publisher by its title.
+  # Labels may have changed or been removed; the old issue must still close.
   number="$(jq -r --arg t "$TITLE" '[.[] | select(.title == $t)][0].number // ""' "$TMP/open.json")"
   [ -n "$number" ] && adopted=yes
+fi
+
+# Repair missing labels on the matched issue in either audit path.
+edit_label_args=()
+if [ -n "$number" ]; then
+  for label in "${LABELS[@]}"; do
+    if ! jq -e --argjson n "$number" --arg l "$label" \
+         '.[] | select(.number == $n) | any(.labels[]?; .name == $l)' "$TMP/open.json" >/dev/null; then
+      edit_label_args+=(--add-label "$label")
+    fi
+  done
 fi
 
 # ------------------------------------------------------------- body assembly
@@ -165,7 +176,7 @@ if [ "$STATUS" -eq 0 ]; then
   # The body is rewritten as well, so a future failure finds this issue by its
   # marker rather than by its title, and the record of why it closed lives in
   # the issue rather than only in a comment.
-  gh_issue edit "$number" --repo "$REPO" --body-file "$TMP/body.md"
+  gh_issue edit "$number" --repo "$REPO" "${edit_label_args[@]}" --body-file "$TMP/body.md"
   gh_issue close "$number" --repo "$REPO" \
     --comment "Verified fixed: $RUN_URL — \`cargo audit --deny warnings\` and \`cargo audit --deny unmaintained\` both exited 0 on a run of the default branch."
   [ "$FAILED" -eq 0 ] || exit 1
@@ -186,10 +197,10 @@ else
              | sed -n 's/.*<!-- last-run: \(.*\) -->.*/\1/p' | head -1)"
   if [ "$last_run" = "$RUN_URL" ]; then
     say "audit failed: #$number already records this run; updating the report only"
-    gh_issue edit "$number" --repo "$REPO" --body-file "$TMP/body.md"
+    gh_issue edit "$number" --repo "$REPO" "${edit_label_args[@]}" --body-file "$TMP/body.md"
   else
     say "audit failed: updating #$number with the new findings"
-    gh_issue edit "$number" --repo "$REPO" --body-file "$TMP/body.md"
+    gh_issue edit "$number" --repo "$REPO" "${edit_label_args[@]}" --body-file "$TMP/body.md"
     gh_issue comment "$number" --repo "$REPO" --body "New failing audit run: $RUN_URL"
   fi
 fi

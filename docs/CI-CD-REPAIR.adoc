@@ -62,6 +62,35 @@ cannot go unrecorded again:
 link:CI-RED-DETERMINATIONS.adoc[CI red-check determinations] and
 link:audits/ci-check-ledger.json[the ledger] (triage issue #147).
 
+== A red that is fiction, second mechanism: the push actor
+
+`startup_failure` with zero jobs is usually read as a workflow-file problem. It
+has a second cause, measured on this repository on 2026-10-14:
+
+A pull request's head commit was created by the CodeRabbit app (its `Commit
+suggestion` flow). GitHub created a run for every workflow on that head and
+started none of them — `startup_failure`, no jobs, nothing to read — while the
+`.github/workflows` tree at that commit was **byte-identical** to the preceding
+head whose eight workflows all ran to success. Re-creating the same tree as a
+commit authored by the repository owner started all eight normally.
+
+Evidence: head `626d9df` (`actor=coderabbitai[bot]`, eight runs, all
+`startup_failure`, zero jobs) versus head `2c851fa` (same tree, `actor` the owner,
+all runs started). `gh run rerun` refuses: "cannot be rerun; its workflow file
+may be broken."
+
+So, before chasing YAML: if every workflow on one head failed to start and the
+workflow tree is unchanged from a head that worked, check the run's actor
+
+[source,bash]
+----
+gh api "repos/OWNER/REPO/actions/runs?head_sha=HEAD&per_page=10" \
+  --jq '.workflow_runs[] | "\(.event) \(.actor.login) \(.conclusion)"'
+----
+
+and re-push the identical tree as a commit the repository's own identity
+created. The repair is not to the workflows; it is to the head.
+
 == Preventing recurrence
 
 `check-lock-sync.sh` reads YAML through mikefarah/yq v4 and compares structured

@@ -21,6 +21,12 @@ on:
       - '**/Cargo.lock'
   schedule:
     - cron: '0 6 * * 1' # Weekly on Monday
+  workflow_dispatch: # re-run by hand: after remediating a finding, to turn the
+    # issue green without waiting for the schedule, and to prove the reconcile
+    # path itself works
+concurrency:
+  group: cargo-audit-${{ github.repository }}
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
@@ -64,4 +70,6 @@ jobs:
             --summary "$RUNNER_TEMP/cargo-audit.txt" \
             --run "$RUN_URL" \
             --event "${{ github.event_name }}" \
-            --repo "${{ github.repository }}"
+            --repo "${{ github.repository }}" \
+            --label security \
+            --label dependencies
