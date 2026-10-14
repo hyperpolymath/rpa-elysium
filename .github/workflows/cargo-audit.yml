@@ -24,6 +24,9 @@ on:
   workflow_dispatch: # re-run by hand: after remediating a finding, to turn the
     # issue green without waiting for the schedule, and to prove the reconcile
     # path itself works
+concurrency:
+  group: cargo-audit-${{ github.repository }}
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
