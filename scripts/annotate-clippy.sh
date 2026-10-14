@@ -11,10 +11,11 @@ status=$?
 set -e
 cat "$messages"
 jq -r '
-  def escape: tostring | gsub("%"; "%25") | gsub("\r"; "%0D") | gsub("\n"; "%0A") | gsub(","; "%2C") | gsub(":"; "%3A");
+  def escape: tostring | gsub("%"; "%25") | gsub("\r"; "%0D") | gsub("\n"; "%0A");
+  def property: escape | gsub(","; "%2C") | gsub(":"; "%3A");
   select(.reason == "compiler-message") | .message as $m |
   select($m.level == "error" or $m.level == "warning") |
   ($m.spans | map(select(.is_primary)) | first // {}) as $s |
-  "::error file=\(($s.file_name // "Cargo.toml") | escape),line=\($s.line_start // 1)::\(($m.rendered // $m.message) | escape)"
+  "::error file=\(($s.file_name // "Cargo.toml") | property),line=\($s.line_start // 1)::\(($m.rendered // $m.message) | escape)"
 ' "$messages"
 exit "$status"

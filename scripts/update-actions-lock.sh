@@ -20,6 +20,12 @@ if [ "${1:-}" = "--verify-local" ]; then
 fi
 
 WF_DIR="${1:-.github/workflows}"
+# gh-actions-lock operates on the repository-root workflow directory. Do not
+# snapshot one directory while asking the tool to verify a different one.
+[ "$WF_DIR" = .github/workflows ] || {
+  echo 'update-actions-lock: run from the repository root; only .github/workflows is supported' >&2
+  exit 2
+}
 GH_BIN="${GH_BIN:-gh}"
 
 [ -d "$WF_DIR" ] || { echo "update-actions-lock: no workflow directory: $WF_DIR" >&2; exit 1; }
@@ -216,6 +222,20 @@ snapshot_workflows "$SNAPSHOT/original-workflows"
 
 if [ "$MODE" = update ]; then
   "$GH_BIN" actions-lock
+  bash "$(dirname "${BASH_SOURCE[0]}")/restore-reusable-lock-coverage.sh" \
+    "$SNAPSHOT/actions.lock" "$WF_DIR"
+  # The generator prepends a management marker. Keep SPDX first so a valid
+  # lock refresh cannot reintroduce the header failures repaired in PR #145.
+  for file in "$WF_DIR"/*.yml "$WF_DIR"/*.yaml; do
+    [ -f "$file" ] || continue
+    spdx=$(grep -m1 '^# SPDX-License-Identifier:' "$file") || {
+      echo "::error::$file has no SPDX header; choose its correct licence first"
+      exit 1
+    }
+    { printf '%s\n' "$spdx"; grep -v '^# SPDX-License-Identifier:' "$file"; } \
+      > "$SNAPSHOT/normalised.yml"
+    cp "$SNAPSHOT/normalised.yml" "$file"
+  done
 fi
 
 # Despite its name, --verify-local can mutate workflow bytes (including

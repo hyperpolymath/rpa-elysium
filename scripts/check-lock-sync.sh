@@ -48,7 +48,7 @@ jq -n --slurpfile lock "$scratch/lock.json" --slurpfile workflows "$scratch/refs
       if $want != $got then {type: "lock-drift", workflow: $w.path, missing: ($want - $got), stale: ($got - $want)} else empty end),
     ($l.workflows | keys[] | . as $p | select(all($ws[]; .path != $p)) | {type: "orphan-workflow", workflow: $p}),
     (((($l.workflows[] | refs[]), ($l.dependencies[] | (.uses // []) | refs[])) as $ref |
-      select($deps[$ref] == null) | {type: "dangling-edge", ref: $ref})), 
+      select($deps[$ref] == null) | {type: "dangling-edge", ref: $ref})),
     ($deps | to_entries[] | select((.value.commit | type != "string") or ((.value.commit // "") | test("^sha1-[0-9a-f]{40}$") | not)) |
       {type: "invalid-commit", ref: .key})
   ] | unique

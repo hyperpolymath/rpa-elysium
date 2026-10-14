@@ -64,3 +64,6 @@ jobs:
 
       - name: Exercise lock-sync positive and negative controls
         run: bash scripts/tests/check-lock-sync-test.sh
+
+      - name: Exercise atomic lock-update controls
+        run: bash scripts/tests/actions-lock-update-test.sh
