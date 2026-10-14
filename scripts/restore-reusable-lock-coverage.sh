@@ -37,5 +37,5 @@ jq -L "$(dirname "${BASH_SOURCE[0]}")" --slurpfile old "$scratch/old.json" --slu
 ' "$scratch/current.json" > "$scratch/merged.json"
 # Write only when parsing and merging both succeeded. The parent updater owns
 # rollback if its subsequent authoritative or structural verification fails.
-yq -P -o=yaml '.' "$scratch/merged.json" > "$scratch/actions.lock"
+jq -r -f "$(dirname "${BASH_SOURCE[0]}")/render-actions-lock.jq" "$scratch/merged.json" > "$scratch/actions.lock"
 cp "$scratch/actions.lock" "$wf_dir/actions.lock"

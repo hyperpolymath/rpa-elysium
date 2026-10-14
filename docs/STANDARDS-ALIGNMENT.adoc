@@ -59,8 +59,11 @@ team, stable-release backports or third-party legal immunity without evidence.
   privileged PR execution has been added.
 * Audit issue creation is disabled for PR events, where writable issue tokens
   may be unavailable; the audit remains blocking on PRs.
+* Local external action refs are commit-pinned as well as locked; the site
+  builder source checkout is pinned to `3dcade85400cef62949a6a0ab6900f5e7f065e56`.
 * The broken, unauthenticated HTTP BoJ trigger is replaced by a manual opt-in
-  HTTPS/authenticated integration with a bounded request and JSON-safe inputs.
+  HTTPS/authenticated integration with a bounded request, JSON-safe inputs and
+  block-mode egress restricted by `BOJ_BUILD_ALLOWED_ENDPOINTS`.
   It is not a claimed working deployment until a maintainer configures it.
 * Developer tasks now fail on the actual Rust failure instead of falling back
   to unrelated runtimes. Unused generic Python/Go/Java/yarn tooling was removed.
@@ -86,8 +89,8 @@ that every remote setting is enabled.
 == Explicit remaining canonical-layout gaps
 
 The current Standards profile checker expects Rust at `src/**/*.rs` rather than
-workspace `crates/*/src/`, FFI at `src/interface/ffi/`, an `abi.ipkg`, Idris at
-`src/interface/abi/` and a `src/interface/generated/` tree. This repository uses
+workspace `crates/*/src/`, FFI at the canonical interface FFI directory, an `abi.ipkg`, Idris at
+the canonical interface ABI directory and a the canonical generated-interface directory tree. This repository uses
 `crates/`, `ffi/zig/`, `rpa-elysium-abi.ipkg` and `src/abi/`; no generated ABI
 artefacts are claimed. The exact upstream checker therefore reports these as
 *MISSING*. We do not create empty scaffolds, change declared capabilities to

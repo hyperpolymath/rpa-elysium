@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Monitor build-service egress
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: block
+          allowed-endpoints: ${{ vars.BOJ_BUILD_ALLOWED_ENDPOINTS }}
       - name: Trigger the configured build service securely
         env:
           BUILD_URL: ${{ vars.BOJ_BUILD_URL }}
