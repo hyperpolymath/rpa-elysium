@@ -80,3 +80,14 @@ bash "$SCRIPTS/check-lock-sync.sh"
 echo 'PASS: update preserves reusable closure, SPDX ordering, and discards verifier mutations'
 yq -o=json '.' .github/workflows/actions.lock | jq -e '.dependencies["owner/transitive@v1"] != null and .dependencies["owner/dead@v1"] == null' >/dev/null
 echo 'PASS: restore retains reachable transitive nodes and prunes stale old records'
+# The deployed Hypatia reader needs the official quoted lock dialect.
+grep -q "^version: 'v0.0.3'$" .github/workflows/actions.lock
+grep -q "^    'owner/transitive@v1':$" .github/workflows/actions.lock
+yq -o=json '.' .github/workflows/actions.lock | jq -e '.dependencies["owner/transitive@v1"].owner_id | type == "number"' >/dev/null
+if jq -r -f "$SCRIPTS/render-actions-lock.jq" <<'JSON' > "$ROOT/unexpected-lock" 2> "$ROOT/renderer-error"
+{"version":"v0.0.3","workflows":{},"dependencies":{"owner/action@v1":{"unknown_field":true}}}
+JSON
+then
+  echo 'FAIL: renderer dropped unknown schema fields'; exit 1
+fi
+echo 'PASS: canonical quote formatting, numeric identities and unknown-field rejection'
