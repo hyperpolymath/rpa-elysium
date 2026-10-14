@@ -58,6 +58,8 @@ echo 'PASS: malformed verdict fails closed and restores inputs'
 export FAKE_VERDICT=true
 bash "$SCRIPTS/update-actions-lock.sh"
 [ "$(head -1 .github/workflows/example.yml)" = '# SPDX-License-Identifier: MPL-2.0' ]
-! grep -q verifier-only .github/workflows/example.yml .github/workflows/actions.lock
+if grep -q verifier-only .github/workflows/example.yml .github/workflows/actions.lock; then
+  echo 'FAIL: verifier mutations survived'; exit 1
+fi
 bash "$SCRIPTS/check-lock-sync.sh"
 echo 'PASS: update preserves reusable closure, SPDX ordering, and discards verifier mutations'
