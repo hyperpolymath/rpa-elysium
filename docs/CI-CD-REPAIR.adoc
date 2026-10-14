@@ -53,6 +53,15 @@ not evidence that those repositories were changed or their CI became green.
   the crates.io index; GitHub's locked build and security audit validate the
   resulting graph.
 
+== Follow-up: reds that had no determination
+
+This repair made the workflows run again, which exposed checks that were already
+red. The follow-up measured every workflow's state on the default branch, recorded
+a determination for each non-green one, and wired the record into CI so a red
+cannot go unrecorded again:
+link:CI-RED-DETERMINATIONS.adoc[CI red-check determinations] and
+link:audits/ci-check-ledger.json[the ledger] (triage issue #147).
+
 == Preventing recurrence
 
 `check-lock-sync.sh` reads YAML through mikefarah/yq v4 and compares structured

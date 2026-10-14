@@ -1,0 +1,333 @@
+{
+  "default_branch": "main",
+  "description": "Recorded state and determination for every workflow in this repository. Green entries carry the run that proves it; every non-green entry carries the reason, the owner action that clears it, an issue, and a review date. Validate with scripts/ci-check-ledger.sh --check.",
+  "repo": "hyperpolymath/rpa-elysium",
+  "schema_version": "1.0",
+  "updated": "2026-10-14",
+  "workflows": [
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38602621810"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "BoJ Server Build Trigger",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/boj-build.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38606899195"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Cargo Audit",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/cargo-audit.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "cancelled",
+      "determination": "in-triage",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608640928"
+      ],
+      "file_updated": "2026-10-14",
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "GitHub Pages",
+      "observed": "2026-10-14",
+      "owner_action": "Enable GitHub Pages with source 'GitHub Actions', or retire the workflow and its actions.lock entry and drop docs-site from .machine_readable/rsr-profile.a2ml.",
+      "path": ".github/workflows/casket-pages.yml",
+      "reason": "Pages deploys alternate cancelled and startup_failure since 2026-09-22 with no successful deployment in the window; a Pages workflow cannot start when the repository site is not configured for GitHub Actions, which is the shape startup_failure takes here.",
+      "review_by": "2026-11-13",
+      "state": "superseded",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "startup_failure",
+      "determination": "in-triage",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38097301623"
+      ],
+      "file_updated": "2026-10-14",
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "ClusterFuzzLite Batch",
+      "observed": "2026-10-11",
+      "owner_action": "Run 'ClusterFuzzLite Batch' from the Actions UI (or wait for the Sunday schedule) and record the result; if it fails, fix the harness or retire both cflite workflows and their actions.lock entries in one change.",
+      "path": ".github/workflows/cflite_batch.yml",
+      "reason": "The weekly ClusterFuzzLite batch run of 2026-10-11 failed before the in-file build.sh and vulnerabilities.sarif repairs now on main, so the current file is unmeasured rather than known-red.",
+      "review_by": "2026-11-13",
+      "state": "stale",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "failure",
+      "determination": "in-triage",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/35542891981"
+      ],
+      "file_updated": "2026-10-14",
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "ClusterFuzzLite PR",
+      "observed": "2026-09-20",
+      "owner_action": "Push a change under **/*.rs, or dispatch 'ClusterFuzzLite PR', and record the result; if it fails, fix the harness or retire both cflite workflows and their actions.lock entries in one change.",
+      "path": ".github/workflows/cflite_pr.yml",
+      "reason": "The last run (2026-09-20) predates the in-file build.sh and vulnerabilities.sarif repairs, and the workflow only runs on pull requests that touch **/*.rs, so the repaired file has never been measured.",
+      "review_by": "2026-11-13",
+      "state": "stale",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608640985"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "CodeQL Security Analysis",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/codeql.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608641076"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Dogfood Gate",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/dogfood-gate.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608641802"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Governance",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/governance.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608641836"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Hypatia Security Scan",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/hypatia-scan.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "failure",
+      "determination": "exempt",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/29342839608"
+      ],
+      "file_updated": null,
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "Instant Sync",
+      "observed": "2026-07-14",
+      "owner_action": "Confirm the dormancy is permanent and delete the workflow plus its actions.lock entry, or record what unblocks the farm dispatch token.",
+      "path": ".github/workflows/instant-sync.yml",
+      "reason": "disabled_manually in GitHub: the forge-propagation dispatch to .git-private-farm has not run since 2026-07-14. Nothing is broken and no run is expected while the workflow is off.",
+      "review_by": "2026-11-13",
+      "state": "dormant",
+      "workflow_state": "disabled_manually"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38613978647",
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/35776613292"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Label Triage",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/label-triage.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/36816004282"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Labels",
+      "observed": "2026-10-01",
+      "owner_action": null,
+      "path": ".github/workflows/labels.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608640933"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Lock Sync Gate",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/lock-sync-gate.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "failure",
+      "determination": "in-triage",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608642035"
+      ],
+      "file_updated": "2026-10-14",
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "Mirror to Git Forges",
+      "observed": "2026-10-14",
+      "owner_action": "Decide declare-or-disable for each enabled forge (gitea and disroot, plus the undeclared-but-working sourcehut and radicle), set or remove vars.GITEA_HOST accordingly, and diagnose or retire the Disroot leg.",
+      "path": ".github/workflows/mirror.yml",
+      "reason": "Two of seven mirror legs fail on main: mirror-gitea exits 1 (the ssh-keyscan step runs with an empty vars.GITEA_HOST) and mirror-disroot exits 128 (git push refused). Seven legs are enabled while META.a2ml, README.adoc and ROADMAP.adoc declare three mirrors.",
+      "review_by": "2026-11-13",
+      "state": "red",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "startup_failure",
+      "determination": "exempt",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/29342847990"
+      ],
+      "file_updated": null,
+      "issue": "https://github.com/hyperpolymath/rpa-elysium/issues/147",
+      "name": "Push email notification",
+      "observed": "2026-07-14",
+      "owner_action": "Confirm the freeze is permanent and delete the workflow plus its actions.lock entry, or re-enable it by setting the PUSH_EMAIL_ENABLED variable to true and re-running once.",
+      "path": ".github/workflows/push-email-notify.yml",
+      "reason": "disabled_manually in GitHub since the 2026-07-20 notification-storm freeze; the file itself documents PUSH_EMAIL_ENABLED=true as the single on/off switch and records why the concurrency group must stay per-run.",
+      "review_by": "2026-11-13",
+      "state": "dormant",
+      "workflow_state": "disabled_manually"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608641840"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Rust CI",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/rust-ci.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38510365624"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "OSSF Scorecard",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/scorecard.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608641807"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Secret Scanner",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/secret-scanner.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    },
+    {
+      "conclusion": "success",
+      "determination": "green",
+      "evidence": [
+        "https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608640962"
+      ],
+      "file_updated": null,
+      "issue": null,
+      "name": "Workflow Security Linter",
+      "observed": "2026-10-14",
+      "owner_action": null,
+      "path": ".github/workflows/workflow-linter.yml",
+      "reason": "",
+      "review_by": null,
+      "state": "green",
+      "workflow_state": "active"
+    }
+  ]
+}

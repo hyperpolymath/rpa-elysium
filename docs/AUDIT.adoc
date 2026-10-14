@@ -4,8 +4,10 @@
 Audit scope: CI quality, action-graph integrity, supply-chain controls,
 community-health surfaces and RSR template applicability, 2026-10-14.
 
-See link:STANDARDS-ALIGNMENT.adoc[authority revisions, findings, checks and gaps]
-and link:CI-CD-REPAIR.adoc[the original multi-gate CI repair].
+See link:STANDARDS-ALIGNMENT.adoc[authority revisions, findings, checks and gaps],
+link:CI-CD-REPAIR.adoc[the original multi-gate CI repair] and
+link:CI-RED-DETERMINATIONS.adoc[the recorded state and determination for every
+workflow] (ledger: link:audits/ci-check-ledger.json[audits/ci-check-ledger.json]).
 This is a maintainer/agent review, not an independent penetration test or
 formal verification of the whole application. Do not infer release readiness
 or legal certification from this file's presence.

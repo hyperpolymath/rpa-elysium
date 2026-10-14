@@ -1,0 +1,161 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= CI red-check determinations
+:toc:
+:toclevels: 3
+
+== Why this file exists
+
+Issue hyperpolymath/rpa-elysium#138[#138] was filed to triage "2 pre-existing red
+checks" exposed when the `actions.lock` cure revived this repository's workflows.
+The two entries in that issue were both named `lint-workflows` — one check
+rendered twice, which is the shape the estate-wide survey in
+hyperpolymath/standards#994[standards#994] records for this class. That check is
+green here now.
+
+Measuring the repository instead of the check name found more than the issue
+listed: five workflows that are red, stale, superseded or dormant on `main`, none
+of them triaged anywhere. They are now determined in
+link:audits/ci-check-ledger.json[the CI check ledger] and owned by
+hyperpolymath/rpa-elysium#147[#147].
+
+The lesson this file records is not "there were more reds than expected". It is
+that reds could accumulate unrecorded because nothing in the repository said what
+each workflow's state was supposed to be. Determinations now live in a checked-in
+ledger that CI verifies, so the question "is this red known?" has a mechanical
+answer.
+
+== What was measured
+
+Measured 2026-10-14 against `main` at `ac5946d`, from the GitHub Actions API: the
+latest *completed* run per workflow on the default branch, plus each workflow's
+own enabled/disabled state. 19 workflow files: **13 green, 6 with a written
+determination**.
+
+|===
+|workflow |state |evidence |determination
+
+|`mirror.yml` |red |run https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608642035[38608642035] — `mirror-gitea` exit 1, `mirror-disroot` exit 128 |#147 — declare-or-disable, plus the preflight below
+|`cflite_batch.yml` |stale |run 2026-10-11 precedes the in-file repairs |#147 — re-measure, then fix or retire
+|`cflite_pr.yml` |stale |run 2026-09-20 precedes the in-file repairs |#147 — re-measure on a `**/*.rs` pull request
+|`casket-pages.yml` |superseded |`cancelled` since 2026-09-22, no successful deploy |#147 — enable Pages or retire
+|`instant-sync.yml` |dormant |`disabled_manually`, last run 2026-07-14 |#147 — record the decision or delete
+|`push-email-notify.yml` |dormant |`disabled_manually`, last run 2026-07-14 |#147 — record the decision or delete
+|===
+
+`lint-workflows` itself is green: workflow-linter run
+https://github.com/hyperpolymath/rpa-elysium/actions/runs/38608640962[38608640962]
+on `main`. The repair is in the repository (SPDX-before-marker ordering, the
+structured lock verifier, the governance pin), not a muted step — see
+link:CI-CD-REPAIR.adoc[].
+
+A *stale* state is the honest reading of `cflite_*`: the failure is older than the
+last commit that touched the workflow file, so it measures an earlier revision.
+The repairs are in the tree; nobody has re-measured them, and asserting they work
+would be the same mistake in the opposite direction.
+
+== The ledger
+
+`docs/audits/ci-check-ledger.json` is the single place a determination is
+written, and `scripts/ci-check-ledger.sh` is what reads it.
+
+Offline (`--check`, wired into `just ci-check` and into CI on every event):
+
+* the ledger must cover **exactly** the workflow files on disk — a new workflow
+  cannot be added without a recorded state, and a deleted one cannot leave a
+  ghost entry;
+* `green` needs an actions-run URL from *this* repository, and its determination
+  may only be `green` or `fixed`;
+* `red` is the strict tier: it needs a reason, an owner action, an issue URL and
+  a review date;
+* `stale`, `superseded`, `dormant`, `never-run` and `unknown` are the light tier:
+  a reason, a review date, and at least one of owner action or issue;
+* review dates more than 90 days out are rejected, so a determination cannot be
+  parked indefinitely.
+
+Online (`--verify`, run by `workflow-linter` on pushes to the default branch):
+
+* recorded states are compared with the latest runs;
+* a workflow recorded as green that is now red fails the check — an unrecorded
+  red is precisely what this mechanism exists to prevent;
+* benign transitions (a merged entry going green, a superseded run) are printed
+  as drift to record and do not fail, because recording them is bookkeeping
+  rather than a hazard;
+* when the API cannot be read the ledger is reported as **not verified**. It is
+  never reported as verified on an unreadable observation set.
+
+`just ci-ledger-write` refreshes states, conclusions and evidence from the API and
+deliberately leaves every human field untouched: a new red still has to be
+determined by hand, which is the entire point.
+
+== The dependency-issue lifecycle
+
+hyperpolymath/rpa-elysium#143[#143] and its predecessor #113 are what the old
+`cargo-audit.yml` produced: an issue whose whole body was "Run `cargo audit`
+locally for details", no findings, no acceptance criteria, never closed. Two of
+them, indistinguishable from a live vulnerability.
+
+The workflow now runs both audits (blocking, unchanged: `--deny warnings` and
+`--deny unmaintained`), captures the output, and hands it to
+`scripts/reconcile-audit-issue.sh`, which:
+
+* on a failing run, keeps **one** issue carrying a stable marker, the audit
+  output, the run that produced it and acceptance criteria; a new failing run is
+  commented so the finding history survives;
+* on a passing run, comments the green run and closes the marked issue. Closing is
+  evidence — the gate that opened the issue is the gate that closes it;
+* adopts an issue created by the old, markerless publisher (same title, same
+  labels) instead of opening a duplicate beside it;
+* never touches issues on pull requests.
+
+The advisory that produced #143, RUSTSEC-2026-0316, was fixed by the
+`wasmtime 36.0.16` / `async-trait 0.1.92` update in
+link:CI-CD-REPAIR.adoc[the CI repair]; cargo-audit run
+https://github.com/hyperpolymath/rpa-elysium/actions/runs/38606899195[38606899195]
+on `main` is green and is the evidence the reconciler links when it closes #143.
+
+== The mirror configuration
+
+Seven mirror legs run against three declared mirrors. The declaration is
+`.machine_readable/6a2/META.a2ml` (`forges = ["github", "gitlab", "bitbucket",
+"codeberg"]`), and `README.adoc` §Multi-Forge Distribution and `ROADMAP.adoc`
+agree with it. `gitea` and `disroot` are enabled but undeclared; `sourcehut` and
+`radicle` are enabled, undeclared, and currently working.
+
+`scripts/check-mirror-config.sh` runs as the `mirror-preflight` job in
+`mirror.yml` before the fan-out. It fails on an enabled-but-undeclared forge and
+on an enabled-but-unconfigured one — including the specific shape that reddened
+`main`: the gitea leg reads `vars.GITEA_HOST`, and an empty host makes
+`ssh-keyscan` exit 1 before any push is attempted. The preflight reads repository
+*variables* only: an empty forge key is already handled by the reusable (the job
+prints a skip notice rather than mirroring), and a job that only compares sets
+has no reason to hold an SSH key. The five working legs and the
+two failing ones stay exactly as they are until the owner decides; what changes is
+that the decision is now named in the run instead of left as an exit code.
+
+== What this does not claim
+
+* No Idris2, Zig or Rust toolchain is available in the environment where this was
+  written: nothing here compiles anything, and the ABI/FFI evidence rules in
+  link:STANDARDS-ALIGNMENT.adoc[] are unaffected. The RSR gaps measured there
+  remain open.
+* The ledger records GitHub Actions state. It is not a claim that the 13 green
+  workflows test what they appear to test.
+* Closing the dependency issue when the audit passes is not a waiver: the audit
+  steps are unchanged and blocking, and a waiver of a specific advisory still has
+  to be written into the change that needs it.
+* Estate-wide rollout is not part of this: the mirror reusable's missing-host
+  behaviour and the templated `cargo-audit.yml` publisher are both standards-side
+  candidates, filed separately rather than patched per repository.
+
+== Updating the record
+
+[source,bash]
+----
+just ci-ledger-check          # offline: does the ledger still describe the workflows?
+just ci-ledger-write          # refresh states/evidence from the latest runs
+$EDITOR docs/audits/ci-check-ledger.json   # record the determination for any new red
+just ci-ledger-check          # the entry is rejected until reason/owner/issue/review date are real
+----
+
+Interpretation belongs in the ledger entry (reason and owner action) and in the
+issue the entry points at. Evidence belongs in the entry's `evidence` list.

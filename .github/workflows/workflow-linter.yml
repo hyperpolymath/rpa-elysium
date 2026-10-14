@@ -6,8 +6,16 @@ on:
   pull_request:
   push:
     branches: [main, master]
+  schedule:
+    # Weekly, after the Monday cargo-audit run: a workflow can go red without a
+    # push (the ClusterFuzzLite batch is on a Sunday schedule), and a red that
+    # nobody pushes near would otherwise go unrecorded until the next commit.
+    - cron: '30 6 * * 1'
 permissions:
   contents: read
+  # Reading the run list is what lets the ledger verify recorded states against
+  # the latest runs on the default branch.
+  actions: read
 jobs:
   lint-workflows:
     runs-on: ubuntu-latest
@@ -44,3 +52,16 @@ jobs:
         run: |
           bash scripts/check-repository-health.sh
           bash scripts/tests/repository-health-test.sh
+      - name: Verify the CI check ledger
+        # Offline structure always; the recorded states are verified against the
+        # latest runs on the default branch, where a green workflow that has
+        # gone red must not pass unnoticed (docs/CI-RED-DETERMINATIONS.adoc).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bash scripts/ci-check-ledger.sh --check
+          if [ '${{ github.event_name }}' = 'pull_request' ]; then
+            echo "pull request: recorded states are verified on the default branch"
+          else
+            bash scripts/ci-check-ledger.sh --verify
+          fi

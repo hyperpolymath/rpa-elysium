@@ -1,5 +1,24 @@
 # SPDX-License-Identifier: MPL-2.0
 # This workflow is managed by gh actions-lock.
+# Mirror to Git Forges.
+#
+# The fan-out itself lives in hyperpolymath/standards (mirror-reusable.yml),
+# where each forge job is gated on a repository variable and skips itself when
+# its key is absent. Two failure modes that gate cannot see are caught here
+# first, by the preflight job below:
+#
+#   * a forge enabled for this repository that META.a2ml does not declare, so
+#     the enabled set and the declared set disagree; and
+#   * a forge enabled but not actually configured — in particular the gitea leg,
+#     which reads `vars.GITEA_HOST` and fails inside ssh-keyscan (exit 1, no
+#     push attempted) when that variable is empty.
+#
+# The preflight reads variables only, never the forge keys: an empty key is
+# handled by the reusable (skip plus notice), and no job here needs to hold one.
+#
+# On 2026-09-15 the mirror legs here went red in exactly that second shape:
+# mirror-gitea exit 1 and mirror-disroot exit 128, with nothing in the run to
+# say which configuration was missing. The preflight names it.
 name: Mirror to Git Forges
 on:
   push:
@@ -9,6 +28,27 @@ permissions:
   actions: read
   contents: read
 jobs:
+  mirror-preflight:
+    name: Mirror configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      CODEBERG_MIRROR_ENABLED: ${{ vars.CODEBERG_MIRROR_ENABLED }}
+      GITLAB_MIRROR_ENABLED: ${{ vars.GITLAB_MIRROR_ENABLED }}
+      BITBUCKET_MIRROR_ENABLED: ${{ vars.BITBUCKET_MIRROR_ENABLED }}
+      SOURCEHUT_MIRROR_ENABLED: ${{ vars.SOURCEHUT_MIRROR_ENABLED }}
+      RADICLE_MIRROR_ENABLED: ${{ vars.RADICLE_MIRROR_ENABLED }}
+      GITEA_MIRROR_ENABLED: ${{ vars.GITEA_MIRROR_ENABLED }}
+      GITEA_HOST: ${{ vars.GITEA_HOST }}
+      DISROOT_MIRROR_ENABLED: ${{ vars.DISROOT_MIRROR_ENABLED }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the enabled mirror set against the declared one
+        run: bash scripts/check-mirror-config.sh
   mirror:
     uses: hyperpolymath/standards/.github/workflows/mirror-reusable.yml@84355587cb2a1f86e6882de83514a32db2646e7a
     secrets: inherit
