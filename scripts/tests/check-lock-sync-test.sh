@@ -6,6 +6,8 @@ ROOT=$(mktemp -d)
 trap 'rm -rf "$ROOT"' EXIT
 mkdir -p "$ROOT/.github/workflows"
 WF="$ROOT/.github/workflows"
+# Remove the files in WF and recreate a workflow and transitively closed lock
+# with reusable-workflow and action refs as the baseline for each test case.
 fixture() {
   rm -f "$WF"/*
   cat > "$WF/example.yml" <<'YAML'
@@ -41,6 +43,8 @@ dependencies:
     repo_id: 3
 YAML
 }
+# Run CHECK against WF and assert the expected pass/fail outcome in $1, using $2
+# as the test label. Print captured diagnostics and exit 1 on an unexpected result.
 assert_status() {
   expected=$1; label=$2
   rc=0
