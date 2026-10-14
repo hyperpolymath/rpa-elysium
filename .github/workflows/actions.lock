@@ -28,7 +28,7 @@ workflows:
     '.github/workflows/dogfood-gate.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/governance.yml':
-        - 'hyperpolymath/standards@80014df42eb81f09396c948299febb258cec4719'
+        - 'hyperpolymath/standards@c11c255e1b5546854e874d1486d61d6d5a4da29a'
     '.github/workflows/hypatia-scan.yml':
         - 'hyperpolymath/standards@84355587cb2a1f86e6882de83514a32db2646e7a'
     '.github/workflows/instant-sync.yml':
@@ -214,9 +214,9 @@ dependencies:
         commit: 'sha1-571cc734cd69fb846032ec77a662aa8ee4fc32cd'
         owner_id: 6759885
         repo_id: 1116521501
-    'hyperpolymath/standards@80014df42eb81f09396c948299febb258cec4719':
-        ref: '80014df42eb81f09396c948299febb258cec4719'
-        commit: 'sha1-80014df42eb81f09396c948299febb258cec4719'
+    'hyperpolymath/standards@c11c255e1b5546854e874d1486d61d6d5a4da29a':
+        ref: 'c11c255e1b5546854e874d1486d61d6d5a4da29a'
+        commit: 'sha1-c11c255e1b5546854e874d1486d61d6d5a4da29a'
         owner_id: 6759885
         repo_id: 1116521501
         uses:
@@ -229,7 +229,6 @@ dependencies:
             - 'actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3'
             - 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
             - 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9'
-            - 'denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed'
             - 'dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f'
             - 'editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393'
             - 'erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124'
