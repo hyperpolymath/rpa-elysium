@@ -114,6 +114,8 @@ workflow_local_uses_resolve() {
   done <<< "$local_refs"
 }
 
+# Return 0 only when the finding category in $1 is the known sha-as-ref advisory;
+# return 1 for every other category, regardless of its reported severity.
 is_advisory_category() {
   # Advisory findings never affect the tool's own `valid` bit: a tree whose
   # only findings are `sha-as-ref` reports `"valid": true` (measured
