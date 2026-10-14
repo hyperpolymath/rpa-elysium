@@ -16,19 +16,19 @@ default:
 
 # Build all crates in release mode
 build:
-    cargo build --release
+    cargo build --locked --workspace --release
 
 # Build in debug mode
 build-debug:
-    cargo build
+    cargo build --locked --workspace
 
 # Run all tests
 test:
-    cargo test --workspace
+    cargo test --locked --workspace --all-targets
 
 # Run tests with output
 test-verbose:
-    cargo test --workspace -- --nocapture
+    cargo test --locked --workspace --all-targets -- --nocapture
 
 # Build + typecheck the Idris2 ABI layer (src/abi/) via its package.
 verify-abi:
@@ -59,7 +59,7 @@ fmt-check:
 
 # Run clippy lints
 lint:
-    cargo clippy --workspace --all-targets -- -D warnings
+    cargo clippy --locked --workspace --all-targets -- -D warnings
 
 # Run all checks (format, lint, test)
 check: fmt-check lint test
@@ -162,3 +162,17 @@ crg-badge:
 
 secret-scan-trufflehog:
     @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true
+
+# Offline repository quality and lock regression controls (mikefarah yq v4 + jq).
+ci-check:
+    bash scripts/check-lock-sync.sh
+    bash scripts/tests/check-lock-sync-test.sh
+    bash scripts/tests/actions-lock-update-test.sh
+    bash scripts/check-repository-health.sh
+    bash scripts/tests/repository-health-test.sh
+
+# Pin the security-audit tool and reject warnings/unmaintained crates.
+audit:
+    cargo install cargo-audit --version 0.22.2 --locked
+    cargo audit --deny warnings
+    cargo audit --deny unmaintained

@@ -55,5 +55,6 @@ Containerfile  text eol=lf
 *.gz    binary
 
 # Lock files
-Cargo.lock  text eol=lf -diff
+Cargo.lock  text eol=lf
+.github/workflows/actions.lock text eol=lf
 flake.lock  text eol=lf -diff

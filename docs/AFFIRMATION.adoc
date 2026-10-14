@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Bounded affirmation
+
+The project adopts the applicable community-health and licence baseline of
+Hyperpolymath Standards and capability-gated RSR template policy.
+Evidence and outstanding limitations are in
+link:STANDARDS-ALIGNMENT.adoc[the alignment audit].
+
+This affirms policy intent, not a perfect security score, independently
+certified compliance, or completion of untested ABI/FFI work. Changes that
+expand capabilities must update the profile and supply corresponding evidence.

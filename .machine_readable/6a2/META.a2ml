@@ -23,7 +23,7 @@ rationale = "BEAM runtime provides fault tolerance and actor model. Gleam adds t
 
 [architecture-decisions.adr-003]
 title = "ReScript for management console"
-status = "accepted"
+status = "superseded"
 date = "2024-12-28"
 rationale = "Type-safe React-compatible UI without TypeScript. Compiles to clean JS."
 

@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Support
+
+Use https://github.com/hyperpolymath/rpa-elysium/discussions[Discussions] for
+questions and design help. Check link:README.adoc[the README] and
+link:QUICKSTART-DEV.adoc[developer quickstart] first.
+
+Use https://github.com/hyperpolymath/rpa-elysium/issues/new/choose[issue forms]
+for reproducible bugs and feature requests. Include your commit, platform,
+exact command, observed output and minimal reproduction. Remove credentials,
+personal data and private infrastructure details before sharing logs.
+
+Security reports belong in link:SECURITY.adoc[the private security channel],
+not public support threads. This is a volunteer-maintained project with no
+paid support contract or guaranteed response time.

@@ -1,0 +1,46 @@
+[
+  {
+    "owner": "Invisible-Door-Studios",
+    "scanned": 29,
+    "workflowRepos": 29,
+    "lockDriftRepos": 14,
+    "danglingRepos": 0,
+    "missingLockRepos": 13,
+    "headerRepos": 10,
+    "policyDriftRepos": 5,
+    "errors": 1
+  },
+  {
+    "owner": "hyperpolymath",
+    "scanned": 351,
+    "workflowRepos": 350,
+    "lockDriftRepos": 229,
+    "danglingRepos": 7,
+    "missingLockRepos": 99,
+    "headerRepos": 193,
+    "policyDriftRepos": 88,
+    "errors": 37
+  },
+  {
+    "owner": "metadatastician",
+    "scanned": 41,
+    "workflowRepos": 39,
+    "lockDriftRepos": 15,
+    "danglingRepos": 0,
+    "missingLockRepos": 10,
+    "headerRepos": 21,
+    "policyDriftRepos": 3,
+    "errors": 1
+  },
+  {
+    "owner": "stuff-of-awe",
+    "scanned": 11,
+    "workflowRepos": 11,
+    "lockDriftRepos": 5,
+    "danglingRepos": 0,
+    "missingLockRepos": 6,
+    "headerRepos": 5,
+    "policyDriftRepos": 0,
+    "errors": 0
+  }
+]

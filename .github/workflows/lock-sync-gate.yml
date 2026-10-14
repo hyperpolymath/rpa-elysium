@@ -1,14 +1,13 @@
 # SPDX-License-Identifier: MPL-2.0
 name: Lock Sync Gate
 
-# Fails any pull request whose .github/workflows/actions.lock has drifted from
-# the workflow YAML. That drift is not cosmetic: GitHub refuses such a run at
-# startup, creating ZERO jobs, and reports only "This run likely failed because
-# of a workflow file issue." A single grouped Dependabot bump can take out most
-# of a repository's CI that way, because Dependabot rewrites `uses:` refs in the
-# YAML and cannot touch the lockfile. Measured across 200 repositories on
-# 2026-09-22: 39 had silently dead CI from exactly this cause.
-# See hyperpolymath/standards#968.
+# Reject drift between workflow refs and actions.lock, and dangling transitive
+# records. These can block policy verification or GitHub's startup resolver.
+# Do not infer the cause of every startup failure from this gate: #144 created
+# jobs, and also had unrelated SPDX, language-policy and clippy failures.
+# Dependabot updates must carry the matching lock and pass the same checks;
+# newer Dependabot/tool versions can update the lock but inherited drift remains.
+# See docs/CI-CD-REPAIR.adoc for the update/verification procedure.
 #
 # This workflow deliberately carries NO `uses:` of its own. It checks out by
 # calling git in a `run:` step instead of using actions/checkout, so it has no
@@ -62,3 +61,9 @@ jobs:
           test -x scripts/check-lock-sync.sh \
             || { echo "::error::scripts/check-lock-sync.sh missing or not executable"; exit 1; }
           ./scripts/check-lock-sync.sh
+
+      - name: Exercise lock-sync positive and negative controls
+        run: bash scripts/tests/check-lock-sync-test.sh
+
+      - name: Exercise atomic lock-update controls
+        run: bash scripts/tests/actions-lock-update-test.sh

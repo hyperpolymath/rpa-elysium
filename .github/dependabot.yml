@@ -9,11 +9,16 @@ updates:
       actions:
         patterns:
           - "*"
-    ignore:
-      # HOLD: github/codeql-action at v4.38.0 (SHA-pinned). v4.38.1 fails
-      # GitHub workflow-startup validation estate-wide (nexia-list#100;
-      # SHA-form re-bump bypassed versions-scoped ignores - see
-      # nexia-list#101/#104). Hold until upstream clears 4.38.1 or a
-      # newer release verifies green; revisit deliberately.
-      - dependency-name: "github/codeql-action"
-
+    # v4.38.3 runs successfully on PR #144 (actions and rust analysis).
+    # Do not retain the estate-wide blanket hold for the older v4.38.1 issue.
+  # Estate Cargo policy: automated security updates, not routine major churn.
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+  - package-ecosystem: "cargo"
+    directory: "/fuzz"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0

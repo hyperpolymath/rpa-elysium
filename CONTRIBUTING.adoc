@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 // Canonical contributing guide (estate policy: AsciiDoc at the repo root).
 // The Markdown copy in .github/ is a pointer kept for GitHub's UI surfaces.
 = Contributing to RPA Elysium
@@ -18,9 +18,9 @@ just check   # fmt + lint + test
 just build   # Release build
 
 # Or individually
-cargo build --workspace
-cargo test --workspace
-cargo clippy --workspace --all-targets -- -D warnings
+cargo build --locked --workspace
+cargo test --locked --workspace --all-targets
+cargo clippy --locked --workspace --all-targets -- -D warnings
 ----
 
 == Repository Structure
@@ -53,14 +53,14 @@ This project follows the Hyperpolymath Language Policy (see `.claude/CLAUDE.md`)
 |*Rust*
 |Core framework, WASM, CLI
 
-|*ReScript*
-|Management console UI
+|*AffineScript*
+|Future management console (not implemented)
 
 |*Gleam*
 |Backend services (BEAM)
 
-|*Deno*
-|JS runtime (not Node.js)
+|*Bun / Deno / pnpm / npm*
+|JS runtime/tooling preference, in that order
 
 |*Idris2*
 |ABI definitions
@@ -72,7 +72,8 @@ This project follows the Hyperpolymath Language Policy (see `.claude/CLAUDE.md`)
 |Scripts, automation
 |===
 
-*Banned*: TypeScript, Node.js, npm, Go, Python, Java, Kotlin, Swift.
+*Banned for new application code*: TypeScript, ReScript, Go, Python, Java, Kotlin, Swift.
+Do not add runtime tooling to this Rust workspace without a real use case.
 
 == Branch Naming
 
@@ -105,14 +106,17 @@ Scopes: `core`, `plugin`, `fs-workflow`, `abi`, `ffi`, `services`, `ci`
 
 . Fork the repository and create a feature branch
 . Ensure `just check` passes (fmt, lint, test)
-. All SPDX headers must be `MPL-2.0`
-. All GitHub Actions must be SHA-pinned
+. Code/config/scripts use `MPL-2.0`; prose uses `CC-BY-SA-4.0`
+. All GitHub Actions must resolve to immutable commits in the reviewed actions.lock graph
 . No banned language code introduced
 . Submit PR against `main` with descriptive title and body
 
 == Code Standards
 
 * All source files must have SPDX license headers
+* Run `just ci-check` for lock, community-health and regression controls
+* Run `just audit` for the Cargo security audit
+* Report exploitable vulnerabilities privately (link:SECURITY.adoc[security policy])
 * All code must pass `cargo clippy -- -D warnings`
 * All code must be formatted with `cargo fmt`
 * Test coverage target: 80%+
@@ -121,7 +125,7 @@ Scopes: `core`, `plugin`, `fs-workflow`, `abi`, `ffi`, `services`, `ci`
 
 == Reporting Bugs
 
-Use the link:.github/ISSUE_TEMPLATE/bug_report.md[bug report template].
+Use the link:.github/ISSUE_TEMPLATE/bug_report.yml[bug report template].
 Include:
 
 * Environment details (OS, Rust version, etc.)
@@ -131,7 +135,7 @@ Include:
 == Suggesting Features
 
 Use the
-link:.github/ISSUE_TEMPLATE/feature_request.md[feature request template].
+link:.github/ISSUE_TEMPLATE/feature_request.yml[feature request template].
 Include:
 
 * Problem statement
@@ -140,7 +144,8 @@ Include:
 
 == License
 
-All contributions are licensed under MPL-2.0.
+Code contributions use MPL-2.0; prose uses CC-BY-SA-4.0. See `LICENSES/`
+and the Standards link:https://github.com/hyperpolymath/standards/blob/main/3-practice/LICENCE-POLICY.adoc[licence policy].
 
 == Signed commits
 

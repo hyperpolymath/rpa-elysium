@@ -25,6 +25,9 @@ The following files in `.machine_readable/` contain structured project metadata:
 |---------------|----------|-------|
 | **AffineScript** | Primary application code | Affine-typed, compiles to typed-wasm or ESM |
 | **Bun** | JS runtime & package management (tier 1) | Default for all new work. Runs compiled ESM/JS directly — no bundler step. Uses an npm-compatible `package.json` plus `bun.lock` — both are expected, not anti-patterns. |
+| **Deno** | JS runtime (tier 2) | Use when Bun is unsuitable |
+| **pnpm** | JS package management (tier 3) | Fallback after Bun and Deno |
+| **npm** | JS package management (tier 4) | Last-resort fallback |
 | **Rust** | Performance-critical, systems, WASM | Preferred for CLI tools |
 | **Tauri 2.0+** | Mobile apps (iOS/Android) | Rust backend + web UI |
 | **Dioxus** | Mobile apps (native UI) | Pure Rust, React-like |
@@ -43,10 +46,10 @@ The following files in `.machine_readable/` contain structured project metadata:
 |--------|-------------|
 | TypeScript | AffineScript |
 | ReScript | AffineScript |
-| Deno | Bun |
+
 | Node.js | Bun |
-| npm | Bun |
-| pnpm/yarn | Bun |
+
+| yarn | Bun |
 | Go | Rust |
 | Python | Julia/Rust/AffineScript |
 | Java/Kotlin | Rust/Tauri/Dioxus |
