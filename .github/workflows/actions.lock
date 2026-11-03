@@ -4,7 +4,7 @@
 version: 'v0.0.3'
 workflows:
     '.github/workflows/boj-build.yml':
-        - 'step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2'
+        - 'step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43'
     '.github/workflows/cargo-audit.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
     '.github/workflows/casket-pages.yml':
@@ -248,14 +248,14 @@ dependencies:
         commit: 'sha1-28959ce8df70de7be546dd1250a005dd32156697'
         owner_id: 18365890
         repo_id: 220359305
+    'step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43':
+        ref: 'v2.22.3'
+        commit: 'sha1-46b06cea07f9e64621fdf066ba77ac6915163d43'
+        owner_id: 88700172
+        repo_id: 422287306
     'step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25':
         ref: 'v2.22.1'
         commit: 'sha1-ccd8616d44fd3846e67624a50d5aad6d37bf2d25'
-        owner_id: 88700172
-        repo_id: 422287306
-    'step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2':
-        ref: 'v2.22.2'
-        commit: 'sha1-dc2769abcc0fcfbadfc1df54081c1608579ef6b2'
         owner_id: 88700172
         repo_id: 422287306
     'swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6':
