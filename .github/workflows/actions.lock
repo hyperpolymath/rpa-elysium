@@ -4,7 +4,7 @@
 version: 'v0.0.3'
 workflows:
     '.github/workflows/boj-build.yml':
-        - 'step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43'
+        - 'step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a'
     '.github/workflows/cargo-audit.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
     '.github/workflows/casket-pages.yml':
@@ -16,15 +16,15 @@ workflows:
         - 'haskell-actions/setup@0f8e8c99d88aeb3fbfd523f1ef2c6f762d10d64d'
     '.github/workflows/cflite_batch.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        - 'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066'
         - 'google/clusterfuzzlite@884713a6c30a92e5e8544c39945cd7cb630abcd1'
     '.github/workflows/cflite_pr.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        - 'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066'
         - 'google/clusterfuzzlite@884713a6c30a92e5e8544c39945cd7cb630abcd1'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        - 'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066'
     '.github/workflows/dogfood-gate.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
     '.github/workflows/governance.yml':
@@ -133,9 +133,9 @@ dependencies:
         commit: 'sha1-54075bcc5e249e4758d363f27d099f55d843f124'
         owner_id: 47606891
         repo_id: 331103973
-    'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370':
-        ref: 'v4.39.1'
-        commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+    'github/codeql-action@33d7b85da1a04171e211befe2c739303b9a4c066':
+        ref: 'v4.39.3'
+        commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
         owner_id: 9919
         repo_id: 259445878
     'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63':
@@ -248,9 +248,9 @@ dependencies:
         commit: 'sha1-28959ce8df70de7be546dd1250a005dd32156697'
         owner_id: 18365890
         repo_id: 220359305
-    'step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43':
-        ref: 'v2.22.3'
-        commit: 'sha1-46b06cea07f9e64621fdf066ba77ac6915163d43'
+    'step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a':
+        ref: 'v2.22.4'
+        commit: 'sha1-1d88384fd173af6ecb012dfd0264a306b711241a'
         owner_id: 88700172
         repo_id: 422287306
     'step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25':
